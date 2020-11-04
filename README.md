@@ -1,5 +1,48 @@
 # Wargame
 
-Projet consistant à programmer en Java un jeu de stratégie permettant de jouer à la **2eme guerre mondiale**.
-Oui oui Gustav oui oui
-Le travail rend l'homme heureux comme on dit
+Indications du prof :
+- 2 camps opposés
+- Carte en grille
+	-  Min carrés, mieux octogones
+	- Un obstacle ou unité par case
+		- Types obstacles: eau, rocher, forêts
+		- Plusieurs types de guerriers
+	- Carte grisée là où le joueur n'a pas d'unités
+- Tours de jeu
+	- Tour du joueur: déplacer chaque unité dans une case adjacente ou la laisser où elle est
+	- Tour des ennemis: attaque automatiquement ou se déplace aléatoirement
+- Fin du jeu quand une armée est anéantie
+- Unité
+	- Camp
+	- Type
+	- Points de vie
+		- Perdues au combat
+		- Regagnés en se reposant
+	- Portée visuelle
+	- Puissance frappe
+		- Max possible dans un tirage aléatoire
+	- Puissance Tir
+	- Une seule action par tour de jeu
+	- Actions donnée par glisser-déposer
+- Options du joueur
+	- Voir infos unité avec souris
+	- Bouton "Fin du tour"
+	- Redémarrer une partie
+	- Sauvegarder une partie
+	- Restaurer une partie
+	- Double accès aux options: menu+raccourci clavier 
+- Technique
+	- Utiliser exceptions
+- Améliorations
+	- niveaux de difficultés
+	- Infos au dessus d'une unité
+	- Images
+	- Sons
+	- Sauvegarder plusieurs parties
+	- Distinguer unités déjà utilisées
+	- Visualiser rayon d'actions
+	- Raccourci-claviers pour tout faire
+	- Plus de types de soldats
+	- Plus de types d'obstacles
+	- Carte customisable
+	- Carte aléatoire
