@@ -1,6 +1,6 @@
 # Wargame
 
-Indications du prof :
+**Indications du prof :**
 - 2 camps opposés
 - Carte en grille
 	-  Min carrés, mieux octogones
@@ -46,3 +46,79 @@ Indications du prof :
 	- Plus de types d'obstacles
 	- Carte customisable
 	- Carte aléatoire
+
+
+
+---
+**Plan d'action:**
+ - Carte
+   - Interfaces / Structure mémoire
+     - Forme
+     - Cellules
+       - Position
+       - Type
+       - Unité potentiel
+       - Sprite(s)
+       - Visible par le joueur
+     - Info sur l'avancement du jeu?
+       - Nombre de tours 
+       - Nombre total d'unités dans chaque camps
+   - Génération du terrain aléatoire avec paramètres
+     - Taille
+     - Pourcentage d'obstacles
+   - Placement des ennemis aléatoire
+   - Fonctions get/set
+   - Fonctions d'affichage
+   - Stockage disque dur
+ - Unités
+   - Interfaces / Structure mémoire
+     - Nom
+     - Sprite(s)
+     - Camp
+     - Type
+     - Points de vies
+     -  Camp
+     -  Portée visuelle
+     -  Puissance de frappe
+     -  Puissance tir
+   - Fonctions
+     - get/set
+     - bouger
+     - attaquer
+     - affichage
+   - Stockage
+   - IA
+     - Aléatoire
+     - "intelligente"
+ - Interfaces
+   - Menu principale
+     - Lancer nouveau jeu
+     - Charger un jeu
+     - Options
+     - Quitter le jeu
+   - Lancer jeu
+     - Paramètres carte
+     - Sélection camps?
+     - Paramètres unités
+     - Limite de temps par tour?
+     - Placement initial des unités?
+   - Charger un jeu
+     - plusieurs save?
+   - Options
+     - Taille/config fenêtre
+     - Difficulté des ennemis
+   - Menu pause
+     - Reprendre partie
+     - Sauvegarder partie
+     - Options
+     - Quitter vers le menu
+   - Dans le jeu
+     - Prochain tour
+     - Liste des unités
+     - Nombre de tours
+     - Options
+    
+    
+      
+      
+      
