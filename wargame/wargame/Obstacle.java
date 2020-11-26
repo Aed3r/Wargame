@@ -2,6 +2,7 @@ package wargame;
 import java.awt.Color;
 import java.awt.Graphics;
 public class Obstacle extends Element {
+	Position pos;
 	public enum TypeObstacle {
 		ROCHER (Color.BLACK), FORET (Color.GREEN), EAU (Color.BLUE);
 		private final Color COULEUR;

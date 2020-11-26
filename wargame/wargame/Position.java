@@ -11,6 +11,6 @@ public class Position implements IConfig {
 	}
 	public String toString() { return "("+x+","+y+")"; }
 	public boolean estVoisine(Position pos) {
-		return ((Math.abs(x-pos.x)<=1) && (Math.abs(y-pos.y)<=1));
+		return (y == pos.y && (x == pos.x - 1 || x == pos.x - 2 || x == pos.x + 1 || x == pos.x + 2)) || (y == pos.y -1 && (x == pos.x - 1 || x == pos.x + 1));
 	}
 }
