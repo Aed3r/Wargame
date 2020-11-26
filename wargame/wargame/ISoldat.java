@@ -37,7 +37,7 @@ public interface ISoldat {
          return values()[(int)(Math.random()*values().length)];
       }
    }
-   int getPoints(); int getTour(); int getPortee();
+   int getPoints(); int getTour(); int getPortee(); Position getPosition();
    void joueTour(int tour);
    void combat(Soldat soldat);
    void seDeplace(Position newPos);
