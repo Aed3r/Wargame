@@ -19,4 +19,7 @@ public class Heros extends Soldat{
     public int getTour(){
         return 0;
     }
+    public String toString(){
+        return  TYPE + super.toString();
+    }
 }
