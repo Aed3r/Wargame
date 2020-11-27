@@ -1,10 +1,10 @@
-package Unites;
+package unites;
 
 import wargame.IConfig;
 
 public class Position implements IConfig {
 	private int x, y;
-	Position(int x, int y) { this.x = x; this.y = y; }
+	public Position(int x, int y) { this.x = x; this.y = y; }
 	public int getX() { return x; }
 	public int getY() { return y; }
 	public void setX(int x) { this.x = x; }
