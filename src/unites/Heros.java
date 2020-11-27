@@ -1,5 +1,7 @@
 package unites;
 
+import terrains.Carte;
+
 public class Heros extends Soldat{
     private final String NOM;
     private final TypesH TYPE;

@@ -1,5 +1,9 @@
 package unites;
 
+import terrains.Carte;
+import misc.Element;
+import wargame.ISoldat;
+
 public abstract class Soldat extends Element implements ISoldat{
     private final int POINT_DE_VIE_MAX, PORTEE_VISUELLE, PUISSANCE, TIR; 
     private int pointsDeVie;
