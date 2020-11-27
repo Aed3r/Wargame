@@ -2,11 +2,11 @@ package wargame;
 
 import java.awt.Graphics;
 
-import Misc.Element;
-import Terrains.PanneauJeu;
-import Unites.Heros;
-import Unites.Position;
-import Unites.Soldat;
+import misc.Element;
+import terrains.PanneauJeu;
+import unites.Heros;
+import unites.Position;
+import unites.Soldat;
 public interface ICarte {
 	Element getElement(Position pos);
 	Position trouvePositionVide(); // Trouve al�atoirement une position vide sur la carte

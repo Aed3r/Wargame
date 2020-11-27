@@ -2,8 +2,8 @@ package terrains;
 
 import java.awt.*;
 
-import Misc.Element;
-import Unites.Position;
+import misc.Element;
+import unites.Position;
 
 public class Obstacle extends Element {
 	Position pos;
