@@ -1,6 +1,9 @@
 package unites;
 
 import terrains.Carte;
+
+import java.util.Random;
+
 import misc.Element;
 import wargame.ISoldat;
 
@@ -27,8 +30,17 @@ public abstract class Soldat extends Element implements ISoldat{
     public void combat(Soldat soldat){ /*On considere que l'instance pour laquelle est appelée cette methode est la première a taper */
         /*Premièrement le cas d'un combat au corps-a-corps (adjacent)*/
         if(this.pos.estVoisine(soldat.pos)){
-            
+            /*On fait un tirage entre 0 et la puissance du soldat*/
+            soldat.pointsDeVie = soldat.pointsDeVie - (int)(Math.random() * PUISSANCE);
+            if(soldat.pointsDeVie <= 0){ /*Si le soldat adverse est mort sur le coup*/
+                carte.mort(soldat);
+            }else{ /* Si il n'est pas mort il peut attaquer a son tour*/
+                this.pointsDeVie = this.pointsDeVie - (int)(Math.random() * soldat.PUISSANCE);
+                if(this.pointsDeVie <= 0) carte.mort(this);
+            }
+        /*Ensuite on s'occupe du cas ou les soldats ne sont pas au corps a corp*/
         }
+        
     }
     public abstract void seDeplace(Position newPos);
 }

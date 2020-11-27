@@ -1,5 +1,9 @@
 package terrains;
 
+import unites.Soldat;
+
 public class Carte {
-    /*A faire*/
+    public void mort(Soldat soldat){
+
+    }
 }
