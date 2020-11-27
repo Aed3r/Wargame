@@ -1,4 +1,4 @@
-package Terrains;
+package terrains;
 
 public class PanneauJeu {
     /*A faire*/

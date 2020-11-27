@@ -1,4 +1,4 @@
-package Unites;
+package unites;
 
 public class Heros extends Soldat{
     private final String NOM;

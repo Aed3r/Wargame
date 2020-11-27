@@ -1,4 +1,4 @@
-package Terrains;
+package terrains;
 
 import java.awt.*;
 

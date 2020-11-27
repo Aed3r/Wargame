@@ -1,4 +1,4 @@
-package Unites;
+package unites;
 
 public abstract class Soldat extends Element implements ISoldat{
     private final int POINT_DE_VIE_MAX, PORTEE_VISUELLE, PUISSANCE, TIR; 
