@@ -1,7 +1,7 @@
 package wargame;
 
-import Unites.Position;
-import Unites.Soldat;
+import unites.Position;
+import unites.Soldat;
 
 public interface ISoldat {
    static enum TypesH {

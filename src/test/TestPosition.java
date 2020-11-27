@@ -1,6 +1,6 @@
 package test;
 
-import Unites.Position;
+import unites.Position;
 
 public class TestOPosition {
     public static void main(String args[]) {
