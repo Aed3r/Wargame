@@ -1,4 +1,4 @@
- Wargame
+Wargame
 
 **Indications du prof :**
 - 2 camps opposés

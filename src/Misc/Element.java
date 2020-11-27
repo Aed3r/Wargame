@@ -1,4 +1,4 @@
-package wargame;
+package Misc;
 
 public class Element {
     /*A faire*/

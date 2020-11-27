@@ -1,6 +1,6 @@
 package wargame;
 
-import
+import java.awt.*;
 
 public class IMenu {
     Color bgColor;
