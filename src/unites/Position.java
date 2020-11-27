@@ -14,6 +14,7 @@ public class Position implements IConfig {
 	}
 	public String toString() { return "("+x+","+y+")"; }
 	public boolean estVoisine(Position pos) {
-		return (y == pos.y && (x == pos.x - 1 || x == pos.x - 2 || x == pos.x + 1 || x == pos.x + 2)) || (y == pos.y -1 && (x == pos.x - 1 || x == pos.x + 1));
+		/*Une case est voisine si les deux sont des positions valide et qu'elles sont adjacentes*/
+		return (this.estValide() && pos.estValide()) && ((y == pos.y && (x == pos.x - 1 || x == pos.x - 2 || x == pos.x + 1 || x == pos.x + 2)) || (y == pos.y -1 && (x == pos.x - 1 || x == pos.x + 1)));
 	}
 }
