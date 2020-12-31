@@ -1,6 +1,6 @@
 package wargame;
 
-import unites.Position;
+import misc.Position;
 import unites.Soldat;
 
 public interface ISoldat {
@@ -41,7 +41,7 @@ public interface ISoldat {
          return values()[(int)(Math.random()*values().length)];
       }
    }
-   int getPoints(); int getTour(); int getPortee(); Position getPosition();
+   int getPoints(); int getTour(); int getPortee();
    void joueTour(int tour);
    void combat(Soldat soldat);
    void seDeplace(Position newPos);

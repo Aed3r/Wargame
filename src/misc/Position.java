@@ -1,4 +1,4 @@
-package unites;
+package misc;
 
 import wargame.IConfig;
 
