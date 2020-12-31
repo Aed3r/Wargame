@@ -1,4 +1,4 @@
-package test;
+package tests;
 
 import terrains.Carte;
 import unites.*;
