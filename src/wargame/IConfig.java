@@ -30,5 +30,5 @@ public interface IConfig {
     Color BR = new Color(0f, 0f, 0f, .4f); // Bas
     Color ST = new Color(1f, 1f, 1f, .2f); // Haut passage souris / Bas clic
     Color SB = new Color(1f, 1f, 1f, .1f); // Bas passage souris / Haut clic
-    Color TC = new Color(1f, 1f, 1f, 1.f); // Couleur du texte
+	Color TC = new Color(1f, 1f, 1f, 1.f); // Couleur du texte
 }

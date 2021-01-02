@@ -5,18 +5,19 @@ import java.awt.Color;
 import misc.*;
 import wargame.ISoldat;
 
-public abstract class Soldat extends Element implements ISoldat{
+public abstract class Soldat implements ISoldat {
     private final int POINT_DE_VIE_MAX, PORTEE_VISUELLE, PUISSANCE, TIR; 
     private int pointsDeVie;
     private Carte carte;
+    private Position pos;
 
     Soldat(Carte carte, int pts, int portee, int puiss, int tir, Position pos, Color couleur, String nom){
-    	super(pos, couleur, nom);
         this.POINT_DE_VIE_MAX = this.pointsDeVie = pts;
         this.PORTEE_VISUELLE = portee;
         this.PUISSANCE = puiss;
         this.TIR = tir;
         this.carte = carte;
+        this.pos = pos;
     }
 
     @Override
@@ -47,7 +48,12 @@ public abstract class Soldat extends Element implements ISoldat{
             }
         }
     }
+<<<<<<< HEAD
     public void seDeplace(Position newPos) { this.setPos(newPos);}
+=======
+    public abstract void seDeplace(Position newPos);
+    public Position getPos () { return pos; }
+>>>>>>> 1f07018594ff143d99af18e0e79abec6b325048b
     public String toString(){
         return " position : " + this.getPos().toString() + " Pdv : " + this.pointsDeVie + "/" + this.POINT_DE_VIE_MAX;
     }
