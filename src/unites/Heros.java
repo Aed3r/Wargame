@@ -26,4 +26,19 @@ public class Heros extends Soldat {
     public String toString(){
         return  TYPE + super.toString();
     }
+<<<<<<< HEAD
+
+	@Override
+	public void afficher() {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void supprimer() {
+		// TODO Auto-generated method stub
+		
+	}
+=======
+>>>>>>> 1f07018594ff143d99af18e0e79abec6b325048b
 }
