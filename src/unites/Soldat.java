@@ -47,8 +47,8 @@ public abstract class Soldat extends Element implements ISoldat{
             }
         }
     }
-    public abstract void seDeplace(Position newPos);
+    public void seDeplace(Position newPos) { this.setPos(newPos);}
     public String toString(){
-        return " position : " + this.pos.toString() + " Pdv : " + this.pointsDeVie + "/" + this.POINT_DE_VIE_MAX;
+        return " position : " + this.getPos().toString() + " Pdv : " + this.pointsDeVie + "/" + this.POINT_DE_VIE_MAX;
     }
 }
