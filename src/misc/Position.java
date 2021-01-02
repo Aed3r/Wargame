@@ -17,4 +17,8 @@ public class Position implements IConfig {
 		/*Une case est voisine si les deux sont des positions valide et qu'elles sont adjacentes*/
 		return (this.estValide() && pos.estValide()) && ((y == pos.y && (x == pos.x - 1 || x == pos.x - 2 || x == pos.x + 1 || x == pos.x + 2)) || (y == pos.y -1 && (x == pos.x - 1 || x == pos.x + 1)));
 	}
+	public int distance(Position pos){ // Retourne la distance (le nombre de cases a parcourir) vers la position pos
+		/*TODO*/
+		return 0;
+	}
 }

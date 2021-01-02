@@ -35,9 +35,17 @@ public abstract class Soldat extends Element implements ISoldat{
                 this.pointsDeVie = this.pointsDeVie - (int)(Math.random() * soldat.PUISSANCE);
                 if(this.pointsDeVie <= 0) carte.mort(this);
             }
-        /*Ensuite on s'occupe du cas ou les soldats ne sont pas au corps a corp*/
+        /*Ensuite le cas d'un combat a distance (on utilise le tir et non la puissance)*/ 
+        }else if(getPos().distance(soldat.getPos()) <= this.getPortee()){ //Si le soldat adverse eset a portée de tir
+            /*On fait un tirage entre 0 et la puissance du soldat*/
+            soldat.pointsDeVie = soldat.pointsDeVie - (int)(Math.random() * TIR);
+            if(soldat.pointsDeVie <= 0){ /*Si le soldat adverse est mort sur le coup*/
+                carte.mort(soldat);
+            }else if(getPos().distance(soldat.getPos()) <= soldat.getPortee()){ /* Si il n'est pas mort et que l'on est a sa portée il peut attaquer a son tour*/
+                this.pointsDeVie = this.pointsDeVie - (int)(Math.random() * soldat.TIR);
+                if(this.pointsDeVie <= 0) carte.mort(this);
+            }
         }
-        
     }
     public abstract void seDeplace(Position newPos);
 }
