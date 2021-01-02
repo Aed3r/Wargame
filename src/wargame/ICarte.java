@@ -5,7 +5,7 @@ import java.awt.Graphics;
 import misc.Element;
 import terrains.PanneauJeu;
 import unites.Heros;
-import unites.Position;
+import misc.Position;
 import unites.Soldat;
 public interface ICarte {
 	Element getElement(Position pos);

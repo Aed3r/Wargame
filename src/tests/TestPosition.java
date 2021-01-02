@@ -1,6 +1,6 @@
 package tests;
 
-import unites.*;
+import misc.*;
 
 public class TestPosition {
     public static void main(String[] args) {
