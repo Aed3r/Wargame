@@ -24,7 +24,7 @@ public class Obstacle extends Element {
 		}
 	}
 	private TypeObstacle TYPE;
-	Obstacle(TypeObstacle type, Position pos) { 
+	public Obstacle(TypeObstacle type, Position pos) { 
 		super(pos, type.getColor(), type.getNom());
 		TYPE = type; 
 	}

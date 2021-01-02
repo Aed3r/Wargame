@@ -22,7 +22,9 @@ public class Carte {
                 if (cmp_obstacle == nb_obstacle_max) {}
                 else {
                     if (alea(0, i*j) <= nb_obstacle_max) {
+                        
                         grille[k][l] = new Obstacle(TypeObstacle.ROCHER, new Position(k, l));
+                        System.out.println("blablza\n");
                         cmp_obstacle++;
                     }
                 }
