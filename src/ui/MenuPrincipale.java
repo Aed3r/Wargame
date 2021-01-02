@@ -2,6 +2,7 @@ package ui;
 
 import java.awt.*;
 import java.awt.event.*;
+import terrains.Carte;
 
 /**
  * Crée le menu principale
@@ -25,7 +26,8 @@ public class MenuPrincipale extends MenuSimple {
         buttons[0].addMouseListener(new MouseAdapter() {
             @Override
             public void mouseClicked(MouseEvent e) {
-                return;
+                Carte c = new Carte();
+                setMenu(new PanneauJeu(c));
             }
         });
             // Charger un jeu

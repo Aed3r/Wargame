@@ -3,7 +3,6 @@ package wargame;
 import java.awt.Graphics;
 
 import misc.Element;
-import terrains.PanneauJeu;
 import unites.Heros;
 import misc.Position;
 import unites.Soldat;
@@ -18,6 +17,6 @@ public interface ICarte {
 	boolean deplaceSoldat(Position pos, Soldat soldat);
 	void mort(Soldat perso);
 	boolean actionHeros(Position pos, Position pos2);
-	void jouerSoldats(PanneauJeu pj);
+	void jouerSoldats();
 	void toutDessiner(Graphics g);
 }

@@ -1,6 +1,8 @@
 package ui;
 
 import java.awt.*;
+import java.io.*;
+import java.util.*;
 
 /**
  * Classe utilitaire permettant de choisir une police en fonction de ses paramètres
@@ -51,5 +53,48 @@ public class GenPolice implements wargame.IConfig {
      */
     public static Font genFont (String name, int weight, boolean isItalic) {
         return genFont(name, weight, isItalic, FONTSIZE);
+    }
+
+    /**
+     * Trouve toutes les polices dans data et les charge.<br>
+     * Allume également l'anti-aliasage des caractères.
+     */
+    public static void loadFonts() {
+        findFonts(new File("data/font").listFiles());
+    }
+
+    /**
+     * Cherche récursivement, à partir des fichiers dans files, toutes les polices TTF puis les charge
+     * @param files un tableau de fichiers dans lequel chercher
+     */
+    private static void findFonts (File[] files) {
+        for (File file : files) {
+            if (file.isDirectory()) {
+                findFonts(file.listFiles()); // Appel récursif 
+            } else {
+                if (Optional.ofNullable(file.getName())
+                        .filter(f -> f.contains("."))
+                        .map(f -> f.substring(file.getName().lastIndexOf(".") + 1))
+                        .filter(f -> f.equals("ttf"))
+                        .isPresent()) {
+                            loadFont(file);
+                        }
+            }
+        }    
+    }
+
+    /**
+     * Charge la police
+     * @param font le fichier de la police à charger
+     * @author https://docs.oracle.com/javase/tutorial/2d/text/fonts.html
+     */
+    private static void loadFont(File font) {
+        try {
+            GraphicsEnvironment ge = GraphicsEnvironment.getLocalGraphicsEnvironment();
+            ge.registerFont(Font.createFont(Font.TRUETYPE_FONT, font).deriveFont(12f));
+        } catch (IOException|FontFormatException e) {
+            System.out.println("Erreur lors du chargement d'une police! '" + font.getName() + "' n'existe pas ou est invalide.");
+            System.exit(-1);
+        }
     }
 }

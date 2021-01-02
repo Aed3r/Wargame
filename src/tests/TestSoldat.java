@@ -3,6 +3,7 @@ package tests;
 import terrains.Carte;
 import unites.*;
 import wargame.ISoldat.TypesH;
+import misc.Position;
 
 public class TestSoldat {
     public static void main(String[] args) {
