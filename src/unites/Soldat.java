@@ -48,12 +48,8 @@ public abstract class Soldat implements ISoldat {
             }
         }
     }
-<<<<<<< HEAD
-    public void seDeplace(Position newPos) { this.setPos(newPos);}
-=======
-    public abstract void seDeplace(Position newPos);
-    public Position getPos () { return pos; }
->>>>>>> 1f07018594ff143d99af18e0e79abec6b325048b
+    public Position getPos(){ return this.pos;}
+    public void seDeplace(Position newPos) { this.pos = newPos;}
     public String toString(){
         return " position : " + this.getPos().toString() + " Pdv : " + this.pointsDeVie + "/" + this.POINT_DE_VIE_MAX;
     }
