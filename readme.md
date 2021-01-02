@@ -117,3 +117,14 @@ Wargame
      - Liste des unités
      - Nombre de tours
      - Options
+
+---
+**Objets des commits**
+Allowed <type>
+  - feat (feature)
+  - fix (bug fix)
+  - docs (documentation)
+  - style (formatting, missing semi colons, …)
+  - refactor
+  - test (when adding missing tests)
+  - chore (maintain)
