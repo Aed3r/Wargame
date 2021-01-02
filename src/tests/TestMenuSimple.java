@@ -1,8 +1,10 @@
 package tests;
 
 import javax.swing.*;
+
+import ui.MenuSimple;
+
 import java.awt.*;
-import interfaces.MenuSimple;
 
 /**
  * Test rapide pour la classe MenuSimple

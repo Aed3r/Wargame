@@ -2,11 +2,12 @@ package tests;
 
 import javax.swing.*;
 
+import ui.MenuPrincipale;
+import ui.TailleFenetre;
+
 import java.awt.*;
 import java.io.*;
 import java.util.*;
-import interfaces.MenuPrincipale;
-import interfaces.TailleFenetre;
 
 public class TestMenuPrincipale implements wargame.IConfig {
 

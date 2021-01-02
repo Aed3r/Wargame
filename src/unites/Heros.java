@@ -23,16 +23,4 @@ public class Heros extends Soldat {
     public int getTour(){
         return 0;
     }
-
-	@Override
-	public void afficher() {
-		// TODO Auto-generated method stub
-		
-	}
-
-	@Override
-	public void supprimer() {
-		// TODO Auto-generated method stub
-		
-	}
 }
