@@ -23,6 +23,11 @@ public class Heros extends Soldat {
     public int getTour(){
         return 0;
     }
+<<<<<<< HEAD
+    public String toString(){
+        return  TYPE + super.toString();
+    }
+=======
 
 	@Override
 	public void afficher() {
@@ -35,4 +40,5 @@ public class Heros extends Soldat {
 		// TODO Auto-generated method stub
 		
 	}
+>>>>>>> dev
 }

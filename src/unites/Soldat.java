@@ -28,7 +28,7 @@ public abstract class Soldat extends Element implements ISoldat{
         /*Premièrement le cas d'un combat au corps-a-corps (adjacent)*/
         if(getPos().estVoisine(soldat.getPos())){
             /*On fait un tirage entre 0 et la puissance du soldat*/
-            soldat.pointsDeVie = soldat.pointsDeVie - (int)(Math.random() * PUISSANCE);
+            soldat.pointsDeVie = soldat.pointsDeVie - (int)(Math.random() * this.PUISSANCE);
             if(soldat.pointsDeVie <= 0){ /*Si le soldat adverse est mort sur le coup*/
                 carte.mort(soldat);
             }else{ /* Si il n'est pas mort il peut attaquer a son tour*/
@@ -48,4 +48,7 @@ public abstract class Soldat extends Element implements ISoldat{
         }
     }
     public abstract void seDeplace(Position newPos);
+    public String toString(){
+        return " position : " + this.pos.toString() + " Pdv : " + this.pointsDeVie + "/" + this.POINT_DE_VIE_MAX;
+    }
 }
