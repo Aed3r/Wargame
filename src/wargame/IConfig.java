@@ -12,7 +12,8 @@ public interface IConfig {
 	*/
 	String[][] PARAMETRES = {
 		{"tailleFenetre", "Taille de la fenètre", "grande", "plein écran", "petite", "moyenne"},
-		{"difficulte", "Difficulté", "normale", "difficile", "simple"}
+		{"difficulte", "Difficulté", "normale", "difficile", "simple"},
+		{"deplacementVert", "Déplacement vertical", "éteind", "allumé"}
 	};
 	// Chemin vers le fichier de configuration
 	String CONFIGFILE = "data/config.properties"; 

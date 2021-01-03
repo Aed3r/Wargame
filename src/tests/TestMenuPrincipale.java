@@ -7,6 +7,7 @@ import ui.*;
 import java.awt.*;
 import java.io.*;
 import java.util.*;
+import misc.Parametres;
 
 public class TestMenuPrincipale implements wargame.IConfig {
 
@@ -16,14 +17,10 @@ public class TestMenuPrincipale implements wargame.IConfig {
 
         Locale.setDefault(Locale.FRENCH);
 
-        // On charge la taille enregistré
-        try (InputStream in = new FileInputStream(CONFIGFILE)) {
-            Properties p = new Properties();
-            p.load(in);
-            TailleFenetre.setTailleFenetre(p.getProperty(PARAMETRES[0][0]), frame);
-        } catch (IOException io) {
-            TailleFenetre.setTailleFenetre(PARAMETRES[0][2], frame);
-        }
+        // On charge les paramètres et la taille enregistré
+        Parametres.loadParametres();
+        TailleFenetre.setTailleFenetre(Parametres.getParametre(0), frame);
+        
         // Evite le redimensionnement 
         frame.setResizable(false);
         // Centre la fenêtre

@@ -4,6 +4,8 @@ import misc.Element;
 import misc.Position;
 import unites.Soldat;
 import java.awt.*;
+import java.util.Random;
+import misc.Parametres;
 
 public class Carte implements wargame.IConfig {
     Element[][] grille = new Element[HAUTEUR_CARTE][LARGEUR_CARTE];
@@ -35,12 +37,18 @@ public class Carte implements wargame.IConfig {
     public void afficher (Graphics g) {
         int i, j, x, y;
 
+        Random rand = new Random();
+
         // lignes
         for (i = 0; i < HAUTEUR_CARTE; i++) {
             // colonnes
             for (j = 0; j < LARGEUR_CARTE; j++) {
                 x = MARGX + j*TAILLEX;
-                y = MARGY + i*TAILLEY;
+                y = (MARGY + i*TAILLEY);
+                
+                // Déplacement vertical aléatoire des éléments 
+                if (Parametres.getParametre("deplacementVert").equals("allumé"))
+                    y += rand.nextInt(50)-25;             
 
                 if (i%2 == 0)
                     grille[i][j].afficher(g, x+TAILLEX/2, y);

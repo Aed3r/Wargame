@@ -5,6 +5,7 @@ import java.awt.event.*;
 import java.io.*;
 import java.util.Properties;
 import javax.swing.*;
+import misc.Parametres;
 
 /**
  * Menu affichant tous les paramètres présentes dans IConfig
@@ -89,6 +90,8 @@ public class MenuOptions extends MenuSimple implements wargame.IConfig {
                         } catch (IOException io) {
                             System.err.println("Erreur lors de l'écriture vers le fichier de configuration! " + io.getLocalizedMessage());
                         }
+                        // On recharge les paramètre
+                        Parametres.loadParametres();
                         // On ajuste le menu parent aux potentiels changement de taille
                         parent.setBounds(0, 0, getWidth(), getHeight());
                         // On repasse au menu précédent
