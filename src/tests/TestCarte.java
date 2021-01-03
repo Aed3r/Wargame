@@ -12,11 +12,12 @@ public class TestCarte {
         Carte C = new Carte ();
         C.affiche_nul();
 
-        int x = 0; int y = 0;
+        int x = 13; int y = 23;
         Position P = new Position(x, y);
         Element E = C.getElement(P);
         System.out.printf("L'élement à la position %d:%d est de type : %s \n", x, y, E.getNom());
     
-        C.trouvePositionVide(P);
+        Position A = new Position(3, 3);
+        C.trouvePositionVide(A);
     }
 }

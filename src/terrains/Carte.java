@@ -12,7 +12,10 @@ public class Carte implements wargame.IConfig {
 
         for (int i = 0; i < HAUTEUR_CARTE; i++) {
             for (int j = 0; j < LARGEUR_CARTE; j++) {
-                grille[i][j] = new Element (new Position(i, j));
+                if (i == 0 || i == HAUTEUR_CARTE-1 || j == 0 || j == LARGEUR_CARTE-1) {
+                    grille[i][j] = new Element(misc.Element.TypeElement.FORET, new Position(i, j));
+                }
+                else grille[i][j] = new Element (new Position(i, j));
             }
         }      
     }
@@ -24,7 +27,7 @@ public class Carte implements wargame.IConfig {
         int i = pos.getX();
         int j = pos.getY();
 
-        if ((i >= HAUTEUR_CARTE || j >= LARGEUR_CARTE) || (i < 0 || j < 0)) {
+        if (!pos.estValide()) {
             System.out.println("Erreur getElement la position est hors de la grille FIN");
             return null;
         }
@@ -37,8 +40,8 @@ public class Carte implements wargame.IConfig {
         int posI = pos.getX();
         int posJ = pos.getY();
         int cmp = 0;
-
-        if ((posI >= HAUTEUR_CARTE || posJ >= LARGEUR_CARTE) || (posI < 0 || posJ < 0)) {
+        System.out.println("\nAyou \n");
+        if (!pos.estValide()) {
             System.out.println("Erreur trouvePositionVide la position est hors de la grille FIN");
             return null;
         }
@@ -46,7 +49,7 @@ public class Carte implements wargame.IConfig {
         for (int i = posI-1; i < posI+2; i++) {
             for (int j = posJ-1; j < posJ+2; j++) {
                 if ((i != posI && j != posJ) || (i != posI-1 && j != posJ+1) || (i != posI+1 && j != posJ+1)) {
-                    if (pos.estVide()) cmp++;
+                    if (grille[posI][posJ].estAccessible()) cmp++;
                 }
             }
         }
@@ -69,7 +72,7 @@ public class Carte implements wargame.IConfig {
             if ((randI != posI && randJ != posJ) || (randI != posI-1 && randJ != posJ+1) || (randI != posI+1 && randJ != posJ+1)) {
                 P.setX(randI);
                 P.setY(randJ);
-                if (P.estVide()) test = 1;
+                if (grille[posI][posJ].estAccessible()) test = 1;
             }
         }
         //System.out.printf("random : %d \n", rand);
