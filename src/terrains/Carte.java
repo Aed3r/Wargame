@@ -19,6 +19,15 @@ public class Carte implements wargame.IConfig {
 
     public void mort(Soldat soldat){}
 
+    public void affiche_nul () {
+        for (int i = 0; i < LARGEUR_CARTE; i++) {
+            for (int j = 0; j < HAUTEUR_CARTE; j++) {
+                System.out.printf("%d ", grille[i][j]);
+            }
+            System.out.printf("\n");
+        }
+    }
+
     /**
      * Affiche sur g tous les éléments constituant la carte courante
      * @param g un object graphique quelconque
