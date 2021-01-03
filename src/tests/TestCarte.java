@@ -10,6 +10,6 @@ public class TestCarte {
         System.out.printf("%d \n", test);
 
         Carte C = new Carte ();
-        //C.affiche_nul();
+        C.affiche_nul();
     }
 }

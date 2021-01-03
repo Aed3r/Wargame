@@ -22,7 +22,7 @@ public class Carte implements wargame.IConfig {
     public void affiche_nul () {
         for (int i = 0; i < LARGEUR_CARTE; i++) {
             for (int j = 0; j < HAUTEUR_CARTE; j++) {
-                System.out.printf("%d ", grille[i][j]);
+                System.out.printf("%s ", grille[i][j].getNom());
             }
             System.out.printf("\n");
         }
