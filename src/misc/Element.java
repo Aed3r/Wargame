@@ -53,7 +53,7 @@ public class Element {
 
 	public Image getSprite () {
         try {
-            return ImageIO.read(new File("data/img/elements/" + type.NOM));
+            return ImageIO.read(new File("data/img/elements/" + type.NOM + ".png"));
         } catch (IOException e) {
             // Problème lors du chargement, on utilise rien
             System.out.println(e.getLocalizedMessage());

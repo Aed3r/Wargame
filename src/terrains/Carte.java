@@ -11,9 +11,8 @@ public class Carte implements wargame.IConfig {
     public Carte () {
 
         for (int i = 0; i < HAUTEUR_CARTE; i++) {
-            for (int j = 0; j < HAUTEUR_CARTE; j++) {
+            for (int j = 0; j < LARGEUR_CARTE; j++) {
                 grille[i][j] = new Element (new Position(i, j));
-                System.out.println("blablza\n");
             }
         }      
     }
