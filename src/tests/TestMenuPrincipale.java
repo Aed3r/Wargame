@@ -5,7 +5,6 @@ import javax.swing.*;
 import ui.*;
 
 import java.awt.*;
-import java.io.*;
 import java.util.*;
 import misc.Parametres;
 

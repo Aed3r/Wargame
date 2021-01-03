@@ -14,7 +14,6 @@ import terrains.Carte;
 public class PanneauJeu extends JPanel implements wargame.IConfig, MouseWheelListener {
     private static final long serialVersionUID = -4874781269011185234L;
     private static final float MAXZOOM = 2f, VITESSEZOOM = 0.1f;
-    private Carte carte;
     private int xPlateau = 0, yPlateau = 0, wPlateau, hPlateau;
     private float zoomPlateau = 1;
     private transient BufferedImage plateau;
@@ -23,7 +22,6 @@ public class PanneauJeu extends JPanel implements wargame.IConfig, MouseWheelLis
 
     public PanneauJeu (Carte carte) {
         super();
-        this.carte = carte;
         wPlateau = MARGX*2+TAILLEX*LARGEUR_CARTE+TAILLEX/2; // Largeur du plateau
         hPlateau = MARGY*2+TAILLEY*(HAUTEUR_CARTE+1); // Hauteur du plateau
         addMouseWheelListener(this);
@@ -115,7 +113,7 @@ public class PanneauJeu extends JPanel implements wargame.IConfig, MouseWheelLis
         }
         // On vérifie si le déplacement est allé trop loin
         verifPosition();
-        // On affiche la partie du plateau voulue
+        // On affiche la partie du plateau voulu
         g2d.drawImage(plateau, xPlateau, yPlateau, null);
 
         // On replace l'ancien Transform

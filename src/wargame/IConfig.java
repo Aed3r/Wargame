@@ -2,8 +2,8 @@ package wargame;
 
 import java.awt.Color;
 public interface IConfig {
-	int LARGEUR_CARTE = 25; int HAUTEUR_CARTE = 15; // en nombre de cases
-	int NB_HEROS = 6; int NB_MONSTRES = 15; int NB_OBSTACLES = 20;
+	int LARGEUR_CARTE = 30; int HAUTEUR_CARTE = 20; // en nombre de cases
+	int NB_HEROS = 6; int NB_MONSTRES = 15;
 	/* Noms des paramètres dans le fichier de configuration. 
 			- [0]: nom du paramètre à utiliser dans le fichier des configurations
 			- [1]: nom à utiliser à l'affichage

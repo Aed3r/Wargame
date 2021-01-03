@@ -100,8 +100,6 @@ public class Carte implements wargame.IConfig {
     public void afficher (Graphics g) {
         int i, j, x, y;
 
-        Random rand = new Random();
-
         // lignes
         for (i = 0; i < HAUTEUR_CARTE; i++) {
             // colonnes
@@ -111,7 +109,7 @@ public class Carte implements wargame.IConfig {
                 
                 // Déplacement vertical aléatoire des éléments 
                 if (Parametres.getParametre("deplacementVert").equals("allumé"))
-                    y += rand.nextInt(50)-25;             
+                    y += Math.random()*50-25;             
 
                 if (i%2 == 0)
                     grille[i][j].afficher(g, x+TAILLEX/2, y);
