@@ -17,9 +17,6 @@ public class Heros extends Soldat {
     public void joueTour(int tour){
 
     }
-    @Override
-    public void seDeplace(Position newPos){
-    }
     public int getTour(){
         return 0;
     }

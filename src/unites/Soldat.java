@@ -20,11 +20,16 @@ public abstract class Soldat implements ISoldat {
         this.pos = pos;
     }
 
+    /* Méthodes abstraites */
+    public abstract int getTour();
+    public abstract void joueTour(int tour);
+
+    /* Méthodes définies */
     @Override
     public int getPoints(){ return this.pointsDeVie;} 
-    public abstract int getTour();
+    
     public int getPortee() {return this.PORTEE_VISUELLE;}
-    public abstract void joueTour(int tour);
+
     public void combat(Soldat soldat){ /*On considere que l'instance pour laquelle est appelée cette methode est la première a taper */
         /*Premièrement le cas d'un combat au corps-a-corps (adjacent)*/
         if(getPos().estVoisine(soldat.getPos())){
@@ -48,8 +53,11 @@ public abstract class Soldat implements ISoldat {
             }
         }
     }
+
     public Position getPos(){ return this.pos;}
+
     public void seDeplace(Position newPos) { this.pos = newPos;}
+    
     public String toString(){
         return " position : " + this.getPos().toString() + " Pdv : " + this.pointsDeVie + "/" + this.POINT_DE_VIE_MAX;
     }

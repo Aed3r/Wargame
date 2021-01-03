@@ -10,7 +10,7 @@ public class Position implements IConfig {
 	public void setX(int x) { this.x = x; }
 	public void setY(int y) { this.y = y; }
 	public boolean estValide() {
-		return !(x<0 || x>=LARGEUR_CARTE || y<0 || y>=HAUTEUR_CARTE);
+		return !((x >= HAUTEUR_CARTE-1) || (y >= LARGEUR_CARTE-1) || (x < 1) || (y < 1));
 	}
 	public String toString() { return "("+x+","+y+")"; }
 	public boolean estVoisine(Position pos) {
@@ -21,4 +21,6 @@ public class Position implements IConfig {
 		/*TODO*/
 		return 0;
 	}
+
+	
 }

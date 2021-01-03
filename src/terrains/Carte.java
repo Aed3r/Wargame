@@ -14,21 +14,84 @@ public class Carte implements wargame.IConfig {
 
         for (int i = 0; i < HAUTEUR_CARTE; i++) {
             for (int j = 0; j < LARGEUR_CARTE; j++) {
-                grille[i][j] = new Element (new Position(i, j));
+                if (i == 0 || i == HAUTEUR_CARTE-1 || j == 0 || j == LARGEUR_CARTE-1) {
+                    grille[i][j] = new Element(misc.Element.TypeElement.FORET, new Position(i, j));
+                }
+                else grille[i][j] = new Element (new Position(i, j));
             }
         }      
     }
 
     public void mort(Soldat soldat){}
 
+    /* Retourne l'élement à la position pos dans la grille */
+    public Element getElement(Position pos) {
+        int i = pos.getX();
+        int j = pos.getY();
+
+        if (!pos.estValide()) {
+            System.out.println("Erreur getElement la position est hors de la grille FIN");
+            return null;
+        }
+        return grille[i][j];     
+    }
+
+    /* Trouve une position vide choisie aleatoirement parmi les 8 positions adjacentes de pos */
+    /* TODO : DECOMMENTER ET IMPLEMENTER pos.ESTVIDE() */
+    public Position trouvePositionVide(Position pos) {
+        int posI = pos.getX();
+        int posJ = pos.getY();
+        int cmp = 0;
+        System.out.println("\nAyou \n");
+        if (!pos.estValide()) {
+            System.out.println("Erreur trouvePositionVide la position est hors de la grille FIN");
+            return null;
+        }
+        
+        for (int i = posI-1; i < posI+2; i++) {
+            for (int j = posJ-1; j < posJ+2; j++) {
+                if ((i != posI && j != posJ) || (i != posI-1 && j != posJ+1) || (i != posI+1 && j != posJ+1)) {
+                    if (grille[posI][posJ].estAccessible()) cmp++;
+                }
+            }
+        }
+
+        if (cmp == 0) {
+            System.out.println("Erreur trouvePositionVide pas de cases vides adjacentes FIN");
+            return null;
+        }
+
+        Position P = new Position(0, 0);
+        int test = 0;
+
+        int max = 1; int min = -1; 
+        int range = max - min + 1; 
+        int randI; int randJ;
+
+        while (test == 0) {
+            randI = (int)(Math.random() * range) + min;
+            randJ = (int)(Math.random() * range) + min;
+            if ((randI != posI && randJ != posJ) || (randI != posI-1 && randJ != posJ+1) || (randI != posI+1 && randJ != posJ+1)) {
+                P.setX(randI);
+                P.setY(randJ);
+                if (grille[posI][posJ].estAccessible()) test = 1;
+            }
+        }
+        //System.out.printf("random : %d \n", rand);
+        return P;
+    }
+
+
+    /* Affichage basique du nom des élements de la grille */
     public void affiche_nul () {
-        for (int i = 0; i < LARGEUR_CARTE; i++) {
-            for (int j = 0; j < HAUTEUR_CARTE; j++) {
+        for (int i = 0; i < HAUTEUR_CARTE; i++) {
+            for (int j = 0; j < LARGEUR_CARTE; j++) {
                 System.out.printf("%s ", grille[i][j].getNom());
             }
             System.out.printf("\n");
         }
     }
+
 
     /**
      * Affiche sur g tous les éléments constituant la carte courante
