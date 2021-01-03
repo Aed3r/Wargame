@@ -11,5 +11,12 @@ public class TestCarte {
 
         Carte C = new Carte ();
         C.affiche_nul();
+
+        int x = 0; int y = 0;
+        Position P = new Position(x, y);
+        Element E = C.getElement(P);
+        System.out.printf("L'élement à la position %d:%d est de type : %s \n", x, y, E.getNom());
+    
+        C.trouvePositionVide(P);
     }
 }
