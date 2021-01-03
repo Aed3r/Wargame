@@ -23,8 +23,8 @@ public class MenuSimple extends JPanel {
     private transient Image bgImage;
     // Le panneau sur lequel est créé le menu en question
     private MainPanel mainP = new MainPanel();
-    // Un sous-menu potentiellement chargé par dessus le premier
-    private MenuSimple secondaryP = null;
+    // Un sous-menu/panneau pouvant être chargé par dessus le premier
+    private JPanel secondaryP = null;
     // Indique s'il faut réafficher le menu lors de changements
     private boolean loadedOnce = false;
     // Logo potentiellement utilisé
@@ -285,9 +285,9 @@ public class MenuSimple extends JPanel {
 
     /**
      * Remplace le menu actuel par p
-     * @param p un menu quelconque
+     * @param p un panneau quelconque
      */
-    protected void setMenu (MenuSimple p) {
+    protected void setMenu (JPanel p) {
         if (p == this) {
             // On revient au menu courant
             mainP.setVisible(true);

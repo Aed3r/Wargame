@@ -21,4 +21,7 @@ public class Position implements IConfig {
 		/*TODO*/
 		return 0;
 	}
+
+	/* A VALIDER */
+	public boolean estVide() {return true;}
 }

@@ -6,18 +6,18 @@ import unites.Soldat;
 import java.io.File;
 import java.io.IOException;
 
-public abstract class Element {
+public class Element {
     public enum TypeElement {
-		PLAINE ("plaine", 0.3f, true, true, 0f, -65), DESERT ("desert", 0.2f, true, true, 0.5f, -65), 
+		PLAINE ("plaine", 0.3f, true, true, 0f, -65), DESERT ("desert", 0.2f, true, true, 0.5f, -67), 
 		EAU ("eau", 0.1f, false, true, 0f, -65), MONTAGNE ("montagne", 0.1f, false, false, 0f, -156),
 		FORET ("foret", 0.2f, false, false, 0f, -72);
 
-		public final String NOM;
-		public final float PROBA;
-		public final boolean ESTACCESSIBLE;
-		public final boolean PEUXTIRER;
-		public final float PDVPERDUES; // Point de vies perdues par tour
-		public final int DEPLACEMENTVERT; // Déplacement Y lors de l'affichage du sprite correspondant
+		final String NOM;
+		final float PROBA;
+		final boolean ESTACCESSIBLE;
+		final boolean PEUXTIRER;
+		final float PDVPERDUES; // Point de vies perdues par tour
+		final int DEPLACEMENTVERT; // Déplacement Y lors de l'affichage du sprite correspondant
 
 		private TypeElement(String nom, float probaApparition, boolean estAccessible,
 					boolean peuxTirer, float pdvPerdues, int deplacementVert) { 
@@ -53,7 +53,7 @@ public abstract class Element {
 
 	public Image getSprite () {
         try {
-            return ImageIO.read(new File("data/img/elements/" + type.NOM));
+            return ImageIO.read(new File("data/img/elements/" + type.NOM + ".png"));
         } catch (IOException e) {
             // Problème lors du chargement, on utilise rien
             System.out.println(e.getLocalizedMessage());
@@ -73,10 +73,6 @@ public abstract class Element {
 		return type.PDVPERDUES;
 	}
 
-	public int getDeplacementVert () {
-		return type.DEPLACEMENTVERT;
-	}
-
 	public Position getPos() {
 		return this.pos;
 	}
@@ -93,5 +89,9 @@ public abstract class Element {
 		if (this.soldat == null) {
 			this.soldat = soldat;
 		}
+	}
+
+	public void afficher (Graphics g, int x, int y) {
+		g.drawImage(getSprite(), x, y+type.DEPLACEMENTVERT, null);
 	}
 }

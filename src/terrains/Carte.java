@@ -1,44 +1,112 @@
 package terrains;
 
 import misc.Element;
-import terrains.Obstacle.TypeObstacle;
 import misc.Position;
 import unites.Soldat;
+import java.awt.*;
 
-public class Carte {
-    Element[][] grille;
-    final int i;
-    final int j;
-    final int nb_obstacle_max;
+public class Carte implements wargame.IConfig {
+    Element[][] grille = new Element[HAUTEUR_CARTE][LARGEUR_CARTE];
 
     public Carte () {
-        i = 15;
-        j = 30;
-        nb_obstacle_max = 12;
-        int cmp_obstacle = 0;
 
-        for (int k = 0; k < i; k++) {
-            for (int l = 0; l < j; l++) {
-                if (cmp_obstacle == nb_obstacle_max) {}
-                else {
-                    if (alea(0, i*j) <= nb_obstacle_max) {
-                        
-                        grille[k][l] = new Obstacle(TypeObstacle.ROCHER, new Position(k, l));
-                        System.out.println("blablza\n");
-                        cmp_obstacle++;
-                    }
-                }
+        for (int i = 0; i < HAUTEUR_CARTE; i++) {
+            for (int j = 0; j < LARGEUR_CARTE; j++) {
+                grille[i][j] = new Element (new Position(i, j));
             }
         }      
     }
 
     public void mort(Soldat soldat){}
 
-    public int alea (int min, int max) {
-        int range = max - min + 1; 
-        int alea = (int)(Math.random() * range) + min; 
-  
-        return alea;
+    /* Retourne l'élement à la position pos dans la grille */
+    public Element getElement(Position pos) {
+        int i = pos.getX();
+        int j = pos.getY();
+
+        if ((i >= HAUTEUR_CARTE || j >= LARGEUR_CARTE) || (i < 0 || j < 0)) {
+            System.out.println("Erreur getElement la position est hors de la grille FIN");
+            return null;
+        }
+        return grille[i][j];     
     }
 
+    /* Trouve une position vide choisie aleatoirement parmi les 8 positions adjacentes de pos */
+    /* TODO : DECOMMENTER ET IMPLEMENTER pos.ESTVIDE() */
+    public Position trouvePositionVide(Position pos) {
+        int posI = pos.getX();
+        int posJ = pos.getY();
+        int cmp = 0;
+
+        if ((posI >= HAUTEUR_CARTE || posJ >= LARGEUR_CARTE) || (posI < 0 || posJ < 0)) {
+            System.out.println("Erreur trouvePositionVide la position est hors de la grille FIN");
+            return null;
+        }
+        
+        for (int i = posI-1; i < posI+2; i++) {
+            for (int j = posJ-1; j < posJ+2; j++) {
+                if ((i != posI && j != posJ) || (i != posI-1 && j != posJ+1) || (i != posI+1 && j != posJ+1)) {
+                    if (pos.estVide()) cmp++;
+                }
+            }
+        }
+
+        if (cmp == 0) {
+            System.out.println("Erreur trouvePositionVide pas de cases vides adjacentes FIN");
+            return null;
+        }
+
+        Position P = new Position(0, 0);
+        int test = 0;
+
+        int max = 1; int min = -1; 
+        int range = max - min + 1; 
+        int randI; int randJ;
+
+        while (test == 0) {
+            randI = (int)(Math.random() * range) + min;
+            randJ = (int)(Math.random() * range) + min;
+            if ((randI != posI && randJ != posJ) || (randI != posI-1 && randJ != posJ+1) || (randI != posI+1 && randJ != posJ+1)) {
+                P.setX(randI);
+                P.setY(randJ);
+                if (P.estVide()) test = 1;
+            }
+        }
+        //System.out.printf("random : %d \n", rand);
+        return P;
+    }
+
+
+    /* Affichage basique du nom des élements de la grille */
+    public void affiche_nul () {
+        for (int i = 0; i < HAUTEUR_CARTE; i++) {
+            for (int j = 0; j < LARGEUR_CARTE; j++) {
+                System.out.printf("%s ", grille[i][j].getNom());
+            }
+            System.out.printf("\n");
+        }
+    }
+
+
+    /**
+     * Affiche sur g tous les éléments constituant la carte courante
+     * @param g un object graphique quelconque
+     */
+    public void afficher (Graphics g) {
+        int i, j, x, y;
+
+        // lignes
+        for (i = 0; i < HAUTEUR_CARTE; i++) {
+            // colonnes
+            for (j = 0; j < LARGEUR_CARTE; j++) {
+                x = MARGX + j*TAILLEX;
+                y = MARGY + i*TAILLEY;
+
+                if (i%2 == 0)
+                    grille[i][j].afficher(g, x+TAILLEX/2, y);
+                else
+                    grille[i][j].afficher(g, x, y);   
+            }
+        }
+    }
 }
