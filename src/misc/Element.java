@@ -30,9 +30,16 @@ public class Element {
 		}
 
 		public static TypeElement getElementAlea() {
-			return values()[(int)(Math.random()*values().length)];
+			double valRand = Math.random(), valElem = 0;
+			int i;
+
+			for (i = 0; i < values().length && valElem < valRand; i++)
+				valElem += values()[i].PROBA;
+				
+			return values()[i-1];
 		}
 	}
+
 	private final TypeElement type;
 	private final Position pos;
 	private Soldat soldat = null;

@@ -1,19 +1,16 @@
 package ui;
 
 import java.awt.*;
-import java.awt.event.MouseAdapter;
-import java.awt.event.MouseEvent;
-import java.awt.event.MouseMotionAdapter;
-import java.awt.event.MouseWheelEvent;
-import java.awt.event.MouseWheelListener;
+import java.awt.event.*;
 import java.awt.geom.AffineTransform;
 import java.awt.image.BufferedImage;
-import javax.swing.JFrame;
-import javax.swing.JPanel;
-import javax.swing.SwingUtilities;
+import javax.swing.*;
 
 import terrains.Carte;
 
+/**
+ * Panneau permettant d'afficher un plateau de jeu
+ */
 public class PanneauJeu extends JPanel implements wargame.IConfig, MouseWheelListener {
     private static final long serialVersionUID = -4874781269011185234L;
     private static final float MAXZOOM = 2f, VITESSEZOOM = 0.1f;
@@ -35,13 +32,16 @@ public class PanneauJeu extends JPanel implements wargame.IConfig, MouseWheelLis
         plateau = new BufferedImage(wPlateau, hPlateau, BufferedImage.TYPE_INT_RGB);
         Graphics g = plateau.getGraphics();
         // On dessine le fond
-        g.setColor(BGCOLOR);
-        g.fillRect(0, 0, wPlateau, hPlateau);
+        Graphics2D g2d = (Graphics2D) g;
+        g2d.setRenderingHint(RenderingHints.KEY_RENDERING, RenderingHints.VALUE_RENDER_QUALITY);
+        GradientPaint gp = new GradientPaint(0, 0, BGCOLOR.brighter().brighter(), 0, hPlateau, BGCOLOR.darker().darker());
+        g2d.setPaint(gp);
+        g2d.fillRect(0, 0, wPlateau, hPlateau);
         // On dessine le plateau sur l'image
         carte.afficher(g);
         g.dispose();
 
-        // Déplacement et zoom sur le plateau
+        // Déplacement sur le plateau
         this.addMouseListener(new MouseAdapter() {
             @Override
             public void mousePressed(MouseEvent e) {
@@ -85,32 +85,40 @@ public class PanneauJeu extends JPanel implements wargame.IConfig, MouseWheelLis
         if (-yPlateau > hPlateau-tailleVirtuelle.height) yPlateau = -(hPlateau-tailleVirtuelle.height);
     }
 
+    /**
+     *  Affiche le plateau sur le panneau
+     */
     @Override
     protected void paintComponent(Graphics g) {
         super.paintComponent(g);
+
+        // Initialisation lors du premier affichage
         if (tailleFenetre == null) {
             tailleFenetre = ((JFrame) SwingUtilities.getWindowAncestor(this)).getSize();
             tailleVirtuelle = (Dimension) tailleFenetre.clone();
             requestFocusInWindow();
         }
 
+        // On récupère un nouveau buffer pour effectuer un zoom
         Graphics2D g2d = (Graphics2D)g;
         AffineTransform og = g2d.getTransform(), at = new AffineTransform(og);
-
         g2d.setClip(0, 0, tailleFenetre.width, tailleFenetre.height);
         at.scale(zoomPlateau, zoomPlateau);
         g2d.setTransform(at);
         tailleVirtuelle.setSize(g2d.getClipBounds().width, g2d.getClipBounds().height);
         // On vérifie si le zoom est allé trop loin
         if (tailleVirtuelle.width > wPlateau || tailleVirtuelle.height > hPlateau) {
-            // On reste à l'ancienne position
+            // On revient au zoom précédent
             zoomPlateau += VITESSEZOOM;
             repaint();
             return;
         }
+        // On vérifie si le déplacement est allé trop loin
         verifPosition();
+        // On affiche la partie du plateau voulue
         g2d.drawImage(plateau, xPlateau, yPlateau, null);
 
+        // On replace l'ancien Transform
         g2d.setTransform(og);
     }
 }
