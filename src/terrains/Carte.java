@@ -6,19 +6,32 @@ import unites.Soldat;
 import java.awt.*;
 
 public class Carte implements wargame.IConfig {
-    Element[][] grille;
+    private Element[][] grille;
 
     public Carte () {
 
         for (int i = 0; i < LARGEUR_CARTE; i++) {
             for (int j = 0; j < HAUTEUR_CARTE; j++) {
-                grille[i][j] = new Element (new Position(i, j));
-                System.out.println("blablza\n");
+                Position P = new Position (i, j);
+                Element E = new Element(P);
+                grille[i][j] = E;
+                System.out.printf("test \n");
+                grille[i][j] = new Element (P);
+                
             }
         }      
     }
 
     public void mort(Soldat soldat){}
+
+    public void affiche_nul () {
+        for (int i = 0; i < LARGEUR_CARTE; i++) {
+            for (int j = 0; j < HAUTEUR_CARTE; j++) {
+                System.out.printf("%d ", grille[i][j]);
+            }
+            System.out.printf("\n");
+        }
+    }
 
     /**
      * Affiche sur g tous les éléments constituant la carte courante
