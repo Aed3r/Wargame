@@ -6,11 +6,11 @@ import unites.Soldat;
 import java.awt.*;
 
 public class Carte implements wargame.IConfig {
-    private Element[][] grille;
+    Element[][] grille = new Element[HAUTEUR_CARTE][LARGEUR_CARTE];
 
     public Carte () {
 
-        for (int i = 0; i < LARGEUR_CARTE; i++) {
+        for (int i = 0; i < HAUTEUR_CARTE; i++) {
             for (int j = 0; j < HAUTEUR_CARTE; j++) {
                 Position P = new Position (i, j);
                 Element E = new Element(P);
@@ -41,9 +41,9 @@ public class Carte implements wargame.IConfig {
         int i, j, x, y;
 
         // lignes
-        for (i = 0; i < LARGEUR_CARTE; i++) {
+        for (i = 0; i < HAUTEUR_CARTE; i++) {
             // colonnes
-            for (j = 0; j < HAUTEUR_CARTE; j++) {
+            for (j = 0; j < LARGEUR_CARTE; j++) {
                 x = MARGX + j*TAILLEX;
                 y = MARGY + i*TAILLEY;
 
