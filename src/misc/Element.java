@@ -6,7 +6,7 @@ import unites.Soldat;
 import java.io.File;
 import java.io.IOException;
 
-public abstract class Element {
+public class Element {
     public enum TypeElement {
 		PLAINE ("plaine", 0.3f, true, true, 0f, -65), DESERT ("desert", 0.2f, true, true, 0.5f, -67), 
 		EAU ("eau", 0.1f, false, true, 0f, -65), MONTAGNE ("montagne", 0.1f, false, false, 0f, -156),
