@@ -2,6 +2,7 @@ package terrains;
 
 import misc.Element;
 import misc.Position;
+import unites.Heros;
 import unites.Soldat;
 import java.awt.*;
 
@@ -17,7 +18,45 @@ public class Carte implements wargame.IConfig {
         }      
     }
 
-    public void mort(Soldat soldat){}
+    public void mort(Soldat soldat){
+        getElement(soldat.getPos()).setSoldat(null);/*On libère la case ou se trouvais le soldat*/
+        soldat.seDeplace(null); /*On met ensuite le soldat dans une position nulle pour signifier qu'il n'est plus de ce monde*/
+    }
+
+    /*Appélée quand le joueur donne l'ordre au heros en position pos de faire une action en pos2
+    si la case est accessible il se déplace, si il y a un enemis il attaque*/
+    public boolean actionHeros(Position pos, Position pos2){
+        
+        /*Vérifications préalables :*/
+        /*Si pos2 n'est pas valide ou qu'il n'y a pas de soldat en pos ou que les cases ne sont pas adjacente*/
+        if(!pos2.estValide() || getElement(pos).getSoldat() == null || !pos.estVoisine(pos2)) 
+            return false; 
+        
+        /*Si le solda n'est pas un heros ou si un héros se trouve déjà en pos2 ou si la variable tour du soldat vaux false*/
+        if(!(getElement(pos).getSoldat() instanceof Heros) || getElement(pos2).getSoldat() instanceof Heros || !getElement(pos).getSoldat().getTour()) 
+            return false;
+        
+        /*Si la case ou le héros essaye de se déplacer est un obstacle*/
+        if(!getElement(pos2).estAccessible())
+            return false;
+        
+        /*On va maintenant déterminer l'action a effectuer :*/
+        /*On essaye de deplacer le soldat dans la case pos2, si on ne peut pas c'est qu'il y a un monstre*/
+        if(!deplacerSoldat(pos2, getElement(pos).getSoldat())){
+             getElement(pos).getSoldat().combat(getElement(pos2).getSoldat());
+        }
+        return true;
+    }
+
+    public boolean deplacerSoldat(Position pos, Soldat soldat){
+        /*Si la position ou l'on veut se deplacer est vide et adjacente au soldat*/
+        if(pos.estVide() && pos.estVoisine(soldat.getPos())){
+            getElement(soldat.getPos()).setSoldat(null); /*On libère la case ou se trouvais le soldat*/
+            soldat.seDeplace(pos);
+            getElement(pos).setSoldat(soldat); /*On sauvegarde le soldat dans l'element de pos*/
+            return true;
+        }else return false;
+    }
 
     /* Retourne l'élement à la position pos dans la grille */
     public Element getElement(Position pos) {

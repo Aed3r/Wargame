@@ -10,6 +10,7 @@ public abstract class Soldat implements ISoldat {
     private int pointsDeVie;
     private Carte carte;
     private Position pos;
+    private boolean tour; /*Permet de savoir si ce soldat a déja joué son tour*/
 
     Soldat(Carte carte, int pts, int portee, int puiss, int tir, Position pos, Color couleur, String nom){
         this.POINT_DE_VIE_MAX = this.pointsDeVie = pts;
@@ -21,8 +22,15 @@ public abstract class Soldat implements ISoldat {
     }
 
     /* Méthodes abstraites */
-    public abstract int getTour();
-    public abstract void joueTour(int tour);
+    public boolean getTour(){return tour;}
+    public int joueTour(){
+        if(tour == true){
+            tour = false;
+            return 0;
+        }else{
+            return -1;
+        }
+    }
 
     /* Méthodes définies */
     @Override
