@@ -2,7 +2,7 @@ package terrains;
 
 import misc.Element;
 import misc.Position;
-import unites.Soldat;
+import unites.*;
 import java.awt.*;
 import java.util.Random;
 import misc.Parametres;
@@ -24,6 +24,8 @@ public class Carte implements wargame.IConfig {
 
     public void mort(Soldat soldat){}
 
+    public void placerSoldat (int nb_soldat) {}
+
     /* Retourne l'élement à la position pos dans la grille */
     public Element getElement(Position pos) {
         int i = pos.getX();
@@ -37,7 +39,6 @@ public class Carte implements wargame.IConfig {
     }
 
     /* Trouve une position vide choisie aleatoirement parmi les 8 positions adjacentes de pos */
-    /* TODO : DECOMMENTER ET IMPLEMENTER pos.ESTVIDE() */
     public Position trouvePositionVide(Position pos) {
         int posI = pos.getX();
         int posJ = pos.getY();
@@ -77,10 +78,51 @@ public class Carte implements wargame.IConfig {
                 if (grille[posI][posJ].estAccessible()) test = 1;
             }
         }
-        //System.out.printf("random : %d \n", rand);
         return P;
     }
 
+    /* Trouve un heros choisi aleatoirement parmi les 8 positions adjacentes de pos */
+    public Heros trouveHeros(Position pos) {
+        int posI = pos.getX();
+        int posJ = pos.getY();
+        int cmp = 0;
+        System.out.println("\nAyou \n");
+        if (!pos.estValide()) {
+            System.out.println("Erreur trouvePositionVide la position est hors de la grille FIN");
+            return null;
+        }
+        
+        for (int i = posI-1; i < posI+2; i++) {
+            for (int j = posJ-1; j < posJ+2; j++) {
+                if ((i != posI && j != posJ) || (i != posI-1 && j != posJ+1) || (i != posI+1 && j != posJ+1)) {
+                    if (grille[posI][posJ].estHeros()) cmp++;
+                }
+            }
+        }
+
+        if (cmp == 0) {
+            System.out.println("Erreur trouveHeros pas de héros dans les cases adjacentes FIN");
+            return null;
+        }
+
+        Position P = new Position(0, 0);
+        int test = 0;
+
+        int max = 1; int min = -1; 
+        int range = max - min + 1; 
+        int randI; int randJ;
+
+        while (test == 0) {
+            randI = (int)(Math.random() * range) + min;
+            randJ = (int)(Math.random() * range) + min;
+            if ((randI != posI && randJ != posJ) || (randI != posI-1 && randJ != posJ+1) || (randI != posI+1 && randJ != posJ+1)) {
+                P.setX(randI);
+                P.setY(randJ);
+                if (grille[posI][posJ].estHeros()) test = 1;
+            }
+        }
+        return (Heros)grille[posI][posJ].getSoldat();
+    }
 
     /* Affichage basique du nom des élements de la grille */
     public void affiche_nul () {

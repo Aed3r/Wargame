@@ -16,7 +16,8 @@ public class TestCarte {
         Element e = c.getElement(p);
         System.out.printf("L'élement à la position %d:%d est de type : %s \n", x, y, e.getNom());
     
-        Position a = new Position(3, 3);
+        Position a = new Position(5, 3);
         c.trouvePositionVide(a);
+        c.trouveHeros(a);
     }
 }
