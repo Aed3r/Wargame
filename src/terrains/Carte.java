@@ -54,7 +54,7 @@ public class Carte implements wargame.IConfig {
 
     public boolean deplacerSoldat(Position pos, Soldat soldat){
         /*Si la position ou l'on veut se deplacer est vide et adjacente au soldat*/
-        if(pos.estVide() && pos.estVoisine(soldat.getPos())){
+        if(getElement(pos).estAccessible() && getElement(pos).getSoldat() == null && pos.estVoisine(soldat.getPos())){
             getElement(soldat.getPos()).setSoldat(null); /*On libère la case ou se trouvais le soldat*/
             soldat.seDeplace(pos);
             getElement(pos).setSoldat(soldat); /*On sauvegarde le soldat dans l'element de pos*/
