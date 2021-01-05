@@ -29,4 +29,5 @@ public interface IConfig {
 	int TAILLEX = 257, TAILLEY = 194; // Tailles des sprite élément
 	int MARGX = TAILLEX*2, MARGY = TAILLEY*2; // Marges horizontales et verticales sur la carte
 	Color BGCOLOR = new Color(12, 12, 12); // Couleur en fond de la carte
+	float ALPHAELEMCACHE = 0.5f; // Transparence des éléments cachés du plateau
 }

@@ -4,7 +4,6 @@ import misc.Element;
 import misc.Position;
 import unites.Soldat;
 import java.awt.*;
-import java.util.Random;
 import misc.Parametres;
 
 public class Carte implements wargame.IConfig {
@@ -100,6 +99,8 @@ public class Carte implements wargame.IConfig {
     public void afficher (Graphics g) {
         int i, j, x, y;
 
+        if (!Element.getReafficher()) return;
+
         // lignes
         for (i = 0; i < HAUTEUR_CARTE; i++) {
             // colonnes
@@ -117,5 +118,7 @@ public class Carte implements wargame.IConfig {
                     grille[i][j].afficher(g, x, y);   
             }
         }
+
+        Element.setReafficher(false);
     }
 }
