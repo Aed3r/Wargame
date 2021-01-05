@@ -19,5 +19,6 @@ public class TestCarte {
         Position a = new Position(5, 3);
         c.trouvePositionVide(a);
         c.trouveHeros(a);
+        c.placementHerosAlea(5);
     }
 }
