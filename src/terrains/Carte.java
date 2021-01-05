@@ -9,7 +9,7 @@ import wargame.ISoldat.TypesM;
 import java.awt.*;
 import misc.Parametres;
 
-public class Carte implements wargame.IConfig {
+public class Carte implements wargame.IConfig, wargame.ICarte {
     Element[][] grille = new Element[HAUTEUR_CARTE][LARGEUR_CARTE];
 
     public Carte () {
@@ -96,13 +96,13 @@ public class Carte implements wargame.IConfig {
         
         /*On va maintenant déterminer l'action a effectuer :*/
         /*On essaye de deplacer le soldat dans la case pos2, si on ne peut pas c'est qu'il y a un monstre*/
-        if(!deplacerSoldat(pos2, getElement(pos).getSoldat())){
+        if(!deplaceSoldat(pos2, getElement(pos).getSoldat())){
              getElement(pos).getSoldat().combat(getElement(pos2).getSoldat());
         }
         return true;
     }
 
-    public boolean deplacerSoldat(Position pos, Soldat soldat){
+    public boolean deplaceSoldat(Position pos, Soldat soldat){
         /*Si la position ou l'on veut se deplacer est vide et adjacente au soldat*/
         if(getElement(pos).estAccessible() && getElement(pos).getSoldat() == null && pos.estVoisine(soldat.getPos())){
             getElement(soldat.getPos()).setSoldat(null); /*On libère la case ou se trouvais le soldat*/
