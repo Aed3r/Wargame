@@ -41,7 +41,7 @@ public class PanneauJeu extends JPanel implements wargame.IConfig, MouseWheelLis
 
             @Override
             public void mouseClicked(MouseEvent e) {
-                plateau.getGraphics().drawOval((int) ((e.getX()-xPlateau)*zoomPlateau), (int) ((e.getX()-yPlateau)*zoomPlateau), 20, 20);
+                
                 repaint();
             }
         });
@@ -66,8 +66,23 @@ public class PanneauJeu extends JPanel implements wargame.IConfig, MouseWheelLis
      */
     @Override
 	public void mouseWheelMoved(MouseWheelEvent e) {
+        double oldZoom = zoomPlateau;
         zoomPlateau += e.getWheelRotation() * -VITESSEZOOM;
         if (zoomPlateau > MAXZOOM) zoomPlateau = MAXZOOM;
+
+        // On replace le plateau de façon à ce que le curseur reste sur le même point de la carte
+        Point curseur = this.getMousePosition();
+        Point pointVirt = new Point((int) (curseur.getX()/oldZoom), (int) (curseur.getY()/oldZoom));
+        Point curseurMap = new Point((int) pointVirt.getX()-xPlateau, (int) pointVirt.getY()-yPlateau);
+        Point pointVirtZoom = new Point((int) (curseur.getX()/zoomPlateau), (int) (curseur.getY()/zoomPlateau));
+        Point curseurMapZoom = new Point((int) pointVirtZoom.getX()-xPlateau, (int) pointVirtZoom.getY()-yPlateau);
+
+        double deplacementX = curseurMapZoom.getX() - curseurMap.getX();
+        double deplacementY = curseurMapZoom.getY() - curseurMap.getY();
+
+        xPlateau += deplacementX;
+        yPlateau += deplacementY;
+
         repaint();
     }
 
@@ -121,10 +136,10 @@ public class PanneauJeu extends JPanel implements wargame.IConfig, MouseWheelLis
         tailleVirtuelle.setSize(tailleFenetre.width/zoomPlateau, tailleFenetre.height/zoomPlateau);
 
         // On vérifie si la position n'est pas allé trop loin
-        /*if (xPlateau > 0) xPlateau = 0;
+        if (xPlateau > 0) xPlateau = 0;
         if (-xPlateau > wPlateau-tailleVirtuelle.width) xPlateau = -(wPlateau-tailleVirtuelle.width);
         if (yPlateau > 0) yPlateau = 0;
-        if (-yPlateau > hPlateau-tailleVirtuelle.height) yPlateau = -(hPlateau-tailleVirtuelle.height);*/
+        if (-yPlateau > hPlateau-tailleVirtuelle.height) yPlateau = -(hPlateau-tailleVirtuelle.height);
 
         // On affiche la partie du plateau voulu
         g2d.drawImage(plateau, xPlateau, yPlateau, null);
