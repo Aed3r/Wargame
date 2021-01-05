@@ -3,6 +3,8 @@ package terrains;
 import misc.Element;
 import misc.Position;
 import unites.*;
+import wargame.ISoldat.TypesH;
+
 import java.awt.*;
 import misc.Parametres;
 
@@ -33,6 +35,40 @@ public class Carte implements wargame.IConfig {
             }
         }
     }
+
+    public void placementHerosAlea () {
+        int nb_heros = NB_HEROS;
+        int nb_monstres = NB_MONSTRES;
+
+        if (HAUTEUR_SPAWN*LARGEUR_SPAWN < nb_heros || HAUTEUR_SPAWN*LARGEUR_SPAWN < nb_monstres) {
+            System.out.println("Erreur placementHerosAlea Trop de soldats dans la zone de Spawn \n");
+            System.exit(-1);
+        }
+        int i; int j; int iMonstre; int jMonstre;
+        int max = 0; int min = 5; 
+        int range = max - min + 1; 
+        int randI; int randJ;
+
+        while (nb_heros > 0 && nb_monstres > 0) {
+            randI = (int)(Math.random() * range) + min;
+            randJ = (int)(Math.random() * range) + min;
+            i = randI + POS_INIT_SPAWN_GENTIL.getX();
+            j = randJ + POS_INIT_SPAWN_GENTIL.getY();
+            iMonstre = randI + POS_INIT_SPAWN_MONSTRE.getX();
+            jMonstre = randJ + POS_INIT_SPAWN_MONSTRE.getY();
+
+            if (grille[i][j].getSoldat() == null) {
+                grille[i][j].setSoldat(new Heros(this, TypesH.getTypeHAlea(), "Adolf", new Position(i, j), Color.black));
+                nb_heros--;
+            }
+            
+            if (grille[iMonstre][jMonstre].getSoldat() == null) {
+                nb_monstres--;
+            }
+        }
+        System.out.println("test test \n");
+    }
+
 
     public void mort(Soldat soldat){
         getElement(soldat.getPos()).setSoldat(null);/*On libère la case ou se trouvais le soldat*/
