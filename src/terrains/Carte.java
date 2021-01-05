@@ -4,6 +4,7 @@ import misc.Element;
 import misc.Position;
 import unites.*;
 import wargame.ISoldat.TypesH;
+import wargame.ISoldat.TypesM;
 
 import java.awt.*;
 import misc.Parametres;
@@ -36,7 +37,7 @@ public class Carte implements wargame.IConfig {
         }
     }
 
-    public void placementHerosAlea () {
+    public void placementSoldatAlea () {
         int nb_heros = NB_HEROS;
         int nb_monstres = NB_MONSTRES;
 
@@ -45,7 +46,7 @@ public class Carte implements wargame.IConfig {
             System.exit(-1);
         }
         int i; int j; int iMonstre; int jMonstre;
-        int max = 0; int min = 5; 
+        int max = 5; int min = 0; 
         int range = max - min + 1; 
         int randI; int randJ;
 
@@ -63,6 +64,7 @@ public class Carte implements wargame.IConfig {
             }
             
             if (grille[iMonstre][jMonstre].getSoldat() == null) {
+                grille[i][j].setSoldat(new Monstre(this, TypesM.getTypeMAlea(), "Gustav", new Position(iMonstre, jMonstre), Color.blue));
                 nb_monstres--;
             }
         }
