@@ -7,11 +7,20 @@ import unites.Heros;
 import unites.Soldat;
 import java.io.File;
 import java.io.IOException;
+import java.awt.image.BufferedImage;
+import java.awt.image.RescaleOp;
 
 /**
  * Représente une des tuile du plateau de jeu
  */
-public class Element {
+public class Element implements wargame.IConfig {
+	private final TypeElement type;
+	private final Position pos;
+	private Soldat soldat = null; // le soldat se trouvant sur la case
+	private boolean estVisible = false; // si un héros peux voir cette case
+	private Image sprite = null, spriteSombre = null;
+	private static boolean reafficher = true; // Indique s'il faut redessiner le plateau
+
 	/**
 	 * Représente un des différents types d'éléments prédéfinies
 	 */
@@ -60,18 +69,13 @@ public class Element {
 		}
 	}
 
-	private final TypeElement type;
-	private final Position pos;
-	private Soldat soldat = null;
-
 	/**
 	 * Crée un élément aléatoire
 	 * @param pos la position de l'élément sur la carte
 	 * @see TypeElement#getElementAlea
 	 */
 	public Element (Position pos) {
-		type = TypeElement.getElementAlea();
-		this.pos = pos;
+		this(TypeElement.getElementAlea(), pos);
 	}
 
 	/**
@@ -83,6 +87,25 @@ public class Element {
 	public Element (TypeElement type, Position pos) {
 		this.type = type;
 		this.pos = pos;
+
+		if (type == TypeElement.PLAINE) estVisible = true;
+
+		// Chargement de l'image normal
+		try {
+            sprite = ImageIO.read(new File("data/img/elements/" + getNom() + ".png"));
+        } catch (IOException e) {
+            // Problème lors du chargement, on utilise rien
+			System.out.println(e.getLocalizedMessage());
+		}
+		
+		// Création de l'image sombre
+		int w = sprite.getWidth(null), h = sprite.getHeight(null);
+		BufferedImage sSombre = new BufferedImage(w, h, BufferedImage.TYPE_INT_ARGB);
+		Graphics g = sSombre.getGraphics();
+		g.drawImage(sprite, 0, 0, null);
+		RescaleOp op = new RescaleOp(ALPHAELEMCACHE, 0, null);
+		sSombre = op.filter(sSombre, null);
+		spriteSombre = sSombre;
 	}
 
 	/**
@@ -96,13 +119,7 @@ public class Element {
 	 * @return l'image de l'élément
 	 */
 	public Image getSprite () {
-        try {
-            return ImageIO.read(new File("data/img/elements/" + getNom() + ".png"));
-        } catch (IOException e) {
-            // Problème lors du chargement, on utilise rien
-            System.out.println(e.getLocalizedMessage());
-            return null;
-        }
+        return sprite;
 	}
 
 	/**
@@ -153,7 +170,39 @@ public class Element {
 	public void setSoldat(Soldat soldat) {
 		if (this.soldat == null) {
 			this.soldat = soldat;
+			setReafficher(true);
 		}
+	}
+
+	/**
+	 * Indique que cet élément et son contenu est visible par le joueur
+	 */
+	public void setVisible () {
+		estVisible = true;
+		setReafficher(true);
+	}
+
+	/**
+	 * Indique que cet élément et son contenu ne sont pas visible par le joueur (case grisée)
+	 */
+	public void setCache () {
+		estVisible = false;
+		setReafficher(true);
+	}
+
+	/**
+	 * Indique s'il faut réafficher la carte ou non
+	 * @param val true s'il faut réafficher, false sinon
+	 */
+	public static void setReafficher (boolean val) {
+		reafficher = val;
+	}
+
+	/**
+	 * @return true s'il faut réafficher la carte, false sinon
+	 */
+	public static boolean getReafficher () {
+		return reafficher;
 	}
 
 	/**
@@ -163,6 +212,7 @@ public class Element {
 	 * @param y l'ordonnée
 	 */
 	public void afficher (Graphics g, int x, int y) {
-		g.drawImage(getSprite(), x, y+type.DEPLACEMENTVERT, null);
+		if (estVisible) g.drawImage(getSprite(), x, y+type.DEPLACEMENTVERT, null);
+		else g.drawImage(spriteSombre, x, y+type.DEPLACEMENTVERT, null);
 	}
 }

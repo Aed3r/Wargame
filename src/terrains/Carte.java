@@ -4,14 +4,13 @@ import misc.Element;
 import misc.Position;
 import unites.*;
 import java.awt.*;
-import java.util.Random;
 import misc.Parametres;
 
 public class Carte implements wargame.IConfig {
     Element[][] grille = new Element[HAUTEUR_CARTE][LARGEUR_CARTE];
 
     public Carte () {
-
+        /* Construction de la carte avec élements aléatoires et un contour de forêt */
         for (int i = 0; i < HAUTEUR_CARTE; i++) {
             for (int j = 0; j < LARGEUR_CARTE; j++) {
                 if (i == 0 || i == HAUTEUR_CARTE-1 || j == 0 || j == LARGEUR_CARTE-1) {
@@ -19,7 +18,20 @@ public class Carte implements wargame.IConfig {
                 }
                 else grille[i][j] = new Element (new Position(i, j));
             }
-        }      
+        }
+
+        /* Placement des zones de spawn pour l'instant des plaines */
+        for (int i = POS_INIT_SPAWN_MONSTRE.getX(); i <= HAUTEUR_SPAWN; i++) {
+            for (int j = POS_INIT_SPAWN_MONSTRE.getY(); j <= LARGEUR_SPAWN; j++) {
+                grille[i][j] = new Element(misc.Element.TypeElement.PLAINE, new Position(i, j));
+            }
+        } 
+
+        for (int i = POS_INIT_SPAWN_GENTIL.getX(); i <= POS_INIT_SPAWN_GENTIL.getX()+HAUTEUR_SPAWN-1; i++) {
+            for (int j = POS_INIT_SPAWN_GENTIL.getY(); j <= POS_INIT_SPAWN_GENTIL.getY()+LARGEUR_SPAWN-1; j++) {
+                grille[i][j] = new Element(misc.Element.TypeElement.PLAINE, new Position(i, j));
+            }
+        }
     }
 
     public void mort(Soldat soldat){
@@ -180,6 +192,8 @@ public class Carte implements wargame.IConfig {
     public void afficher (Graphics g) {
         int i, j, x, y;
 
+        if (!Element.getReafficher()) return;
+
         // lignes
         for (i = 0; i < HAUTEUR_CARTE; i++) {
             // colonnes
@@ -197,5 +211,7 @@ public class Carte implements wargame.IConfig {
                     grille[i][j].afficher(g, x, y);   
             }
         }
+
+        Element.setReafficher(false);
     }
 }

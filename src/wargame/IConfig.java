@@ -1,9 +1,16 @@
 package wargame;
 
 import java.awt.Color;
+
+import misc.Position;
 public interface IConfig {
 	int LARGEUR_CARTE = 30; int HAUTEUR_CARTE = 20; // en nombre de cases
+	int LARGEUR_SPAWN = 5; int HAUTEUR_SPAWN = 5;
+	/* A VOIR SI C'EST VRAIMENT UTILE  */
+	Position POS_INIT_SPAWN_MONSTRE = new Position(1, 1);
+	Position POS_INIT_SPAWN_GENTIL = new Position(HAUTEUR_CARTE-1-HAUTEUR_SPAWN, LARGEUR_CARTE-1-LARGEUR_SPAWN);
 	int NB_HEROS = 6; int NB_MONSTRES = 15;
+	/* ##############################  */
 	/* Noms des paramètres dans le fichier de configuration. 
 			- [0]: nom du paramètre à utiliser dans le fichier des configurations
 			- [1]: nom à utiliser à l'affichage
@@ -29,4 +36,5 @@ public interface IConfig {
 	int TAILLEX = 257, TAILLEY = 194; // Tailles des sprite élément
 	int MARGX = TAILLEX*2, MARGY = TAILLEY*2; // Marges horizontales et verticales sur la carte
 	Color BGCOLOR = new Color(12, 12, 12); // Couleur en fond de la carte
+	float ALPHAELEMCACHE = 0.5f; // Transparence des éléments cachés du plateau
 }
