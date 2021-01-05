@@ -14,12 +14,6 @@ public class Heros extends Soldat {
         TYPE = type;
     }
 
-    public void joueTour(int tour){
-
-    }
-    public int getTour(){
-        return 0;
-    }
     public String toString(){
         return  TYPE + super.toString();
     }

@@ -4,7 +4,6 @@ import terrains.Carte;
 import unites.*;
 
 import java.awt.Color;
-
 import wargame.ISoldat.TypesH;
 import misc.Position;
 

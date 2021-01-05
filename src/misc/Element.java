@@ -2,6 +2,8 @@ package misc;
 
 import java.awt.*;
 import javax.imageio.ImageIO;
+
+import unites.Heros;
 import unites.Soldat;
 import java.io.File;
 import java.io.IOException;
@@ -153,6 +155,12 @@ public class Element implements wargame.IConfig {
 	 */
 	public Soldat getSoldat() {
 		return this.soldat;
+	}
+
+
+	public boolean estHeros () {
+		if (getSoldat() == null) return false;
+		return getSoldat() instanceof Heros;
 	}
 
 	/**
