@@ -252,8 +252,7 @@ public class Carte implements wargame.IConfig, wargame.ICarte {
      */
     public void afficher (Graphics g, byte[][][] tabHitbox, boolean reafficher) {
         int i, j, x, y;
-
-        long start = System.currentTimeMillis();
+        
         // lignes
         for (i = 0; i < HAUTEUR_CARTE; i++) {
             // colonnes
@@ -268,8 +267,5 @@ public class Carte implements wargame.IConfig, wargame.ICarte {
                 } else grille[i][j].afficher(g, x, y, tabHitbox);  
             }
         }
-
-        long finish = System.currentTimeMillis();
-        System.out.println((finish - start)/1000.);
     }
 }

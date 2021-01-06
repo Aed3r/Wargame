@@ -16,5 +16,4 @@ public interface ICarte {
 	boolean deplaceSoldat(Position pos, Soldat soldat);
 	void mort(Soldat perso);
 	boolean actionHeros(Position pos, Position pos2); //Détermine l'action que le héros en position pos doit faire pos2 et l'exécute si possible
-	void afficher(Graphics g);
 }

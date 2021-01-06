@@ -11,6 +11,7 @@ public abstract class Soldat implements ISoldat {
     private Carte carte;
     private Position pos;
     private boolean tour; /*Permet de savoir si ce soldat a déja joué son tour*/
+    private BufferedImage sprite;
 
     Soldat(Carte carte, int pts, int portee, int puiss, int tir, Position pos, Color couleur, String nom){
         this.POINT_DE_VIE_MAX = this.pointsDeVie = pts;
@@ -19,6 +20,14 @@ public abstract class Soldat implements ISoldat {
         this.TIR = tir;
         this.carte = carte;
         this.pos = pos;
+
+        // Chargement de l'image associé
+        /*try {
+            sprite = ImageIO.read(new File("data/img/soldats/" + getNom() + ".png"));
+        } catch (IOException e) {
+            // Problème lors du chargement, on utilise rien
+			System.out.println(e.getLocalizedMessage());
+		}*/
     }
 
     /* Méthodes abstraites */

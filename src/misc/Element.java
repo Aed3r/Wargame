@@ -2,8 +2,7 @@ package misc;
 
 import java.awt.*;
 import javax.imageio.ImageIO;
-
-import org.w3c.dom.ElementTraversal;
+import javax.swing.SwingUtilities;
 
 import unites.Heros;
 import unites.Soldat;
@@ -97,8 +96,6 @@ public class Element implements wargame.IConfig {
 	public Element (TypeElement type, Position pos) {
 		this.type = type;
 		this.pos = pos;
-
-		if (type == TypeElement.PLAINE) estVisible = true;
 
 		// Chargement de l'image normal
 		try {
@@ -296,7 +293,7 @@ public class Element implements wargame.IConfig {
 
 	/**
 	 * Redessine le quart de l'élément indiqué en utilisant le buffer.
-	 * Met également à jour les hitbox pour les côtés bas
+	 * Met également à jour les hitbox
 	 * @param g l'objet graphique sur lequel dessiner
 	 * @param tabHitbox le tableau des hitbox
 	 * @param cote le côté à dessiné <p>
@@ -305,29 +302,54 @@ public class Element implements wargame.IConfig {
 	 * 		- 2: Sud-est </p><p>
 	 * 		- 3: Sud-ouest </p>
 	 */
-	public void dessinerQuart (Graphics g, byte[][][] tabHitbox, int cote) {
-		int w = buffer.getWidth(), h = buffer.getHeight(),
-			halfW = w/2, halfH = h/2;
+	protected void dessinerQuart (Graphics g, byte[][][] tabHitbox, int cote) {
+		int w = buffer.getWidth(), h = buffer.getHeight(), halfW = w/2,
+			x = getPos().getX(), y = getPos().getY();
 
 		switch (cote) {
 			case 0: // Nord-ouest
 				g.drawImage(buffer, drawX, drawY+type.DEPLACEMENTVERT, 
 							drawX+halfW+1, drawY,
 							0, 0, halfW+1, -type.DEPLACEMENTVERT, null);
+
+				// On recalcule la hitbox
+				SwingUtilities.invokeLater(() -> {
+					for (int i = drawY + type.DEPLACEMENTVERT; i < drawY; i++) {
+						for (int j = drawX; j < drawX + halfW + 1; j++) {
+							if (((buffer.getRGB(j - drawX, i - (drawY + type.DEPLACEMENTVERT)) >> 24) & 0xff) == 255) {
+								tabHitbox[i][j][0] = (byte) x;
+								tabHitbox[i][j][1] = (byte) y;
+							}
+						}
+					}
+				});
 				break;
 			case 1: // Nord-Est
 				g.drawImage(buffer, drawX+halfW, drawY+type.DEPLACEMENTVERT, 
 							drawX+w, drawY,
 							halfW, 0, w, -type.DEPLACEMENTVERT, null);
+				
+				// On recalcule la hitbox
+				SwingUtilities.invokeLater(() -> {
+					for (int i = drawY+type.DEPLACEMENTVERT; i < drawY; i++) {
+						for (int j = drawX+halfW; j < drawX+w; j++) {
+							if (((buffer.getRGB(j-(drawX+halfW), i-(drawY+type.DEPLACEMENTVERT))>>24)&0xff) == 255) {
+								tabHitbox[i][j][0] = (byte) x;
+								tabHitbox[i][j][1] = (byte) y;
+							}
+						}
+					}
+				});
 				break;
 			case 2: // Sud-est
 				g.drawImage(buffer, drawX+halfW, drawY, 
 							drawX+w, drawY+type.DEPLACEMENTVERT+h,
 							halfW, -type.DEPLACEMENTVERT, w, h, null);
+				// On recalcule la hitbox
 				for (int i = drawY; i < drawY+type.DEPLACEMENTVERT+h; i++) {
 					for (int j = drawX+halfW; j < drawX+w; j++) {
-						tabHitbox[i][j][0] = (byte) getPos().getX();
-						tabHitbox[i][j][1] = (byte) getPos().getY();
+						tabHitbox[i][j][0] = (byte) x;
+						tabHitbox[i][j][1] = (byte) y;
 					}
 				}
 				break;
@@ -335,10 +357,11 @@ public class Element implements wargame.IConfig {
 				g.drawImage(buffer, drawX, drawY, 
 							drawX+halfW, drawY+type.DEPLACEMENTVERT+h,
 							0, -type.DEPLACEMENTVERT, halfW, h, null);
+				// On recalcule la hitbox
 				for (int i = drawY; i < drawY+type.DEPLACEMENTVERT+h; i++) {
 					for (int j = drawX; j < drawX+halfW; j++) {
-						tabHitbox[i][j][0] = (byte) getPos().getX();
-						tabHitbox[i][j][1] = (byte) getPos().getY();
+						tabHitbox[i][j][0] = (byte) x;
+						tabHitbox[i][j][1] = (byte) y;
 					}
 				}
 				break;
@@ -376,11 +399,9 @@ public class Element implements wargame.IConfig {
 		else g.drawImage(spriteSombre, drawX, drawY+type.DEPLACEMENTVERT, drawX+spriteSombre.getWidth(), drawY+190, 0, 0, spriteSombre.getWidth(), -type.DEPLACEMENTVERT+190, null);
 
 		// On recalcule la hitbox pour la moitié haute de l'élément
-		RunnableAfficher r = new RunnableAfficher(tabHitbox, false);
+		RunnableAfficher r = new RunnableAfficher(tabHitbox, true);
 		Thread t = new Thread(r);
 		t.start();
-
-		// TODO retablir hitbox elem au dessous, chargement plus rapide
 
 		// On réaffiche les parties hautes des élément au dessous de l'élément courant
 		tmp = carte.getElement(getPos().getX()+1, getPos().getY()+deplacementOuest); // Element sud-ouest
