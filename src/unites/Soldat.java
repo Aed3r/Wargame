@@ -4,6 +4,7 @@ import terrains.Carte;
 import java.awt.Color;
 import misc.*;
 import wargame.ISoldat;
+import java.awt.image.*;
 
 public abstract class Soldat implements ISoldat {
     private final int POINT_DE_VIE_MAX, PORTEE_VISUELLE, PUISSANCE, TIR; 
