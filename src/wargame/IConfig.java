@@ -4,12 +4,12 @@ import java.awt.Color;
 
 import misc.Position;
 public interface IConfig {
-	int LARGEUR_CARTE = 30; int HAUTEUR_CARTE = 20; // en nombre de cases (maximum 127 pour chaque)
-	int LARGEUR_SPAWN = 5; int HAUTEUR_SPAWN = 5;
+	int LARGEUR_CARTE = 30; int HAUTEUR_CARTE = 20; // en nombre de cases
+	int LARGEUR_SPAWN = 5; int HAUTEUR_SPAWN = 5; //taille similaire
 	/* A VOIR SI C'EST VRAIMENT UTILE  */
 	Position POS_INIT_SPAWN_MONSTRE = new Position(1, 1);
 	Position POS_INIT_SPAWN_GENTIL = new Position(HAUTEUR_CARTE-1-HAUTEUR_SPAWN, LARGEUR_CARTE-1-LARGEUR_SPAWN);
-	int NB_HEROS = 6; int NB_MONSTRES = 15;
+	int NB_HEROS = 25; int NB_MONSTRES = 25;
 	/* ##############################  */
 	/* Noms des paramètres dans le fichier de configuration. 
 			- [0]: nom du paramètre à utiliser dans le fichier des configurations

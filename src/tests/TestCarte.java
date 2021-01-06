@@ -2,6 +2,7 @@ package tests;
 
 import misc.*;
 import terrains.Carte;
+import unites.Heros;
 
 public class TestCarte {
     public static void main(String[] args) {
@@ -10,7 +11,9 @@ public class TestCarte {
 
         Carte c = new Carte ();
         c.affiche_nul();
+        c.affiche_perso();
 
+        System.out.printf("\n\n");
         int x = 13; int y = 23;
         Position p = new Position(x, y);
         Element e = c.getElement(p);
@@ -19,5 +22,10 @@ public class TestCarte {
         Position a = new Position(5, 3);
         c.trouvePositionVide(a);
         c.trouveHeros(a);
+        c.placementSoldatAlea();
+        c.affiche_perso();
+
+        Position b = new Position(14, 24);
+        System.out.printf("%s\n", c.trouveHeros(b).toString());
     }
 }
