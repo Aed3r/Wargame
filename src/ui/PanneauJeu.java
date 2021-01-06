@@ -4,9 +4,10 @@ import java.awt.*;
 import java.awt.event.*;
 import java.awt.geom.AffineTransform;
 import java.awt.image.BufferedImage;
-import java.util.Currency;
 
 import javax.swing.*;
+
+import misc.Element;
 import terrains.Carte;
 
 /**
@@ -18,18 +19,21 @@ public class PanneauJeu extends JPanel implements wargame.IConfig, MouseWheelLis
     private int xPlateau = -MARGX, yPlateau = -MARGY, wPlateau, hPlateau;
     private double zoomPlateau = 1;
     private transient BufferedImage plateau, fond;
+    private byte[][][] tabHitbox;
     private Point posSouris;
     private Dimension tailleFenetre = null, tailleVirtuelle = null;
     private Carte carte;
 
     public PanneauJeu (Carte carte) {
         super();
-        wPlateau = MARGX*2+TAILLEX*LARGEUR_CARTE+TAILLEX/2; // Largeur du plateau
-        hPlateau = MARGY*2+TAILLEY*(HAUTEUR_CARTE+1); // Hauteur du plateau
-        addMouseWheelListener(this);
         this.carte = carte;
 
+        // Initialisations
         setBackground(BGCOLOR);
+        addMouseWheelListener(this);
+        wPlateau = MARGX*2+TAILLEX*LARGEUR_CARTE+TAILLEX/2; // Largeur du plateau (8866)
+        hPlateau = MARGY*2+TAILLEY*(HAUTEUR_CARTE+1); // Hauteur du plateau (4850)
+        tabHitbox = new byte[hPlateau][wPlateau][2];
 
         // Déplacement sur le plateau
         this.addMouseListener(new MouseAdapter() {
@@ -41,8 +45,19 @@ public class PanneauJeu extends JPanel implements wargame.IConfig, MouseWheelLis
 
             @Override
             public void mouseClicked(MouseEvent e) {
-                
-                repaint();
+                Point curseurMap;
+                try { curseurMap = getPosCurseurPlateau(); }
+                catch (NullPointerException ex) { return; }
+
+                if (SwingUtilities.isLeftMouseButton(e)) {
+                    System.out.println("("+(tabHitbox[curseurMap.y][curseurMap.x][0] & 0xFF) + ", "+(tabHitbox[curseurMap.y][curseurMap.x][1] & 0xFF) +")");
+                } else if (SwingUtilities.isRightMouseButton(e)) {
+                    Element elem = carte.getElement(tabHitbox[curseurMap.y][curseurMap.x][0], tabHitbox[curseurMap.y][curseurMap.x][1]);
+                    if (elem.getVisible()) elem.setCache();
+                    else elem.setVisible();
+                    elem.setReafficher(true);
+                    repaint();
+                }
             }
         });
         this.addMouseMotionListener(new MouseMotionAdapter() {
@@ -61,27 +76,39 @@ public class PanneauJeu extends JPanel implements wargame.IConfig, MouseWheelLis
     }
 
     /**
+     * @return la position du curseur sur le plateau
+     * @throws NullPointerException si le curseur se trouve en dehors de la fenêtres
+     */
+    private Point getPosCurseurPlateau () throws NullPointerException {
+        Point curseur = this.getMousePosition();
+        if (curseur == null) throw new NullPointerException(); // Lorsque le curseur se trouve en dehors de la fenêtre
+
+        Point pointVirt = new Point((int) (curseur.getX()/zoomPlateau), (int) (curseur.getY()/zoomPlateau));
+        return new Point((int) pointVirt.getX()-xPlateau, (int) pointVirt.getY()-yPlateau);
+    }
+
+    /**
      * Définie le zoom lorsque la molette est utilisé
      * @param e l'évenement généré
      */
     @Override
 	public void mouseWheelMoved(MouseWheelEvent e) {
-        double oldZoom = zoomPlateau;
+        // la position du curseur sur le plateau avant le zoom
+        Point curseurMap;
+        try { curseurMap = getPosCurseurPlateau(); }
+        catch (NullPointerException ex) { return; }
+        
         zoomPlateau += e.getWheelRotation() * -VITESSEZOOM;
         if (zoomPlateau > MAXZOOM) zoomPlateau = MAXZOOM;
 
+        // la position du curseur sur le plateau après le zoom
+        Point curseurMapZoom;
+        try { curseurMapZoom = getPosCurseurPlateau(); }
+        catch (NullPointerException ex) { return; }
+
         // On replace le plateau de façon à ce que le curseur reste sur le même point de la carte
-        Point curseur = this.getMousePosition();
-        Point pointVirt = new Point((int) (curseur.getX()/oldZoom), (int) (curseur.getY()/oldZoom));
-        Point curseurMap = new Point((int) pointVirt.getX()-xPlateau, (int) pointVirt.getY()-yPlateau);
-        Point pointVirtZoom = new Point((int) (curseur.getX()/zoomPlateau), (int) (curseur.getY()/zoomPlateau));
-        Point curseurMapZoom = new Point((int) pointVirtZoom.getX()-xPlateau, (int) pointVirtZoom.getY()-yPlateau);
-
-        double deplacementX = curseurMapZoom.getX() - curseurMap.getX();
-        double deplacementY = curseurMapZoom.getY() - curseurMap.getY();
-
-        xPlateau += deplacementX;
-        yPlateau += deplacementY;
+        xPlateau += curseurMapZoom.getX() - curseurMap.getX();
+        yPlateau += curseurMapZoom.getY() - curseurMap.getY();
 
         repaint();
     }
@@ -111,10 +138,13 @@ public class PanneauJeu extends JPanel implements wargame.IConfig, MouseWheelLis
             g2d.setPaint(gp);
             g2d.fillRect(0, 0, tailleFenetre.width, tailleFenetre.height);
             g2d.dispose();
-        }
 
-        // On dessine le plateau sur l'image
-        carte.afficher(plateau.getGraphics());
+            // On dessine le plateau sur l'image
+            carte.afficher(plateau.getGraphics(), tabHitbox, false);
+        } else {
+            // On Met à jour le plateau sur l'image
+            carte.afficher(plateau.getGraphics(), tabHitbox, true);
+        }
 
         // On affiche le fond
         g2d = (Graphics2D) g;

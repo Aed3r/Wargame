@@ -4,7 +4,6 @@ import misc.Element;
 import misc.Position;
 import unites.*;
 import java.awt.*;
-import misc.Parametres;
 
 public class Carte implements wargame.IConfig {
     Element[][] grille = new Element[HAUTEUR_CARTE][LARGEUR_CARTE];
@@ -86,6 +85,11 @@ public class Carte implements wargame.IConfig {
             return null;
         }
         return grille[i][j];     
+    }
+
+    /* Retourne l'élement à la position (x, y) dans la grille */
+    public Element getElement(int x, int y) {
+        return getElement(new Position(x, y));
     }
 
     /* Trouve une position vide choisie aleatoirement parmi les 8 positions adjacentes de pos */
@@ -188,30 +192,29 @@ public class Carte implements wargame.IConfig {
     /**
      * Affiche sur g tous les éléments constituant la carte courante
      * @param g un object graphique quelconque
+     * @param tabHitbox le tableau des hitbox
+     * @param reafficher s'il suffit de réafficher les éléments marqués par setReafficher(true)
      */
-    public void afficher (Graphics g) {
+    public void afficher (Graphics g, byte[][][] tabHitbox, boolean reafficher) {
         int i, j, x, y;
 
-        if (!Element.getReafficher()) return;
-
+        long start = System.currentTimeMillis();
         // lignes
         for (i = 0; i < HAUTEUR_CARTE; i++) {
             // colonnes
             for (j = 0; j < LARGEUR_CARTE; j++) {
                 x = MARGX + j*TAILLEX;
-                y = (MARGY + i*TAILLEY);
+                y = MARGY + i*TAILLEY;   
+                if (i%2 == 0) x += TAILLEX/2;
                 
-                // Déplacement vertical aléatoire des éléments 
-                if (Parametres.getParametre("deplacementVert").equals("allumé"))
-                    y += Math.random()*50-25;             
-
-                if (i%2 == 0)
-                    grille[i][j].afficher(g, x+TAILLEX/2, y);
-                else
-                    grille[i][j].afficher(g, x, y);   
+                if (reafficher) {
+                    if (grille[i][j].getReafficher())
+                        grille[i][j].reafficher(g, tabHitbox, this);
+                } else grille[i][j].afficher(g, x, y, tabHitbox);  
             }
         }
 
-        Element.setReafficher(false);
+        long finish = System.currentTimeMillis();
+        System.out.println((finish - start)/1000.);
     }
 }

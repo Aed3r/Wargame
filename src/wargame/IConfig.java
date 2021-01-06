@@ -4,7 +4,7 @@ import java.awt.Color;
 
 import misc.Position;
 public interface IConfig {
-	int LARGEUR_CARTE = 30; int HAUTEUR_CARTE = 20; // en nombre de cases
+	int LARGEUR_CARTE = 30; int HAUTEUR_CARTE = 20; // en nombre de cases (maximum 127 pour chaque)
 	int LARGEUR_SPAWN = 5; int HAUTEUR_SPAWN = 5;
 	/* A VOIR SI C'EST VRAIMENT UTILE  */
 	Position POS_INIT_SPAWN_MONSTRE = new Position(1, 1);
