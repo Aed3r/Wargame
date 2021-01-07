@@ -27,7 +27,7 @@ public class MenuPrincipale extends MenuSimple {
             @Override
             public void mouseClicked(MouseEvent e) {
                 Carte c = new Carte();
-                setMenu(new PanneauJeu(c));
+                setMenu(new PanneauJeu(c, MenuPrincipale.this));
             }
         });
             // Charger un jeu
@@ -59,6 +59,6 @@ public class MenuPrincipale extends MenuSimple {
         setBgImage("data/img/menuPrincipale.jpg");
 
         // Placement du logo
-        setLogo("data/img/logo.png", 0.3);
+        setLogo("data/img/icon/logo.png", 0.3);
     }
 }

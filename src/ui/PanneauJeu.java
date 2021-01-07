@@ -4,9 +4,10 @@ import java.awt.*;
 import java.awt.event.*;
 import java.awt.geom.AffineTransform;
 import java.awt.image.BufferedImage;
-
+import java.util.ArrayList;
+import misc.Parametres;
+import ui.TailleFenetre;
 import javax.swing.*;
-
 import misc.Element;
 import terrains.Carte;
 
@@ -18,33 +19,210 @@ public class PanneauJeu extends JPanel implements wargame.IConfig, MouseWheelLis
     private static final float MAXZOOM = 2f, VITESSEZOOM = 0.1f;
     private int xPlateau = -MARGX, yPlateau = -MARGY, wPlateau, hPlateau;
     private double zoomPlateau = 1;
-    private transient BufferedImage plateau, fond;
+    private transient BufferedImage plateau = null, fond;
     private byte[][][] tabHitbox;
     private Point posSouris;
     private Dimension tailleFenetre = null, tailleVirtuelle = null;
     private Carte carte;
+    private ArrayList<TranslucentButton> boutonsJeu = new ArrayList<>();
+    private ArrayList<TranslucentButton> boutonsMenu = new ArrayList<>();
+    private boolean afficherMenu = false;
 
-    public PanneauJeu (Carte carte) {
+    public PanneauJeu (Carte carte, MenuSimple parent) {
         super();
         this.carte = carte;
+        Dimension s = new Dimension(300, 75); // Taille des boutons
+        TranslucentButton tmp;
+        GridBagConstraints gc;
+        ImageIcon icon;
 
         // Initialisations
-        setBackground(BGCOLOR);
+        setOpaque(false);
+        setLayout(new GridBagLayout());
         addMouseWheelListener(this);
         wPlateau = MARGX*2+TAILLEX*LARGEUR_CARTE+TAILLEX/2; // Largeur du plateau (8866)
         hPlateau = MARGY*2+TAILLEY*(HAUTEUR_CARTE+1); // Hauteur du plateau (4850)
         tabHitbox = new byte[hPlateau][wPlateau][2];
 
+        /* Boutons du jeu */
+
+        // Menu
+        gc = new GridBagConstraints();
+        icon = new ImageIcon("data/img/icon/settings.png", "");
+        if (icon.getImageLoadStatus() == MediaTracker.COMPLETE) tmp = new TranslucentButton(icon, new Dimension(45, 45));
+        else tmp = new TranslucentButton("Menus", new Dimension(100, 100), 400, false);
+        tmp.addMouseListener(new MouseAdapter() {
+            @Override
+            public void mouseClicked(MouseEvent e) {
+                // On cache tous les boutons du jeu
+                for (int i = 0; i < boutonsJeu.size(); i++) boutonsJeu.get(i).setVisible(false);
+                // On affiche tous les boutons du menu
+                for (int i = 0; i < boutonsMenu.size(); i++) boutonsMenu.get(i).setVisible(true);
+                afficherMenu = true;
+                repaint();
+            }
+        });
+        gc.gridx = 0;
+        gc.gridy = 0;
+        gc.weightx = 1;
+        gc.weighty = 1;
+        gc.anchor = GridBagConstraints.NORTHWEST;
+        gc.insets = new Insets(10,10,0,0);
+        add(tmp, gc);
+        boutonsJeu.add(tmp);
+
+        // Bouger
+        icon = new ImageIcon("data/img/icon/walk.png", "");
+        if (icon.getImageLoadStatus() == MediaTracker.COMPLETE) tmp = new TranslucentButton(icon, new Dimension(70, 70));
+        else tmp = new TranslucentButton("Bouger", new Dimension(100, 100), 400, false);
+        tmp.addMouseListener(new MouseAdapter() {
+            @Override
+            public void mouseClicked(MouseEvent e) {
+                //TODO
+            }
+        });
+        gc.gridx = 0;
+        gc.gridy = 0;
+        gc.weightx = 1;
+        gc.weighty = 1;
+        gc.anchor = GridBagConstraints.SOUTH;
+        gc.insets = new Insets(10,10,10,10);
+        add(tmp, gc);
+        boutonsJeu.add(tmp);
+
+        // Attaquer
+        icon = new ImageIcon("data/img/icon/swords.png", "");
+        if (icon.getImageLoadStatus() == MediaTracker.COMPLETE) tmp = new TranslucentButton(icon, new Dimension(70, 70));
+        else tmp = new TranslucentButton("Attaquer", new Dimension(100, 100), 400, false);
+        tmp.addMouseListener(new MouseAdapter() {
+            @Override
+            public void mouseClicked(MouseEvent e) {
+                //TODO
+            }
+        });
+        gc.gridx = 1;
+        gc.gridy = 0;
+        gc.weightx = 1;
+        gc.weighty = 1;
+        gc.anchor = GridBagConstraints.SOUTH;
+        gc.insets = new Insets(10,10,10,10);
+        add(tmp, gc);
+        boutonsJeu.add(tmp);
+
+        /* Boutons du menu */
+        
+        // Retour au jeu
+        tmp = new TranslucentButton("Retour au jeu", s, 400, false);
+        tmp.addMouseListener(new MouseAdapter() {
+            @Override
+            public void mouseClicked(MouseEvent e) {
+                // On affiche tous les boutons du jeu
+                for (int i = 0; i < boutonsJeu.size(); i++) boutonsJeu.get(i).setVisible(true);
+                // On cache tous les boutons du menu
+                for (int i = 0; i < boutonsMenu.size(); i++) boutonsMenu.get(i).setVisible(false);
+                afficherMenu = false;
+                repaint();
+            }
+        });
+
+        gc.insets = new Insets(10,10,10,10);
+        gc.gridy = 1;
+        gc.anchor = GridBagConstraints.CENTER;
+        add(tmp, gc);
+        tmp.setVisible(false);
+        boutonsMenu.add(tmp);
+
+        // Retour au menu
+        tmp = new TranslucentButton("Menu principal", s, 400, false);
+        tmp.addMouseListener(new MouseAdapter() {
+            @Override
+            public void mouseClicked(MouseEvent e) {
+                parent.setMenu(parent);
+            }
+        });
+
+        gc.insets = new Insets(10,10,10,10);
+        gc.gridy = 2;
+        gc.anchor = GridBagConstraints.CENTER;
+        add(tmp, gc);
+        tmp.setVisible(false);
+        boutonsMenu.add(tmp);
+
+        // Taille
+        tmp = new TranslucentButton("Taille: " + Parametres.getParametre("tailleFenetre"), s, 400, false);
+        tmp.addMouseListener(new MouseAdapter() {
+            @Override
+            public void mouseClicked(MouseEvent e) {
+                // On cherche la valeur actuellement utilisé
+                int l = PARAMETRES[0].length, j = 2;
+                while (j < l && !Parametres.getParametre("tailleFenetre").equals(PARAMETRES[0][j])) j++;
+                // On repasse à la première valeur si rien n'a été trouvé ou qu'il s'agit de la dernière 
+                if (j >= l-1) j = 2;
+                else j++; // Sinon on passe simplement à la prochaine valeur
+                // On modifie le texte du bouton et le paramètre
+                Parametres.setParametre("tailleFenetre", PARAMETRES[0][j]);
+                boutonsMenu.get(2).setText(PARAMETRES[0][1] + ": " + PARAMETRES[0][j]);
+                // Modification de la taille de fenêtre
+                TailleFenetre.setTailleFenetre(PARAMETRES[0][j], (JFrame) SwingUtilities.getWindowAncestor(PanneauJeu.this));
+                tailleFenetre = null;
+                revalidate();
+                repaint();
+            }
+        });
+
+        gc.insets = new Insets(10,10,10,10);
+        gc.gridy = 3;
+        gc.anchor = GridBagConstraints.CENTER;
+        add(tmp, gc);
+        tmp.setVisible(false);
+        boutonsMenu.add(tmp);
+
+        // Sauvegarder
+        tmp = new TranslucentButton("Sauvegarder", s, 400, false);
+        tmp.addMouseListener(new MouseAdapter() {
+            @Override
+            public void mouseClicked(MouseEvent e) {
+                // TODO
+            }
+        });
+
+        gc.insets = new Insets(10,10,10,10);
+        gc.gridy = 4;
+        gc.anchor = GridBagConstraints.CENTER;
+        add(tmp, gc);
+        tmp.setVisible(false);
+        boutonsMenu.add(tmp);
+
+        // Quitter le jeu
+        tmp = new TranslucentButton("Quitter le jeu", s, 400, false);
+        tmp.addMouseListener(new MouseAdapter() {
+            @Override
+            public void mouseClicked(MouseEvent e) {
+                System.exit(0);
+            }
+        });
+
+        gc.insets = new Insets(10,10,10,10);
+        gc.gridy = 5;
+        gc.anchor = GridBagConstraints.CENTER;
+        add(tmp, gc);
+        tmp.setVisible(false);
+        boutonsMenu.add(tmp);
+        
         // Déplacement sur le plateau
         this.addMouseListener(new MouseAdapter() {
             @Override
             public void mousePressed(MouseEvent e) {
+                if(afficherMenu) return;
+
                 posSouris = e.getPoint();
                 repaint();
             }
 
             @Override
             public void mouseClicked(MouseEvent e) {
+                if(afficherMenu) return;
+
                 Point curseurMap;
                 try { curseurMap = getPosCurseurPlateau(); }
                 catch (NullPointerException ex) { return; }
@@ -63,6 +241,8 @@ public class PanneauJeu extends JPanel implements wargame.IConfig, MouseWheelLis
         this.addMouseMotionListener(new MouseMotionAdapter() {
             @Override
             public void mouseDragged(MouseEvent e) {
+                if(afficherMenu) return;
+
                 int dx = e.getX() - posSouris.x;
                 int dy = e.getY() - posSouris.y;
 
@@ -93,6 +273,8 @@ public class PanneauJeu extends JPanel implements wargame.IConfig, MouseWheelLis
      */
     @Override
 	public void mouseWheelMoved(MouseWheelEvent e) {
+        if(afficherMenu) return;
+        
         // la position du curseur sur le plateau avant le zoom
         Point curseurMap;
         try { curseurMap = getPosCurseurPlateau(); }
@@ -118,7 +300,6 @@ public class PanneauJeu extends JPanel implements wargame.IConfig, MouseWheelLis
      */
     @Override
     protected void paintComponent(Graphics g) {
-        super.paintComponent(g);
         Graphics2D g2d;
 
         // Initialisation lors du premier affichage
@@ -126,9 +307,6 @@ public class PanneauJeu extends JPanel implements wargame.IConfig, MouseWheelLis
             tailleFenetre = ((JFrame) SwingUtilities.getWindowAncestor(this)).getSize();
             tailleVirtuelle = (Dimension) tailleFenetre.clone();
             requestFocusInWindow();
-
-            // On crée l'image sur laquelle le plateau sera dessiné
-            plateau = new BufferedImage(wPlateau, hPlateau, BufferedImage.TYPE_INT_ARGB);
 
             // On dessine le fond
             fond = new BufferedImage(tailleFenetre.width, tailleFenetre.height, BufferedImage.TYPE_INT_RGB);
@@ -139,8 +317,12 @@ public class PanneauJeu extends JPanel implements wargame.IConfig, MouseWheelLis
             g2d.fillRect(0, 0, tailleFenetre.width, tailleFenetre.height);
             g2d.dispose();
 
-            // On dessine le plateau sur l'image
-            carte.afficher(plateau.getGraphics(), tabHitbox, false);
+            if (plateau == null) {
+                // On crée l'image sur laquelle le plateau sera dessiné
+                plateau = new BufferedImage(wPlateau, hPlateau, BufferedImage.TYPE_INT_ARGB);
+                // On dessine le plateau sur l'image
+                carte.afficher(plateau.getGraphics(), tabHitbox, false);
+            }
         } else {
             // On Met à jour le plateau sur l'image
             carte.afficher(plateau.getGraphics(), tabHitbox, true);
@@ -156,7 +338,7 @@ public class PanneauJeu extends JPanel implements wargame.IConfig, MouseWheelLis
             zoomMin = (double) tailleFenetre.width / wPlateau;
         else
             zoomMin = (double) tailleFenetre.height / hPlateau;
-        
+
         if (zoomPlateau < zoomMin) zoomPlateau = zoomMin;
 
         // On récupère un nouveau buffer pour effectuer un zoom
@@ -176,5 +358,13 @@ public class PanneauJeu extends JPanel implements wargame.IConfig, MouseWheelLis
 
         // On replace l'ancien Transform
         g2d.setTransform(og);
+
+        // On rend le plateau semi-transparent
+        if (afficherMenu) {
+            g.setColor(new Color(0, 0, 0, 0.5f));
+            g.fillRect(0, 0, tailleFenetre.width, tailleFenetre.height);
+        } 
+        
+        super.paintComponent(g);
     }
 }

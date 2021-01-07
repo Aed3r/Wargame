@@ -235,7 +235,7 @@ public class Element implements wargame.IConfig {
 		else g.drawImage(spriteSombre, x, y+type.DEPLACEMENTVERT, null);
 
 		// Mise à jour du tableau des hitbox et buffer
-		RunnableAfficher r = new RunnableAfficher(tabHitbox, false);
+		RunnableAfficher r = new RunnableAfficher(tabHitbox);
 		Thread t = new Thread(r);
 		t.start();
 	}
@@ -246,23 +246,18 @@ public class Element implements wargame.IConfig {
 	 */
 	public class RunnableAfficher implements Runnable {
 		private byte[][][] tabHitbox;
-		private boolean moitie;
 		
 		/**
 		 * Initialise le runnable avec les paramètres voulu
 		 * @param tabHitbox le tableau des hitbox
-		 * @param moitie s'il faut s'arrêter au millieu de l'élément (hitbox)
 		 */
-		public RunnableAfficher(byte[][][] tabHitbox, boolean moitie) {
+		public RunnableAfficher(byte[][][] tabHitbox) {
 			this.tabHitbox = tabHitbox;
-			this.moitie = moitie;
 		}
 	
 		public void run() {
 			// Calcul des hitbox
-			int w = getSprite().getWidth(null), h = getSprite().getHeight(null), alpha;
-
-			if (moitie) h = h/2;
+			int w = getSprite().getWidth(null), h = getSprite().getHeight(null)-127, alpha;
 
 			for (int i = 0; i < h; i++) {
 				for (int j = 0; j < w; j++) {
@@ -277,8 +272,6 @@ public class Element implements wargame.IConfig {
 
 			// Mise à jour du buffer
 			if (buffer != null) buffer.flush();
-
-			h -= 127;
 
 			if (getSoldat() != null) {
 				// w +=
@@ -334,7 +327,7 @@ public class Element implements wargame.IConfig {
 				SwingUtilities.invokeLater(() -> {
 					for (int i = drawY+type.DEPLACEMENTVERT; i < drawY; i++) {
 						for (int j = drawX+halfW; j < drawX+w; j++) {
-							if (((buffer.getRGB(j-(drawX+halfW), i-(drawY+type.DEPLACEMENTVERT))>>24)&0xff) == 255) {
+							if (((buffer.getRGB(j-drawX, i-(drawY+type.DEPLACEMENTVERT))>>24)&0xff) == 255) {
 								tabHitbox[i][j][0] = (byte) x;
 								tabHitbox[i][j][1] = (byte) y;
 							}
@@ -399,8 +392,8 @@ public class Element implements wargame.IConfig {
 			g.drawImage(getSprite(), drawX, drawY+type.DEPLACEMENTVERT, drawX+getSprite().getWidth(), drawY+190, 0, 0, getSprite().getWidth(), -type.DEPLACEMENTVERT+190, null);
 		else g.drawImage(spriteSombre, drawX, drawY+type.DEPLACEMENTVERT, drawX+spriteSombre.getWidth(), drawY+190, 0, 0, spriteSombre.getWidth(), -type.DEPLACEMENTVERT+190, null);
 
-		// On recalcule la hitbox pour la moitié haute de l'élément
-		RunnableAfficher r = new RunnableAfficher(tabHitbox, true);
+		// On recalcule la hitbox
+		RunnableAfficher r = new RunnableAfficher(tabHitbox);
 		Thread t = new Thread(r);
 		t.start();
 
