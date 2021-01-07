@@ -30,7 +30,15 @@ public class Heros extends Soldat {
     /**
      * @return Le nom associé au type de ce Héros
      */
-    public String getNom(){return (String) TYPE.toString();};
+    public String getNom(){
+        if(this.getPointsMax() == 80){
+            return "CHEVALIER";
+        }else if(this.getPointsMax() == 30){
+            return "GNOME";
+        }else if(this.getPointsMax() == 60){
+            return "BARBARE";
+        }else return "ARCHER";
+    };
 
     /**
      * Appelle la fonction récursive qui calcule les cases que le héros peut voir a partir de sa portée visuelle

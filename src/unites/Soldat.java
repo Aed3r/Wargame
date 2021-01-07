@@ -71,6 +71,11 @@ public abstract class Soldat implements ISoldat {
     public int getPoints(){ return this.pointsDeVie;} 
     
     /**
+     * @return les points de vie maximum du soldat
+     */
+    public int getPointsMax(){ return this.POINT_DE_VIE_MAX;}
+
+    /**
      * @return la portee du soldat
      */
     public int getPortee() {return this.PORTEE_VISUELLE;}
