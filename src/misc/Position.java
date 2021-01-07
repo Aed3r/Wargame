@@ -13,9 +13,20 @@ public class Position implements IConfig {
 		return !((x >= HAUTEUR_CARTE) || (y >= LARGEUR_CARTE) || (x < 0) || (y < 0));
 	}
 	public String toString() { return "("+x+","+y+")"; }
+	/**
+	 * Détermine si la position pos est voisine de cette position
+	 * @param pos position a tester
+	 * @return true si elle est voisine, false sinon
+	 */
 	public boolean estVoisine(Position pos) {
+		/*Puisque l'on travaille avec des hexagones il y a un decalage a prende en compte selon l'indice de la ligne*/
+		int decalageX = 1;
+		if(this.getY() % 2 == 0) decalageX = -1;
+
 		/*Une case est voisine si les deux sont des positions valide et qu'elles sont adjacentes*/
-		return (this.estValide() && pos.estValide()) && ((y == pos.y && (x == pos.x - 1 || x == pos.x - 2 || x == pos.x + 1 || x == pos.x + 2)) || (y == pos.y -1 && (x == pos.x - 1 || x == pos.x + 1)));
+		return (this.estValide() && pos.estValide()) &&
+		(((pos.getY() == getY()-1 || pos.getY() == getY()+1) && (pos.getX() == getX() || pos.getX() == getX() + decalageX)) 
+		|| (pos.getY() == getY() && (pos.getX() == getX() - 1 || pos.getX() == getX() + 1)));
 	}
 	public int distance(Position pos){ // Retourne la distance (le nombre de cases a parcourir) vers la position pos
 		/*TODO*/

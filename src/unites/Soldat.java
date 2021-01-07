@@ -35,8 +35,10 @@ public abstract class Soldat implements ISoldat {
 		}
     }
 
-    /* Méthodes abstraites */
+    /* Méthodes définies */
+    
     public boolean getTour(){return tour;}
+    
     public int joueTour(){
         if(tour == true){
             tour = false;
@@ -46,12 +48,14 @@ public abstract class Soldat implements ISoldat {
         }
     }
 
-    /* Méthodes définies */
-    @Override
     public int getPoints(){ return this.pointsDeVie;} 
     
     public int getPortee() {return this.PORTEE_VISUELLE;}
 
+    /**
+     * Engage un combat avec le soldat en paramètre, détermine tout seul ce qui dois se passer.
+     * @param soldat Le soldat a combatre
+     */
     public void combat(Soldat soldat){ /*On considere que l'instance pour laquelle est appelée cette methode est la première a taper */
         /*Premièrement le cas d'un combat au corps-a-corps (adjacent)*/
         if(getPos().estVoisine(soldat.getPos())){
@@ -78,8 +82,20 @@ public abstract class Soldat implements ISoldat {
         }
     }
 
+    /**
+     * @return la position du soldat
+     */
     public Position getPos(){ return this.pos;}
 
+    /**
+     * @return la carte associée au soldat
+     */
+    public Carte getCarte(){ return carte;}
+
+    /**
+     * Déplace le soldat dans une case sans aucune vérification
+     * @param newPos La position on le soldat se déplace
+     */
     public void seDeplace(Position newPos) { this.pos = newPos;}
 
     public String toString(){
