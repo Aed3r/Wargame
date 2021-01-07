@@ -17,4 +17,6 @@ public class Monstre extends Soldat {
     public String toString(){
         return  TYPE + super.toString();
     }
+
+    public String getNom(){return (String) TYPE.toString();};
 }

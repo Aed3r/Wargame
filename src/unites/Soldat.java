@@ -5,6 +5,10 @@ import java.awt.Color;
 import misc.*;
 import wargame.ISoldat;
 import java.awt.image.*;
+import java.awt.Graphics;
+import javax.imageio.ImageIO;
+import java.io.File;
+import java.io.IOException;
 
 public abstract class Soldat implements ISoldat {
     private final int POINT_DE_VIE_MAX, PORTEE_VISUELLE, PUISSANCE, TIR; 
@@ -22,13 +26,13 @@ public abstract class Soldat implements ISoldat {
         this.carte = carte;
         this.pos = pos;
 
-        // Chargement de l'image associé
-        /*try {
+        // Chargement de l'image associée
+        try {
             sprite = ImageIO.read(new File("data/img/soldats/" + getNom() + ".png"));
         } catch (IOException e) {
             // Problème lors du chargement, on utilise rien
 			System.out.println(e.getLocalizedMessage());
-		}*/
+		}
     }
 
     /* Méthodes abstraites */
@@ -80,5 +84,11 @@ public abstract class Soldat implements ISoldat {
 
     public String toString(){
         return " position : " + this.getPos().toString() + " Pdv : " + this.pointsDeVie + "/" + this.POINT_DE_VIE_MAX;
+    }
+
+    public abstract String getNom(); 
+
+    public void seDessine(Graphics g){
+        
     }
 }

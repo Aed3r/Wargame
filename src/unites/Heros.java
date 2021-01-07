@@ -18,5 +18,7 @@ public class Heros extends Soldat {
         return  TYPE + super.toString();
     }
 
+    public String getNom(){return (String) TYPE.toString();};
+
     public void calculerVision(){} /*TODO Trouve les cases que le héros vois et les positionne sur visible*/
 }
