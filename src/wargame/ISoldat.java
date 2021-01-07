@@ -5,7 +5,7 @@ import unites.Soldat;
 
 public interface ISoldat {
    enum TypesH {
-      HUMAIN (40,3,10,2), NAIN (80,1,20,0), ELF (70,5,10,6), HOBBIT (20,3,5,2);
+      CHEVALIER (40,3,10,2), GNOME (80,1,20,0), BARBARE (70,5,10,6), ARCHER (20,3,5,2);
       
       private final int POINTS_DE_VIE, PORTEE_VISUELLE, PUISSANCE, TIR;
 
@@ -23,7 +23,7 @@ public interface ISoldat {
 
    }
    public enum TypesM {
-      TROLL (100,1,30,0), ORC (40,2,10,3), GOBELIN (20,2,5,2);
+      TROLL (100,1,30,0), ZOMBIE (40,2,10,3), MOMIE (20,2,5,2), SORCIER (20,2,5,2);
       
       private final int POINTS_DE_VIE, PORTEE_VISUELLE, PUISSANCE, TIR;
       

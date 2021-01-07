@@ -127,7 +127,7 @@ public abstract class Soldat implements ISoldat {
 
     public abstract String getNom(); 
 
-    public void seDessine(Graphics g){
-        
+    public void seDessine(Graphics g, int x, int y){
+        g.drawImage(sprite, x, y, null);
     }
 }
