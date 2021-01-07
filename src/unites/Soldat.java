@@ -18,6 +18,17 @@ public abstract class Soldat implements ISoldat {
     private boolean tour; /*Permet de savoir si ce soldat a déja joué son tour*/
     private BufferedImage sprite;
 
+    /**
+     * Crée un soldat selon les caracteristiques en paramètre (CLASSE ABSTRAITE NE DOIT PAS ÊTRE APELLÉ DIRECTEMENT)
+     * @param carte La carte dont le soldat dépend
+     * @param pts Ses points de vie max
+     * @param portee Sa portee
+     * @param puiss Sa puissance d'attaque au corps a corps
+     * @param tir Sa puissance de tir (0 si incapable de tirer)
+     * @param pos Sa position initiale
+     * @param couleur La couleur associée a ce soldat
+     * @param nom Un nom
+     */
     Soldat(Carte carte, int pts, int portee, int puiss, int tir, Position pos, Color couleur, String nom){
         this.POINT_DE_VIE_MAX = this.pointsDeVie = pts;
         this.PORTEE_VISUELLE = portee;
@@ -37,8 +48,14 @@ public abstract class Soldat implements ISoldat {
 
     /* Méthodes définies */
     
+    /**
+     * @return true si le joueur peut jouer son tour false sinon
+     */
     public boolean getTour(){return tour;}
     
+    /**
+     * Joue le tour du soldat, retourne 0 si il a pu jouer son tour, -1 si son tour est déjà joué
+     */
     public int joueTour(){
         if(tour == true){
             tour = false;
@@ -48,8 +65,14 @@ public abstract class Soldat implements ISoldat {
         }
     }
 
+    /**
+     * @return les points de vie actuels du soldat
+     */
     public int getPoints(){ return this.pointsDeVie;} 
     
+    /**
+     * @return la portee du soldat
+     */
     public int getPortee() {return this.PORTEE_VISUELLE;}
 
     /**

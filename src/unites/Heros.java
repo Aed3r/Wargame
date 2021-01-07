@@ -8,6 +8,15 @@ import misc.Position;
 
 public class Heros extends Soldat {
     private final TypesH TYPE;
+    
+    /**
+     * Cree un heros d'un des types énuméré dans ISoldat selon son type 
+     * @param carte La carte dont dépend le Heros
+     * @param type Le type du Heros
+     * @param nom Un nom pour le Heros
+     * @param pos La position initiale du Heros
+     * @param couleur Une couleur associée au Heros
+     */
     public Heros(Carte carte, TypesH type, String nom, Position pos, Color couleur) {
         super(carte, type.getPoints(), type.getPortee(),
         type.getPuissance(), type.getTir(), pos, couleur, nom);
@@ -18,6 +27,9 @@ public class Heros extends Soldat {
         return  TYPE + super.toString();
     }
 
+    /**
+     * @return Le nom associé au type de ce Héros
+     */
     public String getNom(){return (String) TYPE.toString();};
 
     /**
@@ -25,7 +37,7 @@ public class Heros extends Soldat {
      * */
     public void calculerVision(){
         calcVisRec(this.getPortee(), this.getPos(), false);
-    } /*TODO Trouve les cases que le héros vois et les positionne sur visible*/
+    }
 
     /**
      * Utilise récursivement Element.setVisible() sur les cases adjacentes, s'appelle également dessus avec une distance réduite de 1

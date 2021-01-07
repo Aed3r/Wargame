@@ -9,6 +9,9 @@ public class Position implements IConfig {
 	public int getY() { return y; }
 	public void setX(int x) { this.x = x; }
 	public void setY(int y) { this.y = y; }
+	/**
+	 * @return true si la position est bien dans les limites de la carte, false sinon
+	 */
 	public boolean estValide() {
 		return !((x >= HAUTEUR_CARTE) || (y >= LARGEUR_CARTE) || (x < 0) || (y < 0));
 	}
@@ -28,7 +31,11 @@ public class Position implements IConfig {
 		(((pos.getY() == getY()-1 || pos.getY() == getY()+1) && (pos.getX() == getX() || pos.getX() == getX() + decalageX)) 
 		|| (pos.getY() == getY() && (pos.getX() == getX() - 1 || pos.getX() == getX() + 1)));
 	}
-	public int distance(Position pos){ // Retourne la distance (le nombre de cases a parcourir) vers la position pos
+	/**
+	 * @param pos Position
+	 * @return int : distance vers la position pos
+	 */
+	public int distance(Position pos){ // 
 		/*TODO*/
 		return 0;
 	}
