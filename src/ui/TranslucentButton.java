@@ -60,6 +60,19 @@ public class TranslucentButton extends JButton implements wargame.IConfig {
         init();
     }
 
+     /**
+     * Crée un bouton translucide avec l'icône icon
+     * @param icon l'icône figurant sur le bouton, avant le texte
+     * @param size la taille du bouton
+     */
+    public TranslucentButton(Icon icon, Dimension size) {
+        super(icon);
+        setPreferredSize(size);
+        this.fontWeight = 0;
+        this.italic = false;
+        init();
+    }
+
     /**
      * @return L'identifiant du bouton donné lors de sa mise en place
      */
@@ -119,6 +132,18 @@ public class TranslucentButton extends JButton implements wargame.IConfig {
         g2.setRenderingHint(
             RenderingHints.KEY_ANTIALIASING,
             RenderingHints.VALUE_ANTIALIAS_ON);
+        // Affichage icon
+        Icon icon = getIcon();
+        if (icon != null) {
+            if (getText().equals("")) {
+                // On centre l'icon
+                icon.paintIcon(this, g, (w-icon.getIconWidth())/2, (h-icon.getIconHeight())/2);
+            } else {
+                // Icon au début du bouton
+                icon.paintIcon(this, g, 0, 0);
+                w -= icon.getIconWidth();
+            }
+        }
         // Préparation de la forme du rectangle 
         Shape area = new RoundRectangle2D.Float(x, y, w-1, h-1, r, r);
         // Préparation des couleurs
@@ -141,7 +166,7 @@ public class TranslucentButton extends JButton implements wargame.IConfig {
         // Éteind l'anti-aliasage
         g2.setRenderingHint(
             RenderingHints.KEY_ANTIALIASING, 
-            RenderingHints.VALUE_ANTIALIAS_OFF);
+            RenderingHints.VALUE_ANTIALIAS_OFF);    
 
                     /* Dessine le texte */
 
@@ -149,18 +174,20 @@ public class TranslucentButton extends JButton implements wargame.IConfig {
         g2.setRenderingHint(
             RenderingHints.KEY_TEXT_ANTIALIASING,
             RenderingHints.VALUE_TEXT_ANTIALIAS_ON);
-        // Calcule l'emplacement du texte centré, puis le dessine
+        // Calcule l'emplacement du texte centré
         FontMetrics fm = g2.getFontMetrics(g2.getFont());
         Rectangle2D stringBounds = fm.getStringBounds(text, g);
         double textX = (w - stringBounds.getWidth()) / 2d;
+        if (icon != null) textX += icon.getIconWidth();
         double textY = (h - stringBounds.getHeight()) / 2d;
-        // Affichage
+        // Affichage texte
         g2.setPaint(g.getColor());
         g2.drawString(getText(), (int) textX, (int) (textY + fm.getAscent()));
         // Éteind l'anti-aliasage
         g2.setRenderingHint(
             RenderingHints.KEY_TEXT_ANTIALIASING, 
             RenderingHints.VALUE_TEXT_ANTIALIAS_OFF);
+        
         
         g2.dispose();
     }

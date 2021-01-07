@@ -42,4 +42,29 @@ public class Parametres implements wargame.IConfig {
     public static String getParametre(int i) {
         return params.get(PARAMETRES[i][0]);
     }
+
+    /**
+     * Change le paramètre nomParam. Ne vérifie pas s'il s'agit d'un paramètre valide
+     * @param nomParam le nom du paramètre à changer
+     * @param valeur la nouvelle valeur du paramètre
+     */
+    public static void setParametre(String nomParam, String valeur) {
+        Properties p = new Properties();
+
+        try (InputStream in = new FileInputStream(CONFIGFILE)) {
+            p.load(in);
+        } catch (IOException e) {
+            System.err.println("Erreur lors du chargement du fichier de configuration: " + e.getLocalizedMessage());
+            System.exit(-1);
+        }
+
+        p.setProperty(nomParam, valeur);
+        params.put(nomParam, valeur);
+
+        try (FileOutputStream out = new FileOutputStream(CONFIGFILE)) {
+            p.store(out, null);
+        } catch (IOException io) {
+            System.err.println("Erreur lors de l'écriture vers le fichier de configuration! " + io.getLocalizedMessage());
+        }
+    }
 }
