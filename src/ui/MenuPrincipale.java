@@ -27,6 +27,7 @@ public class MenuPrincipale extends MenuSimple {
             @Override
             public void mouseClicked(MouseEvent e) {
                 Carte c = new Carte();
+                c.placementSoldatAlea();
                 setMenu(new PanneauJeu(c, MenuPrincipale.this));
             }
         });

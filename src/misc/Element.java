@@ -22,8 +22,9 @@ public class Element implements wargame.IConfig {
 	private boolean estVisible = false; // si un héros peux voir cette case
 	private transient BufferedImage sprite = null, spriteSombre = null, buffer = null;
 	private boolean reafficher = false; // Indique s'il faut redessiner l'élément
-	private boolean reafficherDessus = true; // Indique s'il faut réafficher les éléments au dessus de l'élément courant
+	private boolean reafficherDessus = false; // Indique s'il faut réafficher les éléments au dessus de l'élément courant
 	private int drawX, drawY; // Coordonnées d'affichage de l'élément
+	private int deplacementYSoldat = 0; // Depassement du soldat au dessus d'un élément
 
 	/**
 	 * Représente un des différents types d'éléments prédéfinies
@@ -234,10 +235,14 @@ public class Element implements wargame.IConfig {
 		if (estVisible) g.drawImage(getSprite(), x, y+type.DEPLACEMENTVERT, null);
 		else g.drawImage(spriteSombre, x, y+type.DEPLACEMENTVERT, null);
 
+		afficherSoldat(g, x, y);
+
 		// Mise à jour du tableau des hitbox et buffer
 		RunnableAfficher r = new RunnableAfficher(tabHitbox);
 		Thread t = new Thread(r);
 		t.start();
+
+		reafficher = false;
 	}
 
 	/**
@@ -256,32 +261,39 @@ public class Element implements wargame.IConfig {
 		}
 	
 		public void run() {
-			// Calcul des hitbox
 			int w = getSprite().getWidth(null), h = getSprite().getHeight(null)-127, alpha;
 
-			for (int i = 0; i < h; i++) {
-				for (int j = 0; j < w; j++) {
-					alpha = (getSprite().getRGB(j, i)>>24)&0xff;
-
-					if (alpha == 255) {
-						tabHitbox[i+drawY+type.DEPLACEMENTVERT][j+drawX][0] = (byte) getPos().getX();
-						tabHitbox[i+drawY+type.DEPLACEMENTVERT][j+drawX][1] = (byte) getPos().getY();
-					}
-				}
-			}
-
 			// Mise à jour du buffer
-			if (buffer != null) buffer.flush();
+			if (getSoldat() != null)
+				deplacementYSoldat = getSoldat().getSprite().getHeight() - (TAILLEY/2-type.DEPLACEMENTVERT);
+			else deplacementYSoldat = 0;
+			
+			if (deplacementYSoldat < 0) deplacementYSoldat = 0;
+			else h += deplacementYSoldat;
 
-			if (getSoldat() != null) {
-				// w +=
-			}
+			if (buffer != null) buffer.flush();
 
 			buffer = new BufferedImage(w, h, BufferedImage.TYPE_INT_ARGB);
 			Graphics g = buffer.getGraphics();
 
-			if (estVisible) g.drawImage(getSprite(), 0, 0, null);
-			else g.drawImage(spriteSombre, 0, 0, null);
+			if (estVisible) g.drawImage(getSprite(), 0, deplacementYSoldat, null);
+			else g.drawImage(spriteSombre, 0, deplacementYSoldat, null);
+
+			afficherSoldat(buffer.getGraphics(), 0, -type.DEPLACEMENTVERT+deplacementYSoldat);
+
+			// Calcul des hitbox
+			for (int i = 0; i < h; i++) {
+				for (int j = 0; j < w; j++) {
+					alpha = (buffer.getRGB(j, i)>>24)&0xff;
+
+					if (alpha == 255) {
+						tabHitbox[i+drawY+type.DEPLACEMENTVERT-deplacementYSoldat][j+drawX][0] = (byte) getPos().getX();
+						tabHitbox[i+drawY+type.DEPLACEMENTVERT-deplacementYSoldat][j+drawX][1] = (byte) getPos().getY();
+					}
+				}
+			}
+
+			
 		}
 	}
 
@@ -298,19 +310,19 @@ public class Element implements wargame.IConfig {
 	 */
 	protected void dessinerQuart (Graphics g, byte[][][] tabHitbox, int cote) {
 		int w = buffer.getWidth(), h = buffer.getHeight(), halfW = w/2,
-			x = getPos().getX(), y = getPos().getY();
+			x = getPos().getX(), y = getPos().getY(), dY = type.DEPLACEMENTVERT-deplacementYSoldat;
 
 		switch (cote) {
 			case 0: // Nord-ouest
-				g.drawImage(buffer, drawX, drawY+type.DEPLACEMENTVERT, 
+				g.drawImage(buffer, drawX, drawY+dY, 
 							drawX+halfW+1, drawY,
-							0, 0, halfW+1, -type.DEPLACEMENTVERT, null);
+							0, 0, halfW+1, -dY, null);
 
 				// On recalcule la hitbox
 				SwingUtilities.invokeLater(() -> {
-					for (int i = drawY + type.DEPLACEMENTVERT; i < drawY; i++) {
+					for (int i = drawY + dY; i < drawY; i++) {
 						for (int j = drawX; j < drawX + halfW + 1; j++) {
-							if (((buffer.getRGB(j - drawX, i - (drawY + type.DEPLACEMENTVERT)) >> 24) & 0xff) == 255) {
+							if (((buffer.getRGB(j - drawX, i - (drawY + dY)) >> 24) & 0xff) == 255) {
 								tabHitbox[i][j][0] = (byte) x;
 								tabHitbox[i][j][1] = (byte) y;
 							}
@@ -319,15 +331,15 @@ public class Element implements wargame.IConfig {
 				});
 				break;
 			case 1: // Nord-Est
-				g.drawImage(buffer, drawX+halfW, drawY+type.DEPLACEMENTVERT, 
+				g.drawImage(buffer, drawX+halfW, drawY+dY, 
 							drawX+w, drawY,
-							halfW, 0, w, -type.DEPLACEMENTVERT, null);
+							halfW, 0, w, -dY, null);
 				
 				// On recalcule la hitbox
 				SwingUtilities.invokeLater(() -> {
-					for (int i = drawY+type.DEPLACEMENTVERT; i < drawY; i++) {
+					for (int i = drawY+dY; i < drawY; i++) {
 						for (int j = drawX+halfW; j < drawX+w; j++) {
-							if (((buffer.getRGB(j-drawX, i-(drawY+type.DEPLACEMENTVERT))>>24)&0xff) == 255) {
+							if (((buffer.getRGB(j-drawX, i-(drawY+dY))>>24)&0xff) == 255) {
 								tabHitbox[i][j][0] = (byte) x;
 								tabHitbox[i][j][1] = (byte) y;
 							}
@@ -337,10 +349,10 @@ public class Element implements wargame.IConfig {
 				break;
 			case 2: // Sud-est
 				g.drawImage(buffer, drawX+halfW, drawY, 
-							drawX+w, drawY+type.DEPLACEMENTVERT+h,
-							halfW, -type.DEPLACEMENTVERT, w, h, null);
+							drawX+w, drawY+dY+h,
+							halfW, -dY, w, h, null);
 				// On recalcule la hitbox
-				for (int i = drawY; i < drawY+type.DEPLACEMENTVERT+h; i++) {
+				for (int i = drawY; i < drawY+dY+h; i++) {
 					for (int j = drawX+halfW; j < drawX+w; j++) {
 						tabHitbox[i][j][0] = (byte) x;
 						tabHitbox[i][j][1] = (byte) y;
@@ -349,10 +361,10 @@ public class Element implements wargame.IConfig {
 				break;
 			case 3: // Sud-ouest
 				g.drawImage(buffer, drawX, drawY, 
-							drawX+halfW, drawY+type.DEPLACEMENTVERT+h,
-							0, -type.DEPLACEMENTVERT, halfW, h, null);
+							drawX+halfW, drawY+dY+h,
+							0, -dY, halfW, h, null);
 				// On recalcule la hitbox
-				for (int i = drawY; i < drawY+type.DEPLACEMENTVERT+h; i++) {
+				for (int i = drawY; i < drawY+dY+h; i++) {
 					for (int j = drawX; j < drawX+halfW; j++) {
 						tabHitbox[i][j][0] = (byte) x;
 						tabHitbox[i][j][1] = (byte) y;
@@ -385,12 +397,15 @@ public class Element implements wargame.IConfig {
 			if (tmp != null) tmp.dessinerQuart(g, tabHitbox, 2); 
 			tmp = carte.getElement(getPos().getX()-1, getPos().getY()+deplacementEst); // Element nord-est
 			if (tmp != null) tmp.dessinerQuart(g, tabHitbox, 3); 
+			reafficherDessus = false;
 		}
 
 		// On réaffiche l'élément courant
 		if (estVisible) 
 			g.drawImage(getSprite(), drawX, drawY+type.DEPLACEMENTVERT, drawX+getSprite().getWidth(), drawY+190, 0, 0, getSprite().getWidth(), -type.DEPLACEMENTVERT+190, null);
 		else g.drawImage(spriteSombre, drawX, drawY+type.DEPLACEMENTVERT, drawX+spriteSombre.getWidth(), drawY+190, 0, 0, spriteSombre.getWidth(), -type.DEPLACEMENTVERT+190, null);
+
+		afficherSoldat(g, drawX, drawY);
 
 		// On recalcule la hitbox
 		RunnableAfficher r = new RunnableAfficher(tabHitbox);
@@ -404,5 +419,15 @@ public class Element implements wargame.IConfig {
 		if (tmp != null) tmp.dessinerQuart(g, tabHitbox, 0); 
 
 		setReafficher(false);
+	}
+
+	private void afficherSoldat (Graphics g, int dX, int dY) {
+		Soldat s = getSoldat();
+
+		if (s != null) {
+			BufferedImage img = s.getSprite();
+			g.drawImage(img, dX+(TAILLEX-img.getWidth())/2, dY+TAILLEY/2-img.getHeight(), null);
+			reafficherDessus = true;
+		}
 	}
 }

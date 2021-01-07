@@ -6,10 +6,9 @@ import java.awt.geom.AffineTransform;
 import java.awt.image.BufferedImage;
 import java.util.ArrayList;
 import misc.Parametres;
-import ui.TailleFenetre;
 import javax.swing.*;
-import misc.Element;
 import terrains.Carte;
+import misc.Position;
 
 /**
  * Panneau permettant d'afficher un plateau de jeu
@@ -27,6 +26,7 @@ public class PanneauJeu extends JPanel implements wargame.IConfig, MouseWheelLis
     private ArrayList<TranslucentButton> boutonsJeu = new ArrayList<>();
     private ArrayList<TranslucentButton> boutonsMenu = new ArrayList<>();
     private boolean afficherMenu = false;
+    private transient Position pos1;
 
     public PanneauJeu (Carte carte, MenuSimple parent) {
         super();
@@ -68,44 +68,6 @@ public class PanneauJeu extends JPanel implements wargame.IConfig, MouseWheelLis
         gc.weighty = 1;
         gc.anchor = GridBagConstraints.NORTHWEST;
         gc.insets = new Insets(10,10,0,0);
-        add(tmp, gc);
-        boutonsJeu.add(tmp);
-
-        // Bouger
-        icon = new ImageIcon("data/img/icon/walk.png", "");
-        if (icon.getImageLoadStatus() == MediaTracker.COMPLETE) tmp = new TranslucentButton(icon, new Dimension(70, 70));
-        else tmp = new TranslucentButton("Bouger", new Dimension(100, 100), 400, false);
-        tmp.addMouseListener(new MouseAdapter() {
-            @Override
-            public void mouseClicked(MouseEvent e) {
-                //TODO
-            }
-        });
-        gc.gridx = 0;
-        gc.gridy = 0;
-        gc.weightx = 1;
-        gc.weighty = 1;
-        gc.anchor = GridBagConstraints.SOUTH;
-        gc.insets = new Insets(10,10,10,10);
-        add(tmp, gc);
-        boutonsJeu.add(tmp);
-
-        // Attaquer
-        icon = new ImageIcon("data/img/icon/swords.png", "");
-        if (icon.getImageLoadStatus() == MediaTracker.COMPLETE) tmp = new TranslucentButton(icon, new Dimension(70, 70));
-        else tmp = new TranslucentButton("Attaquer", new Dimension(100, 100), 400, false);
-        tmp.addMouseListener(new MouseAdapter() {
-            @Override
-            public void mouseClicked(MouseEvent e) {
-                //TODO
-            }
-        });
-        gc.gridx = 1;
-        gc.gridy = 0;
-        gc.weightx = 1;
-        gc.weighty = 1;
-        gc.anchor = GridBagConstraints.SOUTH;
-        gc.insets = new Insets(10,10,10,10);
         add(tmp, gc);
         boutonsJeu.add(tmp);
 
@@ -226,16 +188,19 @@ public class PanneauJeu extends JPanel implements wargame.IConfig, MouseWheelLis
                 Point curseurMap;
                 try { curseurMap = getPosCurseurPlateau(); }
                 catch (NullPointerException ex) { return; }
+                Position pos = new Position(tabHitbox[curseurMap.y][curseurMap.x][0] & 0xFF, tabHitbox[curseurMap.y][curseurMap.x][1] & 0xFF);
 
-                if (SwingUtilities.isLeftMouseButton(e)) {
-                    System.out.println("("+(tabHitbox[curseurMap.y][curseurMap.x][0] & 0xFF) + ", "+(tabHitbox[curseurMap.y][curseurMap.x][1] & 0xFF) +")");
-                } else if (SwingUtilities.isRightMouseButton(e)) {
-                    Element elem = carte.getElement(tabHitbox[curseurMap.y][curseurMap.x][0], tabHitbox[curseurMap.y][curseurMap.x][1]);
-                    if (elem.getVisible()) elem.setCache();
-                    else elem.setVisible();
-                    elem.setReafficher(true);
-                    repaint();
-                }
+                if (pos1 == null) pos1 = pos;
+                else {
+                    System.out.println("trying action");
+                    if (carte.actionHeros(pos1, pos)) {
+                        System.out.println("succeeded");
+                        carte.getElement(pos1).setReafficher(true);
+                        carte.getElement(pos).setReafficher(true);
+                        repaint();
+                    } else System.out.println("failed");
+                    pos1 = null;
+                } 
             }
         });
         this.addMouseMotionListener(new MouseMotionAdapter() {

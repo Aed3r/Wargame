@@ -5,7 +5,6 @@ import java.awt.Color;
 import misc.*;
 import wargame.ISoldat;
 import java.awt.image.*;
-import java.awt.Graphics;
 import javax.imageio.ImageIO;
 import java.io.File;
 import java.io.IOException;
@@ -36,14 +35,6 @@ public abstract class Soldat implements ISoldat {
         this.TIR = tir;
         this.carte = carte;
         this.pos = pos;
-
-        // Chargement de l'image associée
-        try {
-            sprite = ImageIO.read(new File("data/img/soldats/" + getNom() + ".png"));
-        } catch (IOException e) {
-            // Problème lors du chargement, on utilise rien
-			System.out.println(e.getLocalizedMessage());
-		}
     }
 
     /* Méthodes définies */
@@ -127,7 +118,16 @@ public abstract class Soldat implements ISoldat {
 
     public abstract String getNom(); 
 
-    public void seDessine(Graphics g, int x, int y){
-        g.drawImage(sprite, x, y, null);
+    public BufferedImage getSprite(){
+        if (sprite == null) {
+            // Chargement de l'image associée
+            try {
+                sprite = ImageIO.read(new File("data/img/soldats/" + getNom() + ".png"));
+            } catch (IOException e) {
+                // Problème lors du chargement, on utilise rien
+                System.out.println(e.getLocalizedMessage());
+            }
+        }
+        return sprite;
     }
 }
