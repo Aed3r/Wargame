@@ -1,7 +1,5 @@
 package wargame;
 
-import java.awt.Graphics;
-
 import misc.Element;
 import unites.Heros;
 import misc.Position;
