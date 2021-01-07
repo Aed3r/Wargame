@@ -7,7 +7,7 @@ import java.awt.Color;
 import misc.Position;
 
 public class Heros extends Soldat {
-    private final TypesH TYPE;
+    private TypesH TYPE;
     
     /**
      * Cree un heros d'un des types énuméré dans ISoldat selon son type 
