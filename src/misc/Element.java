@@ -58,7 +58,8 @@ public class Element implements wargame.IConfig {
 			this.PDVPERDUES = pdvPerdues;
 			
 			// Déplacement vertical aléatoire des éléments 
-			if (Parametres.getParametre("deplacementVert").equals("allumé"))
+			String param = Parametres.getParametre("deplacementVert");
+			if (param != null && param.equals("allumé"))
 				this.DEPLACEMENTVERT = deplacementVert + (int) (Math.random()*50-25);  	  
 			else
 				this.DEPLACEMENTVERT = deplacementVert;
