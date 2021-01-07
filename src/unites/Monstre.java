@@ -29,5 +29,13 @@ public class Monstre extends Soldat {
     /**
      * @return Le nom associé au type de ce Monstre
      */
-    public String getNom(){return (String) TYPE.toString();};
+    public String getNom(){
+        if(this.getPointsMax() == 100){
+            return "TROLL";
+        }else if(this.getPointsMax() == 30){
+            return "ZOMBIE";
+        }else if(this.getPointsMax() == 60){
+           return "MOMIE";
+        }else return "SORCIER";
+    };
 }

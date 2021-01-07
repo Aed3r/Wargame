@@ -5,7 +5,7 @@ import unites.Soldat;
 
 public interface ISoldat {
    enum TypesH {
-      CHEVALIER (40,3,10,2), GNOME (80,1,20,0), BARBARE (70,5,10,6), ARCHER (20,3,5,2);
+      CHEVALIER (80,3,10,2), GNOME (30,1,8,9), BARBARE (60,3,15,0), ARCHER (20,5,5,10);
       
       private final int POINTS_DE_VIE, PORTEE_VISUELLE, PUISSANCE, TIR;
 
@@ -20,10 +20,9 @@ public interface ISoldat {
       public static TypesH getTypeHAlea() {
          return values()[(int)(Math.random()*values().length)];
       }
-
    }
    public enum TypesM {
-      TROLL (100,1,30,0), ZOMBIE (40,2,10,3), MOMIE (20,2,5,2), SORCIER (20,2,5,2);
+      TROLL (100,1,25,0), ZOMBIE (40,2,10,0), MOMIE (30,2,5,2), SORCIER (20,2,5,10 );
       
       private final int POINTS_DE_VIE, PORTEE_VISUELLE, PUISSANCE, TIR;
       

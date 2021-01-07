@@ -2,7 +2,6 @@ package tests;
 
 import misc.*;
 import terrains.Carte;
-import unites.Heros;
 
 public class TestCarte {
     public static void main(String[] args) {
