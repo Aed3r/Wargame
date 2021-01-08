@@ -145,7 +145,7 @@ public class TranslucentButton extends JButton implements wargame.IConfig {
             }
         }
         // Préparation de la forme du rectangle 
-        Shape area = new RoundRectangle2D.Float(x, y, w-1, h-1, r, r);
+        Shape area = new RoundRectangle2D.Float(x, y, w-1.f, h-1.f, r, r);
         // Préparation des couleurs
         ButtonModel m = getModel();
         if (m.isPressed()) { // Clic 
@@ -159,7 +159,7 @@ public class TranslucentButton extends JButton implements wargame.IConfig {
             bgc = BR;
         }
         // Affichage
-        g2.setPaint(new GradientPaint(x, y, ssc, x, y+h, bgc, true));
+        g2.setPaint(new GradientPaint(x, y, ssc, x, (float) y+h, bgc, true));
         g2.fill(area);
         g2.setPaint(BR);
         g2.draw(area);

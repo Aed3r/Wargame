@@ -6,11 +6,11 @@ import java.awt.geom.AffineTransform;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.io.InputStream;
-import java.security.Key;
 import java.util.ArrayList;
 import misc.Parametres;
 
 import javax.imageio.ImageIO;
+import misc.Element;
 import javax.swing.*;
 import terrains.Carte;
 import misc.Position;
@@ -215,7 +215,9 @@ public class PanneauJeu extends JPanel implements wargame.IConfig, MouseWheelLis
                 try { curseurMap = getPosCurseurPlateau(); }
                 catch (NullPointerException ex) { return; }
                 Position pos = new Position(tabHitbox[curseurMap.y][curseurMap.x][0] & 0xFF, tabHitbox[curseurMap.y][curseurMap.x][1] & 0xFF);
-   
+                System.out.println(pos.toString());
+
+                carte.getElement(pos).setVisible();
 
                 if (pos1 == null) pos1 = pos;
                 else {
@@ -415,11 +417,11 @@ public class PanneauJeu extends JPanel implements wargame.IConfig, MouseWheelLis
                 // On crée l'image sur laquelle le plateau sera dessiné
                 plateau = new BufferedImage(wPlateau, hPlateau, BufferedImage.TYPE_INT_RGB);
                 // On dessine le plateau sur l'image
-                carte.afficher(plateau.getGraphics(), tabHitbox, false);
+                carte.afficher(plateau.getGraphics(), tabHitbox);
             }
         } else {
             // On Met à jour le plateau sur l'image
-            carte.afficher(plateau.getGraphics(), tabHitbox, true);
+            Element.reafficherFile(plateau.getGraphics(), tabHitbox, carte);
         }
 
         // On affiche le fond

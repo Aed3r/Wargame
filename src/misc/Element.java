@@ -6,6 +6,7 @@ import javax.imageio.ImageIO;
 import javax.swing.SwingUtilities;
 import unites.Soldat;
 import java.io.IOException;
+import java.util.LinkedList;
 import java.awt.image.BufferedImage;
 import java.awt.image.RescaleOp;
 import terrains.*;
@@ -19,19 +20,20 @@ public class Element implements wargame.IConfig {
 	private Soldat soldat = null; // le soldat se trouvant sur la case
 	private boolean estVisible = false; // si un héros peux voir cette case
 	private transient BufferedImage sprite = null, spriteSombre = null, buffer = null;
-	private boolean reafficher = false; // Indique s'il faut redessiner l'élément
 	private boolean reafficherDessus = false; // Indique s'il faut réafficher les éléments au dessus de l'élément courant
 	private int drawX, drawY; // Coordonnées d'affichage de l'élément
 	private int deplacementYSoldat = 0; // Depassement du soldat au dessus d'un élément
 	private int nbSoldatVoient = 0; // Le nombre de soldats qui voient l'élément
+	private static LinkedList<Element> fileElem = new LinkedList<>(); // File des éléments à raffraichir
+	private boolean jamaisAffiche = true;
 
 	/**
 	 * Représente un des différents types d'éléments prédéfinies
 	 */
     public enum TypeElement {
-		PLAINE ("plaine", 0.6f, true, true, 0f, -65), DESERT ("desert", 0.2f, true, true, 0.5f, -67), 
-		EAU ("eau", 0.025f, false, true, 0f, -65), MONTAGNE ("montagne", 0.025f, false, false, 0f, -156),
-		FORET ("foret", 0.05f, false, false, 0f, -72);
+		PLAINE ("plaine", 0.6f, true, true, 0f, -65), DESERT ("desert", 0.2f, true, true, 0.5f, -95), 
+		EAU ("eau", 0.025f, false, true, 0f, -60), MONTAGNE ("montagne", 0.025f, false, false, 0f, -195),
+		FORET ("foret", 0.05f, false, false, 0f, -106);
 
 		final String NOM;
 		final float PROBA;
@@ -171,7 +173,7 @@ public class Element implements wargame.IConfig {
 	 */
 	public void setSoldat(Soldat soldat) {
 		this.soldat = soldat;
-		setReafficher(true);
+		setReafficher();
 	}
 
 	/**
@@ -188,7 +190,7 @@ public class Element implements wargame.IConfig {
 		nbSoldatVoient++;
 		if (!estVisible) {
 			estVisible = true;
-			setReafficher(true);
+			setReafficher();
 		}
 	}
 
@@ -200,23 +202,15 @@ public class Element implements wargame.IConfig {
 		if (nbSoldatVoient <= 0) {
 			nbSoldatVoient = 0;
 			estVisible = false;
-			setReafficher(true);
+			setReafficher();
 		}
 	}
 
 	/**
-	 * Indique s'il faut réafficher l'élément ou non
-	 * @param val true s'il faut réafficher, false sinon
+	 * Indique s'il faut réafficher l'élément
 	 */
-	public void setReafficher (boolean val) {
-		reafficher = val;
-	}
-
-	/**
-	 * @return true s'il faut réafficher l'élément, false sinon
-	 */
-	public boolean getReafficher () {
-		return reafficher;
+	private void setReafficher () {
+		if(!jamaisAffiche) fileElem.add(this);
 	}
 
 	/**
@@ -240,7 +234,7 @@ public class Element implements wargame.IConfig {
 		Thread t = new Thread(r);
 		t.start();
 
-		reafficher = false;
+		jamaisAffiche = false;
 	}
 
 	/**
@@ -381,9 +375,12 @@ public class Element implements wargame.IConfig {
 	 * @param tabHitbox le tableau des hitbox de la carte
 	 * @param carte la carte sur laquelle se trouve l'élément
 	 */
-	public void reafficher (Graphics g, byte[][][] tabHitbox, Carte carte) {
-		int deplacementOuest = 0, deplacementEst = 0;
+	private void reafficher (Graphics g, byte[][][] tabHitbox, Carte carte) {
+		int deplacementOuest = 0, deplacementEst = 0, w = getSprite().getWidth(),
+			h = getSprite().getHeight();
 		Element tmp;
+		Position posTmp = new Position();
+		BufferedImage img;
 
 		// La position des éléments au dessus et en dessous dépend de la position de l'élément courant
 		if (getPos().getX() % 2 == 0) deplacementEst = 1;
@@ -391,17 +388,28 @@ public class Element implements wargame.IConfig {
 
 		// On réaffiche les parties basses des éléments au dessus de l'élément courant
 		if (reafficherDessus) {
-			tmp = carte.getElement(getPos().getX()-1, getPos().getY()+deplacementOuest); // Element nord-ouest
-			if (tmp != null) tmp.dessinerQuart(g, tabHitbox, 2); 
-			tmp = carte.getElement(getPos().getX()-1, getPos().getY()+deplacementEst); // Element nord-est
-			if (tmp != null) tmp.dessinerQuart(g, tabHitbox, 3); 
+			// Element nord-ouest
+			posTmp.set(getPos().getX()-1, getPos().getY()+deplacementOuest);
+			if (posTmp.estValide()) {
+				tmp = carte.getElement(posTmp);
+				if (tmp != null) tmp.dessinerQuart(g, tabHitbox, 2); 
+			}
+			// Element nord-est
+			posTmp.set(getPos().getX()-1, getPos().getY()+deplacementEst);
+			if (posTmp.estValide()) {
+				tmp = carte.getElement(posTmp); 
+				if (tmp != null) tmp.dessinerQuart(g, tabHitbox, 3); 
+			}
 			reafficherDessus = false;
 		}
 
 		// On réaffiche l'élément courant
-		if (estVisible) 
-			g.drawImage(getSprite(), drawX, drawY+type.DEPLACEMENTVERT, drawX+getSprite().getWidth(), drawY+190, 0, 0, getSprite().getWidth(), -type.DEPLACEMENTVERT+190, null);
-		else g.drawImage(spriteSombre, drawX, drawY+type.DEPLACEMENTVERT, drawX+spriteSombre.getWidth(), drawY+190, 0, 0, spriteSombre.getWidth(), -type.DEPLACEMENTVERT+190, null);
+		if (estVisible) img = getSprite();
+		else img = spriteSombre;
+
+		g.drawImage(img, drawX, drawY+type.DEPLACEMENTVERT, 
+					drawX+w, drawY+190, 
+					0, 0, w, -type.DEPLACEMENTVERT+190, null);
 
 		afficherSoldat(g, drawX, drawY);
 
@@ -411,12 +419,38 @@ public class Element implements wargame.IConfig {
 		t.start();
 
 		// On réaffiche les parties hautes des élément au dessous de l'élément courant
-		tmp = carte.getElement(getPos().getX()+1, getPos().getY()+deplacementOuest); // Element sud-ouest
-		if (tmp != null) tmp.dessinerQuart(g, tabHitbox, 1); 
-		tmp = carte.getElement(getPos().getX()+1, getPos().getY()+deplacementEst); // Element sud-est
-		if (tmp != null) tmp.dessinerQuart(g, tabHitbox, 0); 
 
-		setReafficher(false);
+		// Element sud-ouest
+		posTmp.set(getPos().getX()+1, getPos().getY()+deplacementOuest);
+		if (posTmp.estValide()) {
+			tmp = carte.getElement(posTmp); 
+			if (tmp != null) tmp.dessinerQuart(g, tabHitbox, 1); 
+		} else {
+			// On réaffiche la partie "souterraine" gauche de l'élément
+			g.drawImage(img, drawX, drawY+130, 
+						drawX+w/2, drawY+type.DEPLACEMENTVERT+h, 
+						0, -type.DEPLACEMENTVERT+130, 
+						w/2, h, null);
+		}
+
+		// Element sud-est
+		posTmp.set(getPos().getX()+1, getPos().getY()+deplacementEst);
+		if (posTmp.estValide()) {
+			tmp = carte.getElement(posTmp); 
+			if (tmp != null) tmp.dessinerQuart(g, tabHitbox, 0); 
+		} else {
+			// On réaffiche la partie "souterraine" droite de l'élément
+			g.drawImage(img, drawX+w/2, drawY+130, 
+						drawX+w, drawY+type.DEPLACEMENTVERT+h, 
+						w/2, -type.DEPLACEMENTVERT+130, 
+						w, h, null);
+		}
+	}
+
+	public static void reafficherFile (Graphics g, byte[][][] tabHitbox, Carte carte) {
+		while (!fileElem.isEmpty()) {
+			fileElem.removeFirst().reafficher(g, tabHitbox, carte);
+		}
 	}
 
 	/**
