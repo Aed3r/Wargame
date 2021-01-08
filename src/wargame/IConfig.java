@@ -27,7 +27,7 @@ public interface IConfig {
 	// Police
 	String FONTNAME = "Raleway";
 	int FONTSIZE = 20;
-	// Couleur utilisés pour l'interface
+	// Couleur utilisés pour l'interface et le jeu
 	Color TL = new Color(1f, 1f, 1f, .2f); // Haut
     Color BR = new Color(0f, 0f, 0f, .4f); // Bas
     Color ST = new Color(1f, 1f, 1f, .2f); // Haut passage souris / Bas clic
@@ -37,4 +37,5 @@ public interface IConfig {
 	int MARGX = TAILLEX*2, MARGY = TAILLEY*2; // Marges horizontales et verticales sur la carte
 	Color BGCOLOR = new Color(12, 12, 12); // Couleur en fond de la carte
 	float ALPHAELEMCACHE = 0.5f; // Transparence des éléments cachés du plateau
+	Color COULEURPDV = new Color(255, 150, 150); // Couleur de la barre de PDV
 }

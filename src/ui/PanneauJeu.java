@@ -200,6 +200,7 @@ public class PanneauJeu extends JPanel implements wargame.IConfig, MouseWheelLis
                 try { curseurMap = getPosCurseurPlateau(); }
                 catch (NullPointerException ex) { return; }
                 Position pos = new Position(tabHitbox[curseurMap.y][curseurMap.x][0] & 0xFF, tabHitbox[curseurMap.y][curseurMap.x][1] & 0xFF);
+   
 
                 if (pos1 == null) pos1 = pos;
                 else {
