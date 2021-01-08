@@ -70,6 +70,7 @@ public abstract class Soldat implements ISoldat {
         if(this.pointsDeVie <= 0){
             carte.mort(this);
         }else if(this.pointsDeVie > POINT_DE_VIE_MAX) this.pointsDeVie = POINT_DE_VIE_MAX;
+        tour = true;
     }
 
     /**
