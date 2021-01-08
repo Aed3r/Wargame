@@ -1,6 +1,8 @@
 package misc;
 
 import java.awt.*;
+import java.awt.geom.RoundRectangle2D;
+
 import javax.imageio.ImageIO;
 import javax.swing.SwingUtilities;
 
@@ -264,7 +266,7 @@ public class Element implements wargame.IConfig {
 
 			// Mise à jour du buffer
 			if (getSoldat() != null)
-				deplacementYSoldat = getSoldat().getSprite().getHeight() - (TAILLEY/2-type.DEPLACEMENTVERT);
+				deplacementYSoldat = (getSoldat().getSprite().getHeight()+20) - (TAILLEY/2-type.DEPLACEMENTVERT);
 			else deplacementYSoldat = 0;
 			
 			if (deplacementYSoldat < 0) deplacementYSoldat = 0;
@@ -420,13 +422,38 @@ public class Element implements wargame.IConfig {
 		setReafficher(false);
 	}
 
+	/**
+	 * Affiche le soldat et ses points de vie positionné sur l'élément (s'il y en a)
+	 * @param g l'objet graphique sur le lequel dessiné
+	 * @param dX le déplacement horizontal pour atteindre l'élément
+	 * @param dY le déplacement vertical pour atteindre l'élément
+	 */
 	private void afficherSoldat (Graphics g, int dX, int dY) {
 		Soldat s = getSoldat();
 
-		if (s != null) {
-			BufferedImage img = s.getSprite();
-			g.drawImage(img, dX+(TAILLEX-img.getWidth())/2, dY+TAILLEY/2-img.getHeight(), null);
-			reafficherDessus = true;
-		}
+		if (s == null) return;
+
+		BufferedImage img = s.getSprite();
+		// Coordonnées d'affichage du soldat
+		int x = dX+(TAILLEX-img.getWidth())/2,
+			y = dY+TAILLEY/2-img.getHeight();
+
+		g.drawImage(img, x, y, null);
+		reafficherDessus = true;
+
+		double ratioVie = (double) s.getPoints() / s.getPointsMax();
+
+		// Points de vie
+		Shape clip = new RoundRectangle2D.Float(dX+TAILLEX/4, y-20.f, TAILLEX/2, 10, 10, 10),
+			  oldClip = g.getClip();
+		g.setClip(clip);
+		g.setColor(COULEURPDV);
+		g.fillRect(dX+TAILLEX/4, y-20, (int) ((TAILLEX/2)*ratioVie), 10);
+		g.setColor(COULEURPDV.brighter().brighter().brighter().brighter());
+		g.fillRect((int) (dX+TAILLEX/4+(TAILLEX/2)*ratioVie), y-20, 
+				   (int) ((TAILLEX/2)*(1-ratioVie)), 10);
+		g.setColor(Color.white);
+		g.fillRect(dX+TAILLEX/4+10, y-18, TAILLEX/3, 1);
+		g.setClip(oldClip);
 	}
 }

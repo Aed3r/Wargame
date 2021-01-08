@@ -39,12 +39,12 @@ public class Carte implements wargame.IConfig, wargame.ICarte {
     public void placementSoldatAlea () {
         int nb_heros = NB_HEROS;
         int nb_monstres = NB_MONSTRES;
-        System.out.printf("nb heros : %d nb monstres : %d \n", nb_heros, nb_monstres);
-        System.out.printf("init Monstre x : %d y : %d \n", POS_INIT_SPAWN_MONSTRE.getX(), POS_INIT_SPAWN_MONSTRE.getY());
-        System.out.printf("init Heros x : %d y : %d \n", POS_INIT_SPAWN_GENTIL.getX(), POS_INIT_SPAWN_GENTIL.getY());
+        System.out.printf("nb heros : %d nb monstres : %d %n", nb_heros, nb_monstres);
+        System.out.printf("init Monstre x : %d y : %d %n", POS_INIT_SPAWN_MONSTRE.getX(), POS_INIT_SPAWN_MONSTRE.getY());
+        System.out.printf("init Heros x : %d y : %d %n", POS_INIT_SPAWN_GENTIL.getX(), POS_INIT_SPAWN_GENTIL.getY());
 
         if (HAUTEUR_SPAWN*LARGEUR_SPAWN < nb_heros || HAUTEUR_SPAWN*LARGEUR_SPAWN < nb_monstres) {
-            System.out.println("Erreur placementHerosAlea Trop de soldats dans la zone de Spawn \n");
+            System.out.println("Erreur placementHerosAlea Trop de soldats dans la zone de Spawn %n");
             System.exit(-1);
         }
         int i; int j; int iMonstre; int jMonstre;
@@ -61,18 +61,18 @@ public class Carte implements wargame.IConfig, wargame.ICarte {
             jMonstre = randJ + POS_INIT_SPAWN_MONSTRE.getY();
 
             if (grille[i][j].getSoldat() == null && nb_heros != 0) {
-                System.out.printf("héros %d %d  \n", i, j);
+                System.out.printf("héros %d %d  %n", i, j);
                 grille[i][j].setSoldat(new Heros(this, TypesH.getTypeHAlea(), "Adolf", new Position(i, j), Color.black));
                 nb_heros--;
             }
             
             if (grille[iMonstre][jMonstre].getSoldat() == null && nb_monstres != 0) {
-                System.out.printf("monstre %d %d  \n", iMonstre, jMonstre);
+                System.out.printf("monstre %d %d  %n", iMonstre, jMonstre);
                 grille[iMonstre][jMonstre].setSoldat(new Monstre(this, TypesM.getTypeMAlea(), "Gustav", new Position(iMonstre, jMonstre), Color.blue));
                 nb_monstres--;
             }
         }
-        System.out.println("test test \n");
+        System.out.println("test test %n");
     }
 
 
@@ -144,7 +144,7 @@ public class Carte implements wargame.IConfig, wargame.ICarte {
         int posI = pos.getX();
         int posJ = pos.getY();
         int cmp = 0;
-        System.out.println("\nAyou \n");
+        System.out.println("%nAyou %n");
         if (!pos.estValide()) {
             System.out.println("Erreur trouvePositionVide la position est hors de la grille FIN");
             return null;
@@ -187,7 +187,7 @@ public class Carte implements wargame.IConfig, wargame.ICarte {
         int posI = pos.getX();
         int posJ = pos.getY();
         int cmp = 0;
-        System.out.println("\nAyou \n");
+        System.out.println("%nAyou %n");
         if (!pos.estValide()) {
             System.out.println("Erreur trouvePositionVide la position est hors de la grille FIN");
             return null;
@@ -222,7 +222,7 @@ public class Carte implements wargame.IConfig, wargame.ICarte {
                 if (grille[posI][posJ].estHeros()) test = 1;
             }
         }
-        System.out.printf("indice : %d %d \n", posI, posJ);
+        System.out.printf("indice : %d %d %n", posI, posJ);
         return (Heros)(grille[posI][posJ].getSoldat());
     }
 
@@ -232,7 +232,7 @@ public class Carte implements wargame.IConfig, wargame.ICarte {
             for (int j = 0; j < LARGEUR_CARTE; j++) {
                 System.out.printf("%s ", grille[i][j].getNom());
             }
-            System.out.printf("\n");
+            System.out.printf("%n");
         }
     }
 
@@ -243,7 +243,22 @@ public class Carte implements wargame.IConfig, wargame.ICarte {
                 if (grille[i][j].getSoldat() != null) System.out.printf("o ");
                 else System.out.printf("- ");
             }
-            System.out.printf("\n");
+            System.out.printf("%n");
+        }
+    }
+
+    /**
+     * Fini le tour des soldats joueur
+     * @see Soldat#termineTour()
+     */
+    public void terminerTour () {
+        for (int i = 0; i < HAUTEUR_CARTE; i++) {
+            for (int j = 0; j < LARGEUR_CARTE; j++) {
+                Soldat s = grille[i][j].getSoldat();
+                if (s != null) {
+                    s.termineTour();
+                }
+            }
         }
     }
 
@@ -252,7 +267,8 @@ public class Carte implements wargame.IConfig, wargame.ICarte {
      * Affiche sur g tous les éléments constituant la carte courante
      * @param g un object graphique quelconque
      * @param tabHitbox le tableau des hitbox
-     * @param reafficher s'il suffit de réafficher les éléments marqués par setReafficher(true)
+     * @param reafficher true s'il suffit de réafficher les éléments marqués par setReafficher(true)
+     * @see Element#setReafficher(boolean)
      */
     public void afficher (Graphics g, byte[][][] tabHitbox, boolean reafficher) {
         int i, j, x, y;
