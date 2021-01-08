@@ -37,7 +37,7 @@ public interface IConfig {
 	float ALPHAELEMCACHE = 0.5f; // Transparence des éléments cachés du plateau
 	Color COULEURPDV = new Color(255, 150, 150); // Couleur de la barre de PDV
 	/* Plateau de jeu */
-	int TAILLEX = 257, TAILLEY = 194; // Tailles des sprite élément
+	int TAILLEX = 256, TAILLEY = 194; // Tailles des sprite élément
 	int MARGX = TAILLEX*2, MARGY = TAILLEY*2; // Marges horizontales et verticales sur la carte
 	int DEPLACEMENTCLAVIER = 30; // Nombre de pixels à déplacer par appui des flèches du clavier
 }

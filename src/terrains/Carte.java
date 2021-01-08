@@ -267,10 +267,9 @@ public class Carte implements wargame.IConfig, wargame.ICarte {
      * Affiche sur g tous les éléments constituant la carte courante
      * @param g un object graphique quelconque
      * @param tabHitbox le tableau des hitbox
-     * @param reafficher true s'il suffit de réafficher les éléments marqués par setReafficher(true)
      * @see Element#setReafficher(boolean)
      */
-    public void afficher (Graphics g, byte[][][] tabHitbox, boolean reafficher) {
+    public void afficher (Graphics g, byte[][][] tabHitbox) {
         int i, j, x, y;
         
         // lignes
@@ -281,10 +280,7 @@ public class Carte implements wargame.IConfig, wargame.ICarte {
                 y = MARGY + i*TAILLEY;   
                 if (i%2 == 0) x += TAILLEX/2;
                 
-                if (reafficher) {
-                    if (grille[i][j].getReafficher())
-                        grille[i][j].reafficher(g, tabHitbox, this);
-                } else grille[i][j].afficher(g, x, y, tabHitbox);  
+                grille[i][j].afficher(g, x, y, tabHitbox);  
             }
         }
     }
