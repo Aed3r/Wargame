@@ -28,13 +28,12 @@ public class Position implements IConfig {
 	 */
 	public boolean estVoisine(Position pos) {
 		/*Puisque l'on travaille avec des hexagones il y a un decalage a prende en compte selon l'indice de la ligne*/
-		int decalageX = 1;
-		if(this.getY() % 2 == 0) decalageX = -1;
+		int decalageY = -1;
+		if(this.getX() % 2 == 0) decalageY = 1;
 
 		/*Une case est voisine si les deux sont des positions valide et qu'elles sont adjacentes*/
-		return (this.estValide() && pos.estValide()) &&
-		(((pos.getY() == getY()-1 || pos.getY() == getY()+1) && (pos.getX() == getX() || pos.getX() == getX() + decalageX)) 
-		|| (pos.getY() == getY() && (pos.getX() == getX() - 1 || pos.getX() == getX() + 1)));
+		return ((((pos.getX() == getX()-1 || pos.getX() == getX()+1) && (pos.getY() == getY() || pos.getY() == getY() + decalageY)) 
+		|| (pos.getX() == getX() && (pos.getY() == getY() - 1 || pos.getY() == getY() + 1))));
 	}
 	/**
 	 * @param pos Position

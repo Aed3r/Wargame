@@ -87,9 +87,13 @@ public class Carte implements wargame.IConfig, wargame.ICarte {
         
         /*Vérifications préalables :*/
         /*Si pos2 n'est pas valide ou qu'il n'y a pas de soldat en pos ou que les cases ne sont pas adjacente*/
-        if(getElement(pos).getSoldat() == null || !pos.estVoisine(pos2)){
+        if(getElement(pos).getSoldat() == null){
             System.out.println("1");
             return false; 
+        }
+        if(!pos.estVoisine(pos2)){
+            System.out.println("AAAAAAAAAAAAAAAAAAAAAAA");
+            return false;
         }
         /*Si le solda n'est pas un heros ou si un héros se trouve déjà en pos2 ou si la variable tour du soldat vaux false*/
         if(!(getElement(pos).getSoldat() instanceof Heros) || getElement(pos2).getSoldat() instanceof Heros || !getElement(pos).getSoldat().getTour()){
