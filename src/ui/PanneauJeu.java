@@ -6,6 +6,7 @@ import java.awt.geom.AffineTransform;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.io.InputStream;
+import java.security.Key;
 import java.util.ArrayList;
 import misc.Parametres;
 
@@ -15,7 +16,7 @@ import terrains.Carte;
 import misc.Position;
 
 /**
- * Panneau permettant d'afficher un plateau de jeu
+ * Panneau permettant d'afficher un plateau de jeu et l'interface associé
  */
 public class PanneauJeu extends JPanel implements wargame.IConfig, MouseWheelListener {
     private static final long serialVersionUID = -4874781269011185234L;
@@ -48,7 +49,7 @@ public class PanneauJeu extends JPanel implements wargame.IConfig, MouseWheelLis
         hPlateau = MARGY * 2 + TAILLEY * (HAUTEUR_CARTE + 1); // Hauteur du plateau (4850)
         tabHitbox = new byte[hPlateau][wPlateau][2];
 
-        /* Boutons du jeu */
+        /* Création des boutons */
 
         // Menu
         gc = new GridBagConstraints();
@@ -65,12 +66,8 @@ public class PanneauJeu extends JPanel implements wargame.IConfig, MouseWheelLis
         tmp.addMouseListener(new MouseAdapter() {
             @Override
             public void mouseClicked(MouseEvent e) {
-                // On cache tous les boutons du jeu
-                for (int i = 0; i < boutonsJeu.size(); i++) boutonsJeu.get(i).setVisible(false);
-                // On affiche tous les boutons du menu
-                for (int i = 0; i < boutonsMenu.size(); i++) boutonsMenu.get(i).setVisible(true);
-                afficherMenu = true;
-                repaint();
+                swapMenu();
+                requestFocusInWindow();
             }
         });
         gc.gridx = 0;
@@ -101,19 +98,15 @@ public class PanneauJeu extends JPanel implements wargame.IConfig, MouseWheelLis
         add(tmp, gc);
         boutonsJeu.add(tmp);
 
-        /* Boutons du menu */
+        /* Création des boutons du menu */
         
         // Retour au jeu
         tmp = new TranslucentButton("Retour au jeu", s, 400, false);
         tmp.addMouseListener(new MouseAdapter() {
             @Override
             public void mouseClicked(MouseEvent e) {
-                // On affiche tous les boutons du jeu
-                for (int i = 0; i < boutonsJeu.size(); i++) boutonsJeu.get(i).setVisible(true);
-                // On cache tous les boutons du menu
-                for (int i = 0; i < boutonsMenu.size(); i++) boutonsMenu.get(i).setVisible(false);
-                afficherMenu = false;
-                repaint();
+                swapMenu();
+                requestFocusInWindow();
             }
         });
 
@@ -201,8 +194,10 @@ public class PanneauJeu extends JPanel implements wargame.IConfig, MouseWheelLis
         tmp.setVisible(false);
         boutonsMenu.add(tmp);
         
-        // Déplacement sur le plateau
+        /* Création des listener */
+
         this.addMouseListener(new MouseAdapter() {
+            // Déplacement de la carte
             @Override
             public void mousePressed(MouseEvent e) {
                 if(afficherMenu) return;
@@ -211,6 +206,7 @@ public class PanneauJeu extends JPanel implements wargame.IConfig, MouseWheelLis
                 repaint();
             }
 
+            // Action d'un héros
             @Override
             public void mouseClicked(MouseEvent e) {
                 if(afficherMenu) return;
@@ -226,14 +222,14 @@ public class PanneauJeu extends JPanel implements wargame.IConfig, MouseWheelLis
                     System.out.println("trying action");
                     if (carte.actionHeros(pos1, pos)) {
                         System.out.println("succeeded");
-                        carte.getElement(pos1).setReafficher(true);
-                        carte.getElement(pos).setReafficher(true);
                         repaint();
                     } else System.out.println("failed");
                     pos1 = null;
                 } 
             }
         });
+
+        // Déplacement de la carte
         this.addMouseMotionListener(new MouseMotionAdapter() {
             @Override
             public void mouseDragged(MouseEvent e) {
@@ -249,6 +245,102 @@ public class PanneauJeu extends JPanel implements wargame.IConfig, MouseWheelLis
                 repaint();
             }
         });
+
+        // Action avec le clavier
+        this.addKeyListener(new KeyAdapter() {
+            @Override
+            public void keyPressed (KeyEvent e) {
+                switch (e.getKeyCode()) {
+                    case KeyEvent.VK_LEFT:
+                    case KeyEvent.VK_Q:
+                    case KeyEvent.VK_A:
+                        // On bouge la carte vers la gauche
+                        // Pas de déplacement pendant que le menu est ouvert
+                        if (afficherMenu) return;
+                        xPlateau += DEPLACEMENTCLAVIER;
+                        repaint();
+                        break;
+                    case KeyEvent.VK_RIGHT:
+                    case KeyEvent.VK_D:
+                        // On bouge la carte vers la droite
+                        if (afficherMenu) return;
+                        xPlateau -= DEPLACEMENTCLAVIER;
+                        repaint();
+                        break;
+                    case KeyEvent.VK_UP:
+                    case KeyEvent.VK_Z:
+                    case KeyEvent.VK_W:
+                        // On bouge la carte vers le haut
+                        if (afficherMenu) return;
+                        yPlateau += DEPLACEMENTCLAVIER;
+                        repaint();
+                        break;
+                    case KeyEvent.VK_DOWN:
+                    case KeyEvent.VK_S:
+                        // On bouge la carte vers le bas
+                        if (afficherMenu) return;
+                        yPlateau -= DEPLACEMENTCLAVIER;
+                        repaint();
+                        break;
+                    case KeyEvent.VK_PAGE_DOWN:
+                        // On dézoom
+                        if (afficherMenu) return;
+                        zoomCentre(-VITESSEZOOM);
+                        break;
+                    case KeyEvent.VK_PAGE_UP:
+                        // On zoom
+                        if (afficherMenu) return;
+                        zoomCentre(VITESSEZOOM);
+                        break;
+                    case KeyEvent.VK_ESCAPE:
+                        // On ouvre/ferme le menu
+                        swapMenu();
+                        break;
+                    case KeyEvent.VK_F5:
+                        // Force le réaffichage du plateau
+                        System.out.println("Rechargement du plateau...");
+                        tailleFenetre = null;
+                        plateau = null;
+                        repaint();
+                        break;
+                    default:
+                        break;
+                }
+            }
+        });
+    }
+
+    /**
+     * Ouvre/Ferme le meu
+     */
+    private void swapMenu() {
+        if (afficherMenu) { // On ferme le menu
+            // On affiche tous les boutons du jeu
+            for (int i = 0; i < boutonsJeu.size(); i++) boutonsJeu.get(i).setVisible(true);
+            // On cache tous les boutons du menu
+            for (int i = 0; i < boutonsMenu.size(); i++) boutonsMenu.get(i).setVisible(false);
+        } else { // On affiche le menu
+            // On cache tous les boutons du jeu
+            for (int i = 0; i < boutonsJeu.size(); i++) boutonsJeu.get(i).setVisible(false);
+            // On affiche tous les boutons du menu
+            for (int i = 0; i < boutonsMenu.size(); i++) boutonsMenu.get(i).setVisible(true);
+        }
+        afficherMenu = !afficherMenu;
+        repaint();
+    }
+
+    /**
+     * Effectue un zoom centré sur le centre de l'écran
+     * @param zoom l'indice du zoom
+     */
+    private void zoomCentre (Float zoom) {
+        Point avant, apres;
+
+        avant = new Point((int) ((tailleFenetre.width/2.)/zoomPlateau)-xPlateau,  (int) ((tailleFenetre.height/2.)/zoomPlateau)-yPlateau);
+        zoomPlateau += zoom;
+        if (zoomPlateau > MAXZOOM) zoomPlateau = MAXZOOM;
+        apres = new Point((int) ((tailleFenetre.width/2.)/zoomPlateau)-xPlateau,  (int) ((tailleFenetre.height/2.)/zoomPlateau)-yPlateau);
+        deplacement(avant, apres);
     }
 
     /**
@@ -285,9 +377,15 @@ public class PanneauJeu extends JPanel implements wargame.IConfig, MouseWheelLis
         catch (NullPointerException ex) { return; }
 
         // On replace le plateau de façon à ce que le curseur reste sur le même point de la carte
-        xPlateau += curseurMapZoom.getX() - curseurMap.getX();
-        yPlateau += curseurMapZoom.getY() - curseurMap.getY();
+        deplacement(curseurMap, curseurMapZoom);
+    }
 
+    /**
+     * Effectue le déplacement nécessaire après le zoom
+     */
+    private void deplacement (Point avant, Point apres) {
+        xPlateau += apres.getX() - avant.getX();
+        yPlateau += apres.getY() - avant.getY();
         repaint();
     }
 
@@ -328,7 +426,7 @@ public class PanneauJeu extends JPanel implements wargame.IConfig, MouseWheelLis
         g2d = (Graphics2D) g;
         //g.drawImage(fond, 0, 0, null);
 
-        // On vérifie si le dézoom n'est pas allé trop loin
+        // On vérifie si le zoom n'est pas allé trop loin
         double zoomMin;
         if (tailleFenetre.width > tailleFenetre.height)
             zoomMin = (double) tailleFenetre.width / wPlateau;

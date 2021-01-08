@@ -60,7 +60,7 @@ public class Heros extends Soldat {
 		int decalageX = 1, y;
         if(pos.getY() % 2 == 0) decalageX = -1;
         
-        /*On rend tout d'abbord visible la case en position pos*/
+        /*On rend tout d'abord visible la case en position pos*/
         if(deplacement){
             getCarte().getElement(pos).setCache();
         }else getCarte().getElement(pos).setVisible();

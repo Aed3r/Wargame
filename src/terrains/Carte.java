@@ -196,7 +196,7 @@ public class Carte implements wargame.IConfig, wargame.ICarte {
         for (int i = posI-1; i < posI+2; i++) {
             for (int j = posJ-1; j < posJ+2; j++) {
                 if ((i != posI && j != posJ) || (i != posI-1 && j != posJ+1) || (i != posI+1 && j != posJ+1)) {
-                    if (grille[posI][posJ].estHeros()) cmp++;
+                    if (grille[posI][posJ].getSoldat() != null && grille[posI][posJ].getSoldat().estHeros()) cmp++;
                 }
             }
         }
@@ -219,7 +219,7 @@ public class Carte implements wargame.IConfig, wargame.ICarte {
             if ((randI != posI && randJ != posJ) || (randI != posI-1 && randJ != posJ+1) || (randI != posI+1 && randJ != posJ+1)) {
                 P.setX(randI);
                 P.setY(randJ);
-                if (grille[posI][posJ].estHeros()) test = 1;
+                if (grille[posI][posJ].getSoldat() != null && grille[posI][posJ].getSoldat().estHeros()) test = 1;
             }
         }
         System.out.printf("indice : %d %d %n", posI, posJ);

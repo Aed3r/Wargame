@@ -51,7 +51,7 @@ public class Parametres implements wargame.IConfig {
     public static void setParametre(String nomParam, String valeur) {
         Properties p = new Properties();
 
-        try (InputStream in = new FileInputStream(CONFIGFILE)) {
+        try (InputStream in = Parametres.class.getResourceAsStream(CONFIGFILE)) {
             p.load(in);
         } catch (IOException e) {
             System.err.println("Erreur lors du chargement du fichier de configuration: " + e.getLocalizedMessage());
@@ -61,7 +61,7 @@ public class Parametres implements wargame.IConfig {
         p.setProperty(nomParam, valeur);
         params.put(nomParam, valeur);
 
-        try (FileOutputStream out = new FileOutputStream(CONFIGFILE)) {
+        try (OutputStream out = new FileOutputStream("data/config.properties")) {
             p.store(out, null);
         } catch (IOException io) {
             System.err.println("Erreur lors de l'écriture vers le fichier de configuration! " + io.getLocalizedMessage());

@@ -152,4 +152,8 @@ public abstract class Soldat implements ISoldat {
         }
         return sprite;
     }
+
+    public boolean estHeros () {
+		return this instanceof Heros;
+	}
 }

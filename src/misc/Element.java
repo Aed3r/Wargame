@@ -2,11 +2,8 @@ package misc;
 
 import java.awt.*;
 import java.awt.geom.RoundRectangle2D;
-
 import javax.imageio.ImageIO;
 import javax.swing.SwingUtilities;
-
-import unites.Heros;
 import unites.Soldat;
 import java.io.IOException;
 import java.awt.image.BufferedImage;
@@ -26,6 +23,7 @@ public class Element implements wargame.IConfig {
 	private boolean reafficherDessus = false; // Indique s'il faut réafficher les éléments au dessus de l'élément courant
 	private int drawX, drawY; // Coordonnées d'affichage de l'élément
 	private int deplacementYSoldat = 0; // Depassement du soldat au dessus d'un élément
+	private int nbSoldatVoient = 0; // Le nombre de soldats qui voient l'élément
 
 	/**
 	 * Représente un des différents types d'éléments prédéfinies
@@ -167,21 +165,13 @@ public class Element implements wargame.IConfig {
 		return this.soldat;
 	}
 
-
-	public boolean estHeros () {
-		if (getSoldat() == null) return false;
-		return getSoldat() instanceof Heros;
-	}
-
 	/**
 	 * Seul un soldat à la fois 
 	 * @param soldat un soldat quelconque
 	 */
 	public void setSoldat(Soldat soldat) {
-		if (this.soldat == null) {
-			this.soldat = soldat;
-			setReafficher(true);
-		}
+		this.soldat = soldat;
+		setReafficher(true);
 	}
 
 	/**
@@ -195,16 +185,23 @@ public class Element implements wargame.IConfig {
 	 * Indique que cet élément et son contenu est visible par le joueur
 	 */
 	public void setVisible () {
-		estVisible = true;
-		setReafficher(true);
+		nbSoldatVoient++;
+		if (!estVisible) {
+			estVisible = true;
+			setReafficher(true);
+		}
 	}
 
 	/**
 	 * Indique que cet élément et son contenu ne sont pas visible par le joueur (case grisée)
 	 */
 	public void setCache () {
-		estVisible = false;
-		setReafficher(true);
+		nbSoldatVoient--;
+		if (nbSoldatVoient <= 0) {
+			nbSoldatVoient = 0;
+			estVisible = false;
+			setReafficher(true);
+		}
 	}
 
 	/**

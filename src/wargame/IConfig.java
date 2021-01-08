@@ -33,9 +33,11 @@ public interface IConfig {
     Color ST = new Color(1f, 1f, 1f, .2f); // Haut passage souris / Bas clic
     Color SB = new Color(1f, 1f, 1f, .1f); // Bas passage souris / Haut clic
 	Color TC = new Color(1f, 1f, 1f, 1.f); // Couleur du texte
-	int TAILLEX = 257, TAILLEY = 194; // Tailles des sprite élément
-	int MARGX = TAILLEX*2, MARGY = TAILLEY*2; // Marges horizontales et verticales sur la carte
 	Color BGCOLOR = new Color(12, 12, 12); // Couleur en fond de la carte
 	float ALPHAELEMCACHE = 0.5f; // Transparence des éléments cachés du plateau
 	Color COULEURPDV = new Color(255, 150, 150); // Couleur de la barre de PDV
+	/* Plateau de jeu */
+	int TAILLEX = 257, TAILLEY = 194; // Tailles des sprite élément
+	int MARGX = TAILLEX*2, MARGY = TAILLEY*2; // Marges horizontales et verticales sur la carte
+	int DEPLACEMENTCLAVIER = 30; // Nombre de pixels à déplacer par appui des flèches du clavier
 }
