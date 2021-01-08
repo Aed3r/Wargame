@@ -56,6 +56,23 @@ public abstract class Soldat implements ISoldat {
     }
 
     /**
+     * Termine le tour du soldat, si il n'as pas bougé ce tour ci il recupère des pv.
+     * Si il se trouve dans un désert il perd des pv
+     */
+    public void termineTour(){
+        /*Si le soldat n'as pas joué ce tour ci et qu'il ne se trouve pas sur une case qui cause des dégats il recupère 10% de ses pv max*/
+        if(tour == true && carte.getElement(this.pos).getPDVPerdues() > 0){
+            this.pointsDeVie = this.pointsDeVie + (int)(this.POINT_DE_VIE_MAX *0.1);
+        }else{
+            this.pointsDeVie = this.pointsDeVie - (int) carte.getElement(this.pos).getPDVPerdues();
+        }  
+        /*On vérifie que le soldat n'est pas mort, ou que son nombre de points de vie n'est pas au dessus du maximum */
+        if(this.pointsDeVie <= 0){
+            carte.mort(this);
+        }else if(this.pointsDeVie > POINT_DE_VIE_MAX) this.pointsDeVie = POINT_DE_VIE_MAX;
+    }
+
+    /**
      * @return les points de vie actuels du soldat
      */
     public int getPoints(){ return this.pointsDeVie;} 
