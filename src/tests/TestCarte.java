@@ -12,11 +12,11 @@ public class TestCarte {
         c.affiche_nul();
         c.affiche_perso();
 
-        System.out.printf("\n\n");
+        System.out.printf("%n%n");
         int x = 13; int y = 23;
         Position p = new Position(x, y);
         Element e = c.getElement(p);
-        System.out.printf("L'élement à la position %d:%d est de type : %s \n", x, y, e.getNom());
+        System.out.printf("L'élement à la position %d:%d est de type : %s %n", x, y, e.getNom());
     
         Position a = new Position(5, 3);
         c.trouvePositionVide(a);
@@ -25,6 +25,6 @@ public class TestCarte {
         c.affiche_perso();
 
         Position b = new Position(14, 24);
-        System.out.printf("%s\n", c.trouveHeros(b).toString());
+        System.out.printf("%s%n", c.trouveHeros(b).toString());
     }
 }

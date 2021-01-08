@@ -82,6 +82,25 @@ public class PanneauJeu extends JPanel implements wargame.IConfig, MouseWheelLis
         add(tmp, gc);
         boutonsJeu.add(tmp);
 
+        // Passer le tour
+        gc = new GridBagConstraints();
+        tmp = new TranslucentButton("Finir le tour >", new Dimension(200, 70), 400, false);
+
+        tmp.addMouseListener(new MouseAdapter() {
+            @Override
+            public void mouseClicked(MouseEvent e) {
+                //TODO
+            }
+        });
+        gc.gridx = 0;
+        gc.gridy = 0;
+        gc.weightx = 1;
+        gc.weighty = 1;
+        gc.anchor = GridBagConstraints.SOUTHEAST;
+        gc.insets = new Insets(10,10,10,10);
+        add(tmp, gc);
+        boutonsJeu.add(tmp);
+
         /* Boutons du menu */
         
         // Retour au jeu
