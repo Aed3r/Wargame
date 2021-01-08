@@ -87,7 +87,7 @@ public class Carte implements wargame.IConfig, wargame.ICarte {
         
         /*Vérifications préalables :*/
         /*Si pos2 n'est pas valide ou qu'il n'y a pas de soldat en pos ou que les cases ne sont pas adjacente*/
-        if(!pos2.estValide() || getElement(pos).getSoldat() == null || !pos.estVoisine(pos2)){
+        if(getElement(pos).getSoldat() == null || !pos.estVoisine(pos2)){
             System.out.println("1");
             return false; 
         }
