@@ -13,7 +13,7 @@ public abstract class Soldat implements ISoldat {
     private int pointsDeVie;
     private Carte carte;
     private Position pos;
-    private boolean tour; /*Permet de savoir si ce soldat a déja joué son tour*/
+    private boolean tour = true; /*Permet de savoir si ce soldat a déja joué son tour*/
     private BufferedImage sprite;
 
     /**

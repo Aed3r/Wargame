@@ -87,21 +87,25 @@ public class Carte implements wargame.IConfig, wargame.ICarte {
         
         /*Vérifications préalables :*/
         /*Si pos2 n'est pas valide ou qu'il n'y a pas de soldat en pos ou que les cases ne sont pas adjacente*/
-        if(!pos2.estValide() || getElement(pos).getSoldat() == null || !pos.estVoisine(pos2)) 
+        if(!pos2.estValide() || getElement(pos).getSoldat() == null || !pos.estVoisine(pos2)){
+            System.out.println("1");
             return false; 
-        
+        }
         /*Si le solda n'est pas un heros ou si un héros se trouve déjà en pos2 ou si la variable tour du soldat vaux false*/
-        if(!(getElement(pos).getSoldat() instanceof Heros) || getElement(pos2).getSoldat() instanceof Heros || !getElement(pos).getSoldat().getTour()) 
+        if(!(getElement(pos).getSoldat() instanceof Heros) || getElement(pos2).getSoldat() instanceof Heros || !getElement(pos).getSoldat().getTour()){
+            System.out.println("2");    
             return false;
-        
-        /*Si la case ou le héros essaye de se déplacer est un obstacle*/
-        if(!getElement(pos2).estAccessible())
-            return false;
+        }
         
         /*On va maintenant déterminer l'action a effectuer :*/
         /*On essaye de deplacer le soldat dans la case pos2, si on ne peut pas c'est qu'il y a un monstre*/
         if(!deplaceSoldat(pos2, getElement(pos).getSoldat())){
-             getElement(pos).getSoldat().combat(getElement(pos2).getSoldat());
+            if(getElement(pos2).getSoldat() != null){
+                getElement(pos).getSoldat().combat(getElement(pos2).getSoldat());
+            }else{
+                System.out.println("3");    
+                return false;
+            }
         }
         return true;
     }
