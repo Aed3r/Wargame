@@ -15,7 +15,7 @@ public class Parametres implements wargame.IConfig {
      * Charge les paramètres se trouvant dans le fichier des configurations
      */
 	public static void loadParametres() {
-        try (InputStream in = new FileInputStream(CONFIGFILE)) {
+        try (InputStream in = Parametres.class.getResourceAsStream(CONFIGFILE)) {
             Properties p = new Properties();
             p.load(in);
             p.forEach( (k,v) -> params.put((String)k, (String)v));

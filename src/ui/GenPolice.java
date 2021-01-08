@@ -2,7 +2,6 @@ package ui;
 
 import java.awt.*;
 import java.io.*;
-import java.util.*;
 
 /**
  * Classe utilitaire permettant de choisir une police en fonction de ses paramètres
@@ -25,13 +24,9 @@ public class GenPolice implements wargame.IConfig {
         Font f;
 
         if (weight <= 100) fontName += " Thin";
-        else if (weight <= 200) fontName += " ExtraLight";
-        else if (weight <= 300) fontName += " Light";
         else if (weight <= 400) fontName += " Regular";
         else if (weight <= 500) fontName += " Medium";
-        else if (weight <= 600) fontName += " SemiBold";
         else if (weight <= 700) fontName += " Bold";
-        else if (weight <= 800) fontName += " ExtraBold";
         else if (weight <= 900) fontName += " Black";
         else {
             System.out.println("Erreur lors de la création d'un bouton! " + 
@@ -60,13 +55,18 @@ public class GenPolice implements wargame.IConfig {
      * Allume également l'anti-aliasage des caractères.
      */
     public static void loadFonts() {
-        findFonts(new File("data/font").listFiles());
+        loadFont("/font/Raleway/static/Raleway-Thin.ttf");
+        loadFont("/font/Raleway/static/Raleway-Regular.ttf");
+        loadFont("/font/Raleway/static/Raleway-Medium.ttf");
+        loadFont("/font/Raleway/static/Raleway-Bold.ttf");
+        loadFont("/font/Raleway/static/Raleway-Black.ttf");
     }
 
+    /*
     /**
      * Cherche récursivement, à partir des fichiers dans files, toutes les polices TTF puis les charge
      * @param files un tableau de fichiers dans lequel chercher
-     */
+     *
     private static void findFonts (File[] files) {
         for (File file : files) {
             if (file.isDirectory()) {
@@ -77,23 +77,24 @@ public class GenPolice implements wargame.IConfig {
                         .map(f -> f.substring(file.getName().lastIndexOf(".") + 1))
                         .filter(f -> f.equals("ttf"))
                         .isPresent()) {
-                            loadFont(file);
+                            //loadFont(file);
                         }
             }
         }    
-    }
+    }*/
 
     /**
      * Charge la police
      * @param font le fichier de la police à charger
      * @author https://docs.oracle.com/javase/tutorial/2d/text/fonts.html
      */
-    private static void loadFont(File font) {
+    private static void loadFont(String name) {
+        InputStream font = GenPolice.class.getResourceAsStream(name);
         try {
             GraphicsEnvironment ge = GraphicsEnvironment.getLocalGraphicsEnvironment();
             ge.registerFont(Font.createFont(Font.TRUETYPE_FONT, font).deriveFont(12f));
         } catch (IOException|FontFormatException e) {
-            System.out.println("Erreur lors du chargement d'une police! '" + font.getName() + "' n'existe pas ou est invalide.");
+            System.out.println("Erreur lors du chargement d'une police! " + e.getLocalizedMessage());
             System.exit(-1);
         }
     }

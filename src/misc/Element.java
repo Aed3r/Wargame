@@ -6,7 +6,6 @@ import javax.swing.SwingUtilities;
 
 import unites.Heros;
 import unites.Soldat;
-import java.io.File;
 import java.io.IOException;
 import java.awt.image.BufferedImage;
 import java.awt.image.RescaleOp;
@@ -101,7 +100,7 @@ public class Element implements wargame.IConfig {
 
 		// Chargement de l'image normal
 		try {
-            sprite = ImageIO.read(new File("data/img/elements/" + getNom() + ".png"));
+            sprite = ImageIO.read(getClass().getResourceAsStream("/img/elements/" + getNom() + ".png"));
         } catch (IOException e) {
             // Problème lors du chargement, on utilise rien
 			System.out.println(e.getLocalizedMessage());

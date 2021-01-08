@@ -4,8 +4,12 @@ import java.awt.*;
 import java.awt.event.*;
 import java.awt.geom.AffineTransform;
 import java.awt.image.BufferedImage;
+import java.io.IOException;
+import java.io.InputStream;
 import java.util.ArrayList;
 import misc.Parametres;
+
+import javax.imageio.ImageIO;
 import javax.swing.*;
 import terrains.Carte;
 import misc.Position;
@@ -28,11 +32,11 @@ public class PanneauJeu extends JPanel implements wargame.IConfig, MouseWheelLis
     private boolean afficherMenu = false;
     private transient Position pos1;
 
-    public PanneauJeu (Carte carte, MenuSimple parent) {
+    public PanneauJeu(Carte carte, MenuSimple parent) {
         super();
         this.carte = carte;
         Dimension s = new Dimension(300, 75); // Taille des boutons
-        TranslucentButton tmp;
+        TranslucentButton tmp = null;
         GridBagConstraints gc;
         ImageIcon icon;
 
@@ -40,17 +44,24 @@ public class PanneauJeu extends JPanel implements wargame.IConfig, MouseWheelLis
         setOpaque(false);
         setLayout(new GridBagLayout());
         addMouseWheelListener(this);
-        wPlateau = MARGX*2+TAILLEX*LARGEUR_CARTE+TAILLEX/2; // Largeur du plateau (8866)
-        hPlateau = MARGY*2+TAILLEY*(HAUTEUR_CARTE+1); // Hauteur du plateau (4850)
+        wPlateau = MARGX * 2 + TAILLEX * LARGEUR_CARTE + TAILLEX / 2; // Largeur du plateau (8866)
+        hPlateau = MARGY * 2 + TAILLEY * (HAUTEUR_CARTE + 1); // Hauteur du plateau (4850)
         tabHitbox = new byte[hPlateau][wPlateau][2];
 
         /* Boutons du jeu */
 
         // Menu
         gc = new GridBagConstraints();
-        icon = new ImageIcon("data/img/icon/settings.png", "");
-        if (icon.getImageLoadStatus() == MediaTracker.COMPLETE) tmp = new TranslucentButton(icon, new Dimension(45, 45));
-        else tmp = new TranslucentButton("Menus", new Dimension(100, 100), 400, false);
+        InputStream stream = getClass().getResourceAsStream("/img/icon/settings.png");
+        try {
+            icon = new ImageIcon(ImageIO.read(stream));
+            tmp = new TranslucentButton(icon, new Dimension(45, 45));
+        } catch (IOException e1) {
+            stream = null;
+        }
+
+        if (stream == null) tmp = new TranslucentButton("Menus", new Dimension(100, 100), 400, false);
+
         tmp.addMouseListener(new MouseAdapter() {
             @Override
             public void mouseClicked(MouseEvent e) {
@@ -273,18 +284,18 @@ public class PanneauJeu extends JPanel implements wargame.IConfig, MouseWheelLis
             tailleVirtuelle = (Dimension) tailleFenetre.clone();
             requestFocusInWindow();
 
-            // On dessine le fond
-            fond = new BufferedImage(tailleFenetre.width, tailleFenetre.height, BufferedImage.TYPE_INT_RGB);
+            // On dessine le fond (trop couteux en mémoire)
+            /*fond = new BufferedImage(tailleFenetre.width, tailleFenetre.height, BufferedImage.TYPE_INT_RGB);
             g2d = (Graphics2D) fond.getGraphics();
             g2d.setRenderingHint(RenderingHints.KEY_RENDERING, RenderingHints.VALUE_RENDER_QUALITY);
             GradientPaint gp = new GradientPaint(0, 0, BGCOLOR.brighter(), 0, tailleFenetre.height, BGCOLOR.darker());
             g2d.setPaint(gp);
             g2d.fillRect(0, 0, tailleFenetre.width, tailleFenetre.height);
-            g2d.dispose();
+            g2d.dispose();*/
 
             if (plateau == null) {
                 // On crée l'image sur laquelle le plateau sera dessiné
-                plateau = new BufferedImage(wPlateau, hPlateau, BufferedImage.TYPE_INT_ARGB);
+                plateau = new BufferedImage(wPlateau, hPlateau, BufferedImage.TYPE_INT_RGB);
                 // On dessine le plateau sur l'image
                 carte.afficher(plateau.getGraphics(), tabHitbox, false);
             }
@@ -295,7 +306,7 @@ public class PanneauJeu extends JPanel implements wargame.IConfig, MouseWheelLis
 
         // On affiche le fond
         g2d = (Graphics2D) g;
-        g.drawImage(fond, 0, 0, null);
+        //g.drawImage(fond, 0, 0, null);
 
         // On vérifie si le dézoom n'est pas allé trop loin
         double zoomMin;

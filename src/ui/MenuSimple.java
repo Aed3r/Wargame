@@ -279,7 +279,9 @@ public class MenuSimple extends JPanel {
      */
     private BufferedImage loadImage (String src) throws IOException {
         BufferedImage img = null;
-        img = ImageIO.read(new File(src));
+        InputStream in = MenuSimple.class.getResourceAsStream(src);
+        if (in == null) throw new IOException();
+        img = ImageIO.read(in);
         return img;
     }
 

@@ -57,9 +57,9 @@ public class MenuPrincipale extends MenuSimple {
         setButtons(buttons);
         
         // Placement de l'image de fond
-        setBgImage("data/img/menuPrincipale.jpg");
+        setBgImage("/img/menuPrincipale.jpg");
 
         // Placement du logo
-        setLogo("data/img/icon/logo.png", 0.3);
+        setLogo("/img/icon/logo.png", 0.3);
     }
 }

@@ -6,7 +6,6 @@ import misc.*;
 import wargame.ISoldat;
 import java.awt.image.*;
 import javax.imageio.ImageIO;
-import java.io.File;
 import java.io.IOException;
 
 public abstract class Soldat implements ISoldat {
@@ -127,7 +126,7 @@ public abstract class Soldat implements ISoldat {
         if (sprite == null) {
             // Chargement de l'image associée
             try {
-                sprite = ImageIO.read(new File("data/img/soldats/" + getNom() + ".png"));
+                sprite = ImageIO.read(getClass().getResourceAsStream("/img/soldats/" + getNom() + ".png"));
             } catch (IOException e) {
                 // Problème lors du chargement, on utilise rien
                 System.out.println(e.getLocalizedMessage());

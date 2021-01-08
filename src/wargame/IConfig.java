@@ -4,7 +4,7 @@ import java.awt.Color;
 
 import misc.Position;
 public interface IConfig {
-	int LARGEUR_CARTE = 30; int HAUTEUR_CARTE = 20; // en nombre de cases
+	int LARGEUR_CARTE = 20; int HAUTEUR_CARTE = 15; // en nombre de cases
 	int LARGEUR_SPAWN = 5; int HAUTEUR_SPAWN = 5; //taille similaire
 	/* A VOIR SI C'EST VRAIMENT UTILE  */
 	Position POS_INIT_SPAWN_MONSTRE = new Position(1, 1);
@@ -23,7 +23,7 @@ public interface IConfig {
 		{"deplacementVert", "Déplacement vertical", "éteind", "allumé"}
 	};
 	// Chemin vers le fichier de configuration
-	String CONFIGFILE = "data/config.properties"; 
+	String CONFIGFILE = "/config.properties"; 
 	// Police
 	String FONTNAME = "Raleway";
 	int FONTSIZE = 20;

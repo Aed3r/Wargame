@@ -30,7 +30,7 @@ public class MenuOptions extends MenuSimple implements wargame.IConfig {
         setBgImage(parent.getBgImage());
 
         while(nbEssais < NBESSAISMAX) {
-            try (InputStream in = new FileInputStream(CONFIGFILE)) {
+            try (InputStream in = Parametres.class.getResourceAsStream(CONFIGFILE)) {
                 // Chargement des paramètres actuel
                 Properties p = new Properties();
                 p.load(in);
@@ -85,7 +85,7 @@ public class MenuOptions extends MenuSimple implements wargame.IConfig {
                     @Override
                     public void mouseClicked(MouseEvent e) {
                         // On enregistre les changements dans le fichier de configuration
-                        try (OutputStream out = new FileOutputStream(CONFIGFILE)) {
+                        try (OutputStream out = new FileOutputStream("data/config.properties")) {
                             p.store(out, null);
                         } catch (IOException io) {
                             System.err.println("Erreur lors de l'écriture vers le fichier de configuration! " + io.getLocalizedMessage());
