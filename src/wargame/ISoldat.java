@@ -25,7 +25,7 @@ public interface ISoldat {
       }
    }
    public enum TypesM {
-      TROLL (100,1,25,0), ZOMBIE (40,2,10,0), MOMIE (30,2,5,2), SORCIER (20,2,5,10 );
+      TROLL (100,1,25,0), ZOMBIE (40,2,10,0), MOMIE (30,2,5,2), SORCIER (20,2,0,10);
       
       private final int POINTS_DE_VIE, PORTEE_VISUELLE, PUISSANCE, TIR;
       
@@ -46,6 +46,6 @@ public interface ISoldat {
 
    int getPoints(); boolean getTour(); int getPortee();
    boolean joueTour();
-   void combat(Soldat soldat);
+   boolean combat(Soldat soldat);
    void seDeplace(Position newPos);
 }

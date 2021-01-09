@@ -96,8 +96,9 @@ public abstract class Soldat implements ISoldat, IConfig {
     /**
      * Engage un combat avec le soldat en paramètre, détermine tout seul ce qui dois se passer.
      * @param soldat Le soldat a combatre
+     * @return true si les soldat on pu combatre, false sinon
      */
-    public void combat(Soldat soldat){ /*On considere que l'instance pour laquelle est appelée cette methode est la première a taper */
+    public boolean combat(Soldat soldat){ /*On considere que l'instance pour laquelle est appelée cette methode est la première a taper */
         /*Premièrement le cas d'un combat au corps-a-corps (adjacent)*/
         if(getPos().estVoisine(soldat.getPos())){
             /*On fait un tirage entre 0 et la puissance du soldat*/
@@ -120,7 +121,8 @@ public abstract class Soldat implements ISoldat, IConfig {
                 this.pointsDeVie = this.pointsDeVie - (int)(Math.random() * soldat.TIR);
                 if(this.pointsDeVie <= 0) carte.mort(this);
             }
-        }
+        }else return false;
+        return true;
     }
 
     /**
