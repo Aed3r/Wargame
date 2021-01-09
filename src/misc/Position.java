@@ -34,7 +34,7 @@ public class Position implements IConfig {
 		if(this.getX() % 2 == 0) decalageY = 1;
 
 		/*Une case est voisine si les deux sont des positions valide et qu'elles sont adjacentes*/
-		return ((((pos.getX() == getX()-1 || pos.getX() == getX()+1) && (pos.getY() == getY() || pos.getY() == getY() + decalageY)) 
+		return (pos.estValide() && this.estValide() && (((pos.getX() == getX()-1 || pos.getX() == getX()+1) && (pos.getY() == getY() || pos.getY() == getY() + decalageY)) 
 		|| (pos.getX() == getX() && (pos.getY() == getY() - 1 || pos.getY() == getY() + 1))));
 	}
 	/**
