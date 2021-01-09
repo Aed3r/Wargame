@@ -46,12 +46,12 @@ public abstract class Soldat implements ISoldat {
     /**
      * Joue le tour du soldat, retourne 0 si il a pu jouer son tour, -1 si son tour est déjà joué
      */
-    public int joueTour(){
+    public boolean joueTour(){
         if(tour == true){
             tour = false;
-            return 0;
+            return true;
         }else{
-            return -1;
+            return false;
         }
     }
 

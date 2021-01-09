@@ -95,11 +95,14 @@ public class Carte implements wargame.IConfig, wargame.ICarte {
             System.out.println("AAAAAAAAAAAAAAAAAAAAAAA");
             return false;
         }
-        /*Si le solda n'est pas un heros ou si un héros se trouve déjà en pos2 ou si la variable tour du soldat vaux false*/
-        if(!(getElement(pos).getSoldat() instanceof Heros) || getElement(pos2).getSoldat() instanceof Heros || !getElement(pos).getSoldat().getTour()){
+        /*Si le solda n'est pas un heros ou si un héros se trouve déjà en pos2*/
+        if(!(getElement(pos).getSoldat() instanceof Heros) || getElement(pos2).getSoldat() instanceof Heros){
             System.out.println("2");    
             return false;
         }
+        
+        /*On essaie de jouer le tour du soldat*/
+        if(!getElement(pos).getSoldat().joueTour()) return false;
         
         /*On va maintenant déterminer l'action a effectuer :*/
         /*On essaye de deplacer le soldat dans la case pos2, si on ne peut pas c'est qu'il y a un monstre*/
