@@ -271,6 +271,21 @@ public class Carte implements wargame.IConfig, wargame.ICarte {
         }
     }
 
+    /**
+     * Joue le tour des ennemis de la carte
+     * @see Monstre#joueTour()
+     */
+    public void jouerEnnemis () {
+        for (int i = 0; i < HAUTEUR_CARTE; i++) {
+            for (int j = 0; j < LARGEUR_CARTE; j++) {
+                Soldat s = grille[i][j].getSoldat();
+                if (s != null && !s.estHeros()) {
+                    ((Monstre) s).joueTour();
+                }
+            }
+        }
+    }
+
 
     /**
      * Affiche sur g tous les éléments constituant la carte courante

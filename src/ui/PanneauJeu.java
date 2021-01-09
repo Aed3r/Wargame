@@ -105,18 +105,22 @@ public class PanneauJeu extends JPanel implements wargame.IConfig, MouseWheelLis
         add(tmp, gc);
         boutonsJeu.add(tmp);
 
-        // Passer le tour
+        // Passer le tour, puis jouer celui des monstres
         gc = new GridBagConstraints();
         tmp = new TranslucentButton("Finir le tour >", new Dimension(200, 70), 400, false);
 
         tmp.addMouseListener(new MouseAdapter() {
             @Override
             public void mouseClicked(MouseEvent e) {
+                System.out.println("finir tour");
                 carte.terminerTour();
+                PanneauJeu.this.repaint();
+                carte.jouerEnnemis();
+                PanneauJeu.this.repaint();
             }
         });
         gc.gridx = 1;
-        gc.gridy = 5;
+        gc.gridy = 6;
         gc.weightx = 1;
         gc.weighty = 1;
         gc.anchor = GridBagConstraints.SOUTHEAST;
@@ -291,6 +295,17 @@ public class PanneauJeu extends JPanel implements wargame.IConfig, MouseWheelLis
         tmp.setVisible(false);
         add(tmp, gc);
         labelsInfo.add(tmp);
+
+        // Tour joué
+        tmp = new LabelAA("");
+        tmp.setForeground(Color.white);
+        tmp.setHorizontalAlignment(SwingConstants.RIGHT);
+        s.setSize(300, 45);
+        tmp.setPreferredSize(s);
+        gc.gridy = 5;
+        tmp.setVisible(false);
+        add(tmp, gc);
+        labelsInfo.add(tmp);
     }
 
     /**
@@ -370,30 +385,7 @@ public class PanneauJeu extends JPanel implements wargame.IConfig, MouseWheelLis
                     } 
 
                     // Affichage d'informations en mode performance
-                    if (perf) {
-                        if (s != null) {
-                            // Nom
-                            labelsInfo.get(0).setText(s.getNom());
-                            labelsInfo.get(0).setVisible(true);
-                            // Points de vies
-                            labelsInfo.get(1).setText(s.getPoints() + "/" + s.getPointsMax());
-                            labelsInfo.get(1).setVisible(true);
-                            // Portée de vue
-                            labelsInfo.get(2).setText(s.getPortee() + "");
-                            labelsInfo.get(2).setVisible(true);
-                            // Puissance au corps à corps
-                            labelsInfo.get(3).setText(s.getPUISSANCE() + "");
-                            labelsInfo.get(3).setVisible(true);
-                            // Puissance au tir
-                            labelsInfo.get(4).setText(s.getTIR() + "");
-                            labelsInfo.get(4).setVisible(true);
-                            barreInfosCache = false;
-                        } else if (!barreInfosCache) {
-                            // On cache tous les boutons de la barre d'informations
-                            for (int i = 0; i < labelsInfo.size(); i++) labelsInfo.get(i).setVisible(false);
-                            barreInfosCache = true;
-                        }
-                    }
+                    if (perf) switchBarreInfo(s);
                 } else if (SwingUtilities.isRightMouseButton(e)) {
                     pos1 = null;
                 }
@@ -450,30 +442,42 @@ public class PanneauJeu extends JPanel implements wargame.IConfig, MouseWheelLis
                     Position pos = new Position(tabHitbox[curseurMap.y][curseurMap.x][0] & 0xFF, tabHitbox[curseurMap.y][curseurMap.x][1] & 0xFF);
     
                     s = carte.getElement(pos).getSoldat();
-                    if (s != null) {
-                        // Nom
-                        labelsInfo.get(0).setText(s.getNom());
-                        labelsInfo.get(0).setVisible(true);
-                        // Points de vies
-                        labelsInfo.get(1).setText(s.getPoints() + "/" + s.getPointsMax());
-                        labelsInfo.get(1).setVisible(true);
-                        // Portée de vue
-                        labelsInfo.get(2).setText(s.getPortee() + "");
-                        labelsInfo.get(2).setVisible(true);
-                        // Puissance au corps à corps
-                        labelsInfo.get(3).setText(s.getPUISSANCE() + "");
-                        labelsInfo.get(3).setVisible(true);
-                        // Puissance au tir
-                        labelsInfo.get(4).setText(s.getTIR() + "");
-                        labelsInfo.get(4).setVisible(true);
-                        barreInfosCache = false;
-                    } else if (!barreInfosCache) {
-                        // On cache tous les boutons de la barre d'informations
-                        for (int i = 0; i < labelsInfo.size(); i++) labelsInfo.get(i).setVisible(false);
-                        barreInfosCache = true;
-                    }
+                    switchBarreInfo(s);
                 }
             });
+        }
+    }
+
+    /**
+     * Affiche/cache la barre d'info 
+     */
+    private void switchBarreInfo (Soldat s) {
+        if (s != null) {
+            // Nom
+            labelsInfo.get(0).setText(s.getNom());
+            labelsInfo.get(0).setVisible(true);
+            // Points de vies
+            labelsInfo.get(1).setText(s.getPoints() + "/" + s.getPointsMax());
+            labelsInfo.get(1).setVisible(true);
+            // Portée de vue
+            labelsInfo.get(2).setText(s.getPortee() + "");
+            labelsInfo.get(2).setVisible(true);
+            // Puissance au corps à corps
+            labelsInfo.get(3).setText(s.getPUISSANCE() + "");
+            labelsInfo.get(3).setVisible(true);
+            // Puissance au tir
+            labelsInfo.get(4).setText(s.getTIR() + "");
+            labelsInfo.get(4).setVisible(true);
+            // Tour Joué
+            if (!s.getTour()) {
+                labelsInfo.get(5).setText("Tour joué");
+                labelsInfo.get(5).setVisible(true);
+            }
+            barreInfosCache = false;
+        } else if (!barreInfosCache) {
+            // On cache tous les boutons de la barre d'informations
+            for (int i = 0; i < labelsInfo.size(); i++) labelsInfo.get(i).setVisible(false);
+            barreInfosCache = true;
         }
     }
 
