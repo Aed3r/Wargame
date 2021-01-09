@@ -38,4 +38,20 @@ public class Monstre extends Soldat {
            return "MOMIE";
         }else return "SORCIER";
     };
+
+    /**
+     * Joue le monstre
+     * @return true si le monstre a fait une action, false sinon
+     */
+    public boolean jouer(){
+        Heros h = getCarte().trouveHeros(getPos());
+        if(h == null){/*Il n'y a aucun Heros adjacents*/
+            Position pos = getCarte().trouvePositionVide(getPos());
+            if(pos == null) return false;
+            getCarte().deplaceSoldat(pos, this);
+        }else{
+            this.combat(h);
+        }
+        return true;
+    }
 }
