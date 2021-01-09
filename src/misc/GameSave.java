@@ -21,13 +21,13 @@ public class GameSave {
      * @param date la date de la sauvegarde
      * @param troopCount le nombre de troupes restante au joueur pour cette sauvegarde
      * @param minutesPlayed le nombre de minutes jouées dans cette sauvegarde
-     * @param gameImgPath chemin vers une capture d'écran du jeu sauvegardé
+     * @param gameImg capture d'écran du jeu sauvegardé
      */
-    public GameSave(Date date, int troopCount, int minutesPlayed, String gameImgPath) {
+    public GameSave(Date date, int troopCount, int minutesPlayed, BufferedImage gameImg) {
         setDate(date);
         setTroopCount(troopCount);
         setMinutesPlayed(minutesPlayed);
-        setGameImg(gameImgPath);
+        setGameImg(gameImg);
     }
     
     /**
@@ -80,16 +80,10 @@ public class GameSave {
     }
 
     /**
-     * @param gameImgPath chemin vers une nouvelle capture d'écran du jeu sauvegardé
+     * @param gameImg nouvelle capture d'écran du jeu sauvegardé
      */
-    public void setGameImg (String gameImgPath) {
-        if (gameImgPath == null) return;
-        try {
-            gameImg = ImageIO.read(new File(gameImgPath));
-        } catch (IOException e) {
-            // Problème lors du chargement, on utilise rien
-            System.out.println(e.getLocalizedMessage());
-            gameImg = null;
-        }
+    public void setGameImg (BufferedImage gameImg) {
+        if (this.gameImg != null) this.gameImg.flush();
+        this.gameImg = gameImg;
     }
 }

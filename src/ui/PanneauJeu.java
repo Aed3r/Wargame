@@ -4,12 +4,17 @@ import java.awt.*;
 import java.awt.event.*;
 import java.awt.geom.AffineTransform;
 import java.awt.image.BufferedImage;
+import java.io.BufferedInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
+import java.util.Date;
+
 import misc.Parametres;
 import javax.imageio.ImageIO;
 import misc.Element;
+import misc.GameSave;
+
 import javax.swing.*;
 import terrains.Carte;
 import unites.Soldat;
@@ -28,6 +33,8 @@ public class PanneauJeu extends JPanel implements wargame.IConfig, MouseWheelLis
     private final MenuSimple menuParent;
     private final boolean perf; // Si le mode performance est activé ou non
     private final float multTaille; // Le multiplicateur des tailles d'images
+    private final GameSave save; // L'objet potentiellement suavegardé par le joueur
+    private final long debutJeu = System.currentTimeMillis();
 
     private int xPlateau = -MARGX, yPlateau = -MARGY, wPlateau, hPlateau; // Position et taille du plateau
     private double zoomPlateau = 1, zoomMin;
@@ -223,8 +230,11 @@ public class PanneauJeu extends JPanel implements wargame.IConfig, MouseWheelLis
         tmp.addMouseListener(new MouseAdapter() {
             @Override
             public void mouseClicked(MouseEvent e) {
-                // TODO
-            }
+                save.setMinutesPlayed(save.getMinutesPlayed() + (int) (debutJeu / 6000));
+                save.setDate(new Date());
+                save.setGameImg(creerThumbnail());
+                save.setTroopCount(Element.getCompteurSoldat());
+            }   
         });
 
         gc.gridy = 4;
@@ -245,6 +255,24 @@ public class PanneauJeu extends JPanel implements wargame.IConfig, MouseWheelLis
         add(tmp, gc);
         tmp.setVisible(false);
         boutonsMenu.add(tmp);
+    }
+
+    /**
+     * @return une capture d'écran de l'écran actuel pouvant être utilisé dans une save
+     */
+    private BufferedImage creerThumbnail () {
+        int w = tailleFenetre.width/5,
+            h = tailleFenetre.height/5;
+
+        BufferedImage thumb = new BufferedImage(w, h, BufferedImage.TYPE_INT_RGB);
+        Graphics2D g2d = thumb.createGraphics();
+        g2d.setRenderingHint (RenderingHints.KEY_INTERPOLATION, RenderingHints.VALUE_INTERPOLATION_BILINEAR);
+        g2d.setRenderingHint(RenderingHints.KEY_RENDERING,RenderingHints.VALUE_RENDER_QUALITY);
+        g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING,RenderingHints.VALUE_ANTIALIAS_ON);
+        g2d.drawImage (plateau, 0, 0, w, h, null);
+        g2d.dispose();
+
+        return thumb;
     }
 
     /**

@@ -29,6 +29,7 @@ public class Element implements wargame.IConfig {
 	private final boolean perf; // Si le mode performance est allumé ou non
 	private final float multTaille; // Le multiplicateur des tailles d'images
 	private final int tailleX, tailleY; // La taille des sprite
+	private static int compteurSoldats = 0; // Compte les soldats présent sur le plateau
 
 	/**
 	 * Représente un des différents types d'éléments prédéfinies
@@ -208,8 +209,29 @@ public class Element implements wargame.IConfig {
 	 * @param soldat un soldat quelconque
 	 */
 	public void setSoldat(Soldat soldat) {
+		// Mise à jour du compteur
+		if (getSoldat() != null && soldat == null)
+			addCompteurSoldat(-1);
+		else if (soldat != null)
+			addCompteurSoldat(1);
+
+
 		this.soldat = soldat;
 		setReafficher();
+	}
+
+	/**
+	 * @param x le nombre de soldats à ajouter au compte
+	 */
+	private static void addCompteurSoldat (int x) {
+		compteurSoldats += x;
+	}
+
+	/**
+	 * @return le compteur de soldats
+	 */
+	public static int getCompteurSoldat () {
+		return compteurSoldats;
 	}
 
 	/**
