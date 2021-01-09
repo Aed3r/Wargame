@@ -131,7 +131,6 @@ public class Carte implements wargame.IConfig, wargame.ICarte {
 
     /* Retourne l'élement à la position pos dans la grille */
     public Element getElement(Position pos) {
-        if (pos == null) return;
         
         int i = pos.getX();
         int j = pos.getY();
