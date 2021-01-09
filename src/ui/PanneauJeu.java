@@ -103,8 +103,8 @@ public class PanneauJeu extends JPanel implements wargame.IConfig, MouseWheelLis
                 //TODO
             }
         });
-        gc.gridx = 5;
-        gc.gridy = 0;
+        gc.gridx = 1;
+        gc.gridy = 5;
         gc.weightx = 1;
         gc.weighty = 1;
         gc.anchor = GridBagConstraints.SOUTHEAST;
@@ -214,17 +214,18 @@ public class PanneauJeu extends JPanel implements wargame.IConfig, MouseWheelLis
         ImageIcon icon;
         Dimension s = new Dimension();
             
-        gc.anchor = GridBagConstraints.SOUTHWEST;
-        gc.insets = new Insets(0,10,10,10);
-        gc.gridy = 0;
-        gc.fill = GridBagConstraints.HORIZONTAL;
+        gc.anchor = GridBagConstraints.NORTHEAST;
+        gc.insets = new Insets(10,10,10,10);
+        gc.gridx = 1;
+        gc.ipadx = 50;
 
         // Nom du soldat
         tmp = new LabelAA("");
         tmp.setForeground(Color.white);
+        tmp.setHorizontalAlignment(SwingConstants.RIGHT);
         s.setSize(300, 45);
         tmp.setPreferredSize(s);
-        gc.gridx = 0;
+        gc.gridy = 0;
         tmp.setVisible(false);
         add(tmp, gc);
         labelsInfo.add(tmp);
@@ -232,11 +233,11 @@ public class PanneauJeu extends JPanel implements wargame.IConfig, MouseWheelLis
         // Points de vies
         icon = chargerIcon("heart");
         tmp = new LabelAA("", icon);
+        tmp.setHorizontalAlignment(SwingConstants.RIGHT);
         tmp.setForeground(Color.white);
         s.setSize(200, 45);
         tmp.setPreferredSize(s);
-        gc.gridx = 1;
-        gc.ipadx = 45;
+        gc.gridy = 1;
         tmp.setVisible(false);
         add(tmp, gc);
         labelsInfo.add(tmp);
@@ -244,10 +245,11 @@ public class PanneauJeu extends JPanel implements wargame.IConfig, MouseWheelLis
         // Portee
         icon = chargerIcon("eye");
         tmp = new LabelAA("", icon);
+        tmp.setHorizontalAlignment(SwingConstants.RIGHT);
         tmp.setForeground(Color.white);
         s.setSize(200, 45);
         tmp.setPreferredSize(s);
-        gc.gridx = 2;
+        gc.gridy = 2;
         tmp.setVisible(false);
         add(tmp, gc);
         labelsInfo.add(tmp);
@@ -255,10 +257,11 @@ public class PanneauJeu extends JPanel implements wargame.IConfig, MouseWheelLis
         // Puissance au corps à corps
         icon = chargerIcon("swords");
         tmp = new LabelAA("", icon);
+        tmp.setHorizontalAlignment(SwingConstants.RIGHT);
         tmp.setForeground(Color.white);
         s.setSize(100, 45);
         tmp.setPreferredSize(s);
-        gc.gridx = 3;
+        gc.gridy = 3;
         tmp.setVisible(false);
         add(tmp, gc);
         labelsInfo.add(tmp);
@@ -266,10 +269,11 @@ public class PanneauJeu extends JPanel implements wargame.IConfig, MouseWheelLis
         // Puissance au tir
         icon = chargerIcon("bow");
         tmp = new LabelAA("", icon);
+        tmp.setHorizontalAlignment(SwingConstants.RIGHT);
         tmp.setForeground(Color.white);
         s.setSize(100, 45);
         tmp.setPreferredSize(s);
-        gc.gridx = 4;
+        gc.gridy = 4;
         tmp.setVisible(false);
         add(tmp, gc);
         labelsInfo.add(tmp);
@@ -283,7 +287,7 @@ public class PanneauJeu extends JPanel implements wargame.IConfig, MouseWheelLis
 
         public LabelAA(String text) { super(text); }
 
-        public LabelAA(String text, Icon ico) { super(text, ico, SwingConstants.CENTER); }
+        public LabelAA(String text, Icon ico) { super(text, ico, SwingConstants.RIGHT); }
         
         @Override
         public void paintComponent (Graphics g) {
