@@ -34,15 +34,15 @@ public class Element implements wargame.IConfig {
 	 * Représente un des différents types d'éléments prédéfinies
 	 */
     public enum TypeElement {
-		PLAINE ("plaine", 0.6f, true, true, 0f, -65), DESERT ("desert", 0.2f, true, true, 0.5f, -95), 
-		EAU ("eau", 0.025f, false, true, 0f, -60), MONTAGNE ("montagne", 0.025f, false, false, 0f, -195),
-		FORET ("foret", 0.05f, false, false, 0f, -106);
+		PLAINE ("plaine", 0.6f, true, true, 0, -65), DESERT ("desert", 0.2f, true, true, 5, -95), 
+		EAU ("eau", 0.025f, false, true, 0, -60), MONTAGNE ("montagne", 0.025f, false, false, 0, -195),
+		FORET ("foret", 0.05f, false, false, 0, -106);
 
 		final String NOM;
 		final float PROBA;
 		final boolean ESTACCESSIBLE;
 		final boolean PEUXTIRER;
-		final float PDVPERDUES;
+		final int PDVPERDUES;
 		final float DEPLACEMENTVERT;
 		int deplacementY;
 
@@ -56,7 +56,7 @@ public class Element implements wargame.IConfig {
 		 * @param deplacementY déplacement vertical à effectuer pour afficher l'image de l'élément
 		 */
 		private TypeElement(String nom, float probaApparition, boolean estAccessible,
-					boolean peuxTirer, float pdvPerdues, int deplacementVert) 
+					boolean peuxTirer, int pdvPerdues, int deplacementVert) 
 		{ 
 			this.NOM = nom;
 			this.PROBA = probaApparition;
@@ -146,11 +146,12 @@ public class Element implements wargame.IConfig {
 		
 		// Création de l'image sombre
 		BufferedImage sSombre = new BufferedImage(w, h, BufferedImage.TYPE_INT_ARGB);
-		Graphics g = sSombre.getGraphics();
-		g.drawImage(sprite, 0, 0, null);
+		Graphics gr = sSombre.getGraphics();
+		gr.drawImage(sprite, 0, 0, null);
 		RescaleOp op = new RescaleOp(ALPHAELEMCACHE, 0, null);
 		sSombre = op.filter(sSombre, null);
 		spriteSombre = sSombre;
+		gr.dispose();
 	}
 
 	/**
@@ -184,7 +185,7 @@ public class Element implements wargame.IConfig {
 	/**
 	 * @return le nombre de point de vies perdus à chaque tour par une unité se trouvant sur cet élément
 	 */
-	public float getPDVPerdues () {
+	public int getPDVPerdues () {
 		return type.PDVPERDUES;
 	}
 
@@ -244,7 +245,7 @@ public class Element implements wargame.IConfig {
 	/**
 	 * Indique s'il faut réafficher l'élément
 	 */
-	private void setReafficher () {
+	public void setReafficher () {
 		if(!jamaisAffiche) fileElem.add(this);
 	}
 
