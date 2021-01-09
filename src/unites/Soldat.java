@@ -155,5 +155,13 @@ public abstract class Soldat implements ISoldat {
 
     public boolean estHeros () {
 		return this instanceof Heros;
-	}
+    }
+
+    public int getPUISSANCE() {
+        return this.PUISSANCE;
+    }
+
+    public int getTIR() {
+        return this.TIR;
+    }    
 }
