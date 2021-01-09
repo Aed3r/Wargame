@@ -1,6 +1,7 @@
 package terrains;
 
 import misc.Element;
+import misc.Parametres;
 import misc.Position;
 import unites.*;
 import wargame.ISoldat.TypesH;
@@ -279,14 +280,19 @@ public class Carte implements wargame.IConfig, wargame.ICarte {
      */
     public void afficher (Graphics g, byte[][][] tabHitbox) {
         int i, j, x, y;
+        float multTaille = 1;
+
+        String val = Parametres.getParametre("modePerf");
+        if (val == null || val.equals(PARAMETRES[3][2]))
+            multTaille = MULTTAILLEPERF;
         
         // lignes
         for (i = 0; i < HAUTEUR_CARTE; i++) {
             // colonnes
             for (j = 0; j < LARGEUR_CARTE; j++) {
-                x = MARGX + j*TAILLEX;
-                y = MARGY + i*TAILLEY;   
-                if (i%2 == 0) x += TAILLEX/2;
+                x = (int) ((MARGX + j * TAILLEX) * multTaille);
+                y = (int) ((MARGY + i * TAILLEY) * multTaille);
+                if (i%2 == 0) x += (TAILLEX*multTaille)/2;
                 
                 grille[i][j].afficher(g, x, y, tabHitbox);  
             }

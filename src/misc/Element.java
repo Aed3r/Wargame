@@ -25,7 +25,10 @@ public class Element implements wargame.IConfig {
 	private int deplacementYSoldat = 0; // Depassement du soldat au dessus d'un élément
 	private int nbSoldatVoient = 0; // Le nombre de soldats qui voient l'élément
 	private static LinkedList<Element> fileElem = new LinkedList<>(); // File des éléments à raffraichir
-	private boolean jamaisAffiche = true;
+	private boolean jamaisAffiche = true; 
+	private final boolean perf; // Si le mode performance est allumé ou non
+	private final float multTaille; // Le multiplicateur des tailles d'images
+	private final int tailleX, tailleY; // La taille des sprite
 
 	/**
 	 * Représente un des différents types d'éléments prédéfinies
@@ -40,7 +43,8 @@ public class Element implements wargame.IConfig {
 		final boolean ESTACCESSIBLE;
 		final boolean PEUXTIRER;
 		final float PDVPERDUES;
-		final int DEPLACEMENTVERT;
+		final float DEPLACEMENTVERT;
+		int deplacementY;
 
 		/**
 		 * Crée les éléments définies au dessus
@@ -49,22 +53,17 @@ public class Element implements wargame.IConfig {
 		 * @param estAccessible si une unité peuvent être déplacé sur l'élément ou non
 		 * @param peuxTirer si les unités peuvent tirer des projectiles au travers de l'élément
 		 * @param pdvPerdues le nombre de point de vies perdus à chaque tour par une unité se trouvant sur cet élément
-		 * @param deplacementVert déplacement vertical à effectuer pour afficher l'image de l'élément
+		 * @param deplacementY déplacement vertical à effectuer pour afficher l'image de l'élément
 		 */
 		private TypeElement(String nom, float probaApparition, boolean estAccessible,
-					boolean peuxTirer, float pdvPerdues, int deplacementVert) { 
+					boolean peuxTirer, float pdvPerdues, int deplacementVert) 
+		{ 
 			this.NOM = nom;
 			this.PROBA = probaApparition;
 			this.ESTACCESSIBLE = estAccessible;
 			this.PEUXTIRER = peuxTirer;
 			this.PDVPERDUES = pdvPerdues;
-			
-			// Déplacement vertical aléatoire des éléments 
-			String param = Parametres.getParametre("deplacementVert");
-			if (param != null && param.equals("allumé"))
-				this.DEPLACEMENTVERT = deplacementVert + (int) (Math.random()*50-25);  	  
-			else
-				this.DEPLACEMENTVERT = deplacementVert;
+			this.DEPLACEMENTVERT = deplacementVert;
 		}
 
 		/**
@@ -78,6 +77,20 @@ public class Element implements wargame.IConfig {
 				valElem += values()[i].PROBA;
 
 			return values()[i-1];
+		}
+
+		/**
+		 * Charge le deplacement des types en fonction du mode performance<br>
+		 * Utile lorsque le mode est éteind/allumé d'une partie à l'autre
+		 */
+		public static void setDeplacement(float multTaille) {
+			for (TypeElement te : values()) {
+				String param = Parametres.getParametre("deplacementVert");
+				if (param != null && param.equals("allumé"))
+					te.deplacementY = (int) ((te.DEPLACEMENTVERT + (int) (Math.random()*50-25)) * multTaille);  	  
+				else
+					te.deplacementY = (int) (te.DEPLACEMENTVERT * multTaille);
+			}
 		}
 	}
 
@@ -97,19 +110,41 @@ public class Element implements wargame.IConfig {
 	 * @see TypeElement
 	 */
 	public Element (TypeElement type, Position pos) {
+		int w, h;
+
 		this.type = type;
 		this.pos = pos;
 
+		// Mode Performance
+		String val = Parametres.getParametre("modePerf");
+        if (val != null) perf = val.equals(PARAMETRES[3][2]);
+        else perf = true;
+
+		if (perf) {
+			multTaille = MULTTAILLEPERF;
+			tailleX = (int) (TAILLEX * MULTTAILLEPERF);
+			tailleY = (int) (TAILLEY * MULTTAILLEPERF);
+		} else {
+			multTaille = 1;
+			tailleX = TAILLEX;
+			tailleY = TAILLEY;
+		}
+
 		// Chargement de l'image normal
 		try {
-            sprite = ImageIO.read(getClass().getResourceAsStream("/img/elements/" + getNom() + ".png"));
+			if (perf) 
+				sprite = ImageIO.read(getClass().getResourceAsStream("/img/elements/" + getNom() + "Perf.png"));
+			else
+				sprite = ImageIO.read(getClass().getResourceAsStream("/img/elements/" + getNom() + ".png"));
         } catch (IOException e) {
             // Problème lors du chargement, on utilise rien
 			System.out.println(e.getLocalizedMessage());
 		}
+
+		w = sprite.getWidth(null);
+		h = sprite.getHeight(null);
 		
 		// Création de l'image sombre
-		int w = sprite.getWidth(null), h = sprite.getHeight(null);
 		BufferedImage sSombre = new BufferedImage(w, h, BufferedImage.TYPE_INT_ARGB);
 		Graphics g = sSombre.getGraphics();
 		g.drawImage(sprite, 0, 0, null);
@@ -224,8 +259,8 @@ public class Element implements wargame.IConfig {
 		drawX = x;
 		drawY = y;
 		
-		if (estVisible) g.drawImage(getSprite(), x, y+type.DEPLACEMENTVERT, null);
-		else g.drawImage(spriteSombre, x, y+type.DEPLACEMENTVERT, null);
+		if (estVisible) g.drawImage(getSprite(), x, y+type.deplacementY, null);
+		else g.drawImage(spriteSombre, x, y+type.deplacementY, null);
 
 		afficherSoldat(g, x, y);
 
@@ -253,11 +288,11 @@ public class Element implements wargame.IConfig {
 		}
 	
 		public void run() {
-			int w = getSprite().getWidth(null), h = getSprite().getHeight(null)-127, alpha;
+			int w = getSprite().getWidth(null), h = (int) (getSprite().getHeight(null)-(127*multTaille)), alpha;
 
 			// Mise à jour du buffer
 			if (getSoldat() != null)
-				deplacementYSoldat = (getSoldat().getSprite().getHeight()+20) - (TAILLEY/2-type.DEPLACEMENTVERT);
+				deplacementYSoldat = (getSoldat().getSprite().getHeight()+15) - (tailleY/2-type.deplacementY);
 			else deplacementYSoldat = 0;
 			
 			if (deplacementYSoldat < 0) deplacementYSoldat = 0;
@@ -271,7 +306,7 @@ public class Element implements wargame.IConfig {
 			if (estVisible) g.drawImage(getSprite(), 0, deplacementYSoldat, null);
 			else g.drawImage(spriteSombre, 0, deplacementYSoldat, null);
 
-			afficherSoldat(buffer.getGraphics(), 0, -type.DEPLACEMENTVERT+deplacementYSoldat);
+			afficherSoldat(buffer.getGraphics(), 0, -type.deplacementY+deplacementYSoldat);
 
 			// Calcul des hitbox
 			for (int i = 0; i < h; i++) {
@@ -279,8 +314,8 @@ public class Element implements wargame.IConfig {
 					alpha = (buffer.getRGB(j, i)>>24)&0xff;
 
 					if (alpha == 255) {
-						tabHitbox[i+drawY+type.DEPLACEMENTVERT-deplacementYSoldat][j+drawX][0] = (byte) getPos().getX();
-						tabHitbox[i+drawY+type.DEPLACEMENTVERT-deplacementYSoldat][j+drawX][1] = (byte) getPos().getY();
+						tabHitbox[i+drawY+type.deplacementY-deplacementYSoldat][j+drawX][0] = (byte) getPos().getX();
+						tabHitbox[i+drawY+type.deplacementY-deplacementYSoldat][j+drawX][1] = (byte) getPos().getY();
 					}
 				}
 			}
@@ -302,7 +337,7 @@ public class Element implements wargame.IConfig {
 	 */
 	protected void dessinerQuart (Graphics g, byte[][][] tabHitbox, int cote) {
 		int w = buffer.getWidth(), h = buffer.getHeight(), halfW = w/2,
-			x = getPos().getX(), y = getPos().getY(), dY = type.DEPLACEMENTVERT-deplacementYSoldat;
+			x = getPos().getX(), y = getPos().getY(), dY = type.deplacementY-deplacementYSoldat;
 
 		switch (cote) {
 			case 0: // Nord-ouest
@@ -312,8 +347,8 @@ public class Element implements wargame.IConfig {
 
 				// On recalcule la hitbox
 				SwingUtilities.invokeLater(() -> {
-					for (int i = drawY + dY; i < drawY; i++) {
-						for (int j = drawX; j < drawX + halfW + 1; j++) {
+					for (int i = drawY+dY; i < drawY; i++) {
+						for (int j = drawX; j < drawX+halfW+1; j++) {
 							if (((buffer.getRGB(j - drawX, i - (drawY + dY)) >> 24) & 0xff) == 255) {
 								tabHitbox[i][j][0] = (byte) x;
 								tabHitbox[i][j][1] = (byte) y;
@@ -407,9 +442,9 @@ public class Element implements wargame.IConfig {
 		if (estVisible) img = getSprite();
 		else img = spriteSombre;
 
-		g.drawImage(img, drawX, drawY+type.DEPLACEMENTVERT, 
-					drawX+w, drawY+190, 
-					0, 0, w, -type.DEPLACEMENTVERT+190, null);
+		g.drawImage(img, drawX, drawY+type.deplacementY, 
+					drawX+w, (int) (drawY+190*multTaille), 
+					0, 0, w, (int) (-type.deplacementY+190*multTaille), null);
 
 		afficherSoldat(g, drawX, drawY);
 
@@ -427,9 +462,9 @@ public class Element implements wargame.IConfig {
 			if (tmp != null) tmp.dessinerQuart(g, tabHitbox, 1); 
 		} else {
 			// On réaffiche la partie "souterraine" gauche de l'élément
-			g.drawImage(img, drawX, drawY+130, 
-						drawX+w/2, drawY+type.DEPLACEMENTVERT+h, 
-						0, -type.DEPLACEMENTVERT+130, 
+			g.drawImage(img, drawX, (int) (drawY+130*multTaille), 
+						drawX+w/2, drawY+type.deplacementY+h, 
+						0, (int) (-type.deplacementY+130*multTaille), 
 						w/2, h, null);
 		}
 
@@ -440,9 +475,9 @@ public class Element implements wargame.IConfig {
 			if (tmp != null) tmp.dessinerQuart(g, tabHitbox, 0); 
 		} else {
 			// On réaffiche la partie "souterraine" droite de l'élément
-			g.drawImage(img, drawX+w/2, drawY+130, 
-						drawX+w, drawY+type.DEPLACEMENTVERT+h, 
-						w/2, -type.DEPLACEMENTVERT+130, 
+			g.drawImage(img, drawX+w/2, (int) (drawY+130*multTaille), 
+						drawX+w, drawY+type.deplacementY+h, 
+						w/2, (int) (-type.deplacementY+130*multTaille), 
 						w, h, null);
 		}
 	}
@@ -466,8 +501,8 @@ public class Element implements wargame.IConfig {
 
 		BufferedImage img = s.getSprite();
 		// Coordonnées d'affichage du soldat
-		int x = dX+(TAILLEX-img.getWidth())/2,
-			y = dY+TAILLEY/2-img.getHeight();
+		int x = dX+(tailleX-img.getWidth())/2,
+			y = dY+tailleY/2-img.getHeight();
 
 		g.drawImage(img, x, y, null);
 		reafficherDessus = true;
@@ -475,16 +510,16 @@ public class Element implements wargame.IConfig {
 		double ratioVie = (double) s.getPoints() / s.getPointsMax();
 
 		// Points de vie
-		Shape clip = new RoundRectangle2D.Float(dX+TAILLEX/4, y-20.f, TAILLEX/2, 10, 10, 10),
+		Shape clip = new RoundRectangle2D.Float(dX+tailleX/4, y-15.f, tailleX/2, 10, 10, 10),
 			  oldClip = g.getClip();
 		g.setClip(clip);
 		g.setColor(COULEURPDV);
-		g.fillRect(dX+TAILLEX/4, y-20, (int) ((TAILLEX/2)*ratioVie), 10);
+		g.fillRect(dX+tailleX/4, y-15, (int) ((tailleX/2.)*ratioVie), 10);
 		g.setColor(COULEURPDV.brighter().brighter().brighter().brighter());
-		g.fillRect((int) (dX+TAILLEX/4+(TAILLEX/2)*ratioVie), y-20, 
-				   (int) ((TAILLEX/2)*(1-ratioVie)), 10);
+		g.fillRect((int) (dX+tailleX/4.+(tailleX/2.)*ratioVie), y-15, 
+				   (int) ((tailleX/2.)*(1-ratioVie)), 10);
 		g.setColor(Color.white);
-		g.fillRect(dX+TAILLEX/4+10, y-18, TAILLEX/3, 1);
+		g.fillRect(dX+tailleX/4+10, y-13, tailleX/3, 1);
 		g.setClip(oldClip);
 	}
 }

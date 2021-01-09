@@ -29,6 +29,7 @@ public class MenuPrincipale extends MenuSimple {
                 Carte c = new Carte();
                 c.placementSoldatAlea();
                 setMenu(new PanneauJeu(c, MenuPrincipale.this));
+                c = null; // Déréférence c pour que l'objet soit nettoyer
             }
         });
             // Charger un jeu

@@ -87,7 +87,12 @@ public class MenuOptions extends MenuSimple implements wargame.IConfig {
                         // On enregistre les changements dans le fichier de configuration
                         try (OutputStream out = new FileOutputStream("data/config.properties")) {
                             p.store(out, null);
-                        } catch (IOException io) {
+                        } catch (IOException|NullPointerException io) {
+                            System.err.println("Erreur lors de l'écriture vers le fichier de configuration! " + io.getLocalizedMessage());
+                        }
+                        try (OutputStream out = new FileOutputStream("bin/config.properties")) {
+                            p.store(out, null);
+                        } catch (IOException|NullPointerException io) {
                             System.err.println("Erreur lors de l'écriture vers le fichier de configuration! " + io.getLocalizedMessage());
                         }
                         // On recharge les paramètre
