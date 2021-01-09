@@ -3,6 +3,9 @@ package wargame;
 import misc.Position;
 import unites.Soldat;
 
+/**
+ * Interface contenant les enumerations pour les types de Soldats
+ */
 public interface ISoldat {
    enum TypesH {
       CHEVALIER (80,3,10,2), GNOME (30,1,8,9), BARBARE (60,3,15,0), ARCHER (20,5,5,10);

@@ -3,8 +3,6 @@ package misc;
 import wargame.IConfig;
 import terrains.Carte;
 import terrains.Chemin;
-import terrains.Noeud;
-import java.util.ArrayList;
 
 public class Position implements IConfig {
 	private int x, y;

@@ -8,6 +8,10 @@ import java.awt.image.*;
 import javax.imageio.ImageIO;
 import java.io.IOException;
 
+
+/**
+ * Classe abstraite décrivant les méthodes et variables communes aux deux factions
+ */
 public abstract class Soldat implements ISoldat {
     private final int POINT_DE_VIE_MAX, PORTEE_VISUELLE, PUISSANCE, TIR; 
     private int pointsDeVie;

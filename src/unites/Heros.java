@@ -6,6 +6,10 @@ import java.awt.Color;
 
 import misc.Position;
 
+
+/**
+ * Classe représentants les Héros, l'armée du joueur
+ */
 public class Heros extends Soldat {
     private TypesH TYPE;
     

@@ -6,6 +6,9 @@ import java.awt.Color;
 
 import misc.Position;
 
+/**
+ * Classe représentant les monstres
+ */
 public class Monstre extends Soldat {
     private final TypesM TYPE;
     /**
