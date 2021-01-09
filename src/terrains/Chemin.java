@@ -72,6 +72,10 @@ public class Chemin {
         System.out.println("Fin du constructeur \n");
     }
 
+    public ArrayList<Noeud> getListeF () {
+        return liste_f;
+    }
+
     /* calcule la distance entre les points (x1,y1) et (x2,y2) */
     public float distance(int x1, int y1, int x2, int y2){
         /* distance euclidienne */

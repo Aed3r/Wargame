@@ -1,6 +1,10 @@
 package misc;
 
 import wargame.IConfig;
+import terrains.Carte;
+import terrains.Chemin;
+import terrains.Noeud;
+import java.util.ArrayList;
 
 public class Position implements IConfig {
 	private int x, y;
@@ -39,9 +43,15 @@ public class Position implements IConfig {
 	 * @param pos Position
 	 * @return int : distance vers la position pos
 	 */
-	public int distance(Position pos){ // 
-		/*TODO*/
-		return 0;
+	public int distance(Position pos, Carte c){ // 
+		Chemin chem = new Chemin(x, y, pos.getX(), pos.getY(), c);
+		int cmp = 0;
+
+		for (int i = 0; i < chem.getListeF().size(); i++) {
+			cmp++;
+		}
+
+		return cmp;
 	}
 
 	

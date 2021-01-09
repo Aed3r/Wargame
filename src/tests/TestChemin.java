@@ -7,6 +7,7 @@ import javax.print.attribute.standard.MediaSize.NA;
 import terrains.Chemin;
 import terrains.Noeud;
 import terrains.Carte;
+import misc.Position;
 
 public class TestChemin {
     public static void main(String[] args) {
@@ -54,6 +55,10 @@ public class TestChemin {
         Carte c = new Carte ();
         c.affiche_nul();
 
-        Chemin chem = new Chemin(5, 2, 5, 18, c);
+        //Chemin chem = new Chemin(5, 2, 5, 18, c);
+        Position p = new Position(5, 2);
+        Position p2 = new Position(5, 18);
+        int longu = p.distance(p2, c);
+        System.out.printf("La longueur du chemin est de %d \n", longu);
     }
 }
