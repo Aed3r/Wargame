@@ -3,6 +3,9 @@ package wargame;
 import misc.Position;
 import unites.Soldat;
 
+/**
+ * Interface contenant les enumerations pour les types de Soldats
+ */
 public interface ISoldat {
    enum TypesH {
       CHEVALIER (80,3,10,2), GNOME (30,1,8,9), BARBARE (60,3,15,0), ARCHER (20,5,5,10);
@@ -22,7 +25,7 @@ public interface ISoldat {
       }
    }
    public enum TypesM {
-      TROLL (100,1,25,0), ZOMBIE (40,2,10,0), MOMIE (30,2,5,2), SORCIER (20,2,5,10 );
+      TROLL (100,1,25,0), ZOMBIE (40,2,10,0), MOMIE (30,2,5,2), SORCIER (20,2,0,10);
       
       private final int POINTS_DE_VIE, PORTEE_VISUELLE, PUISSANCE, TIR;
       
@@ -43,6 +46,6 @@ public interface ISoldat {
 
    int getPoints(); boolean getTour(); int getPortee();
    boolean joueTour();
-   void combat(Soldat soldat);
+   boolean combat(Soldat soldat);
    void seDeplace(Position newPos);
 }
