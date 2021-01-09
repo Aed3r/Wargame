@@ -161,7 +161,7 @@ public class Carte implements wargame.IConfig, wargame.ICarte {
         for (int i = posI-1; i < posI+2; i++) {
             for (int j = posJ-1; j < posJ+2; j++) {
                 if ((i != posI && j != posJ) || (i != posI-1 && j != posJ+1) || (i != posI+1 && j != posJ+1)) {
-                    if (grille[posI][posJ].estAccessible()) cmp++;
+                    if (grille[i][j].estAccessible()) cmp++;
                 }
             }
         }
@@ -204,7 +204,7 @@ public class Carte implements wargame.IConfig, wargame.ICarte {
         for (int i = posI-1; i < posI+2; i++) {
             for (int j = posJ-1; j < posJ+2; j++) {
                 if ((i != posI && j != posJ) || (i != posI-1 && j != posJ+1) || (i != posI+1 && j != posJ+1)) {
-                    if (grille[posI][posJ].getSoldat() != null && grille[posI][posJ].getSoldat().estHeros()) cmp++;
+                    if (grille[i][j].getSoldat() != null && grille[posI][posJ].getSoldat().estHeros()) cmp++;
                 }
             }
         }
