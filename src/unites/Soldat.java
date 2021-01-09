@@ -3,12 +3,14 @@ package unites;
 import terrains.Carte;
 import java.awt.Color;
 import misc.*;
+import wargame.IConfig;
 import wargame.ISoldat;
 import java.awt.image.*;
 import javax.imageio.ImageIO;
 import java.io.IOException;
 
-public abstract class Soldat implements ISoldat {
+
+public abstract class Soldat implements ISoldat, IConfig {
     private final int POINT_DE_VIE_MAX, PORTEE_VISUELLE, PUISSANCE, TIR; 
     private int pointsDeVie;
     private Carte carte;
@@ -144,7 +146,11 @@ public abstract class Soldat implements ISoldat {
         if (sprite == null) {
             // Chargement de l'image associée
             try {
-                sprite = ImageIO.read(getClass().getResourceAsStream("/img/soldats/" + getNom() + ".png"));
+                String val = Parametres.getParametre("modePerf");
+                if (val == null || val.equals(PARAMETRES[3][2])) 
+                    sprite = ImageIO.read(getClass().getResourceAsStream("/img/soldats/" + getNom() + "Perf.png"));
+                else    
+                    sprite = ImageIO.read(getClass().getResourceAsStream("/img/soldats/" + getNom() + ".png"));
             } catch (IOException e) {
                 // Problème lors du chargement, on utilise rien
                 System.out.println(e.getLocalizedMessage());

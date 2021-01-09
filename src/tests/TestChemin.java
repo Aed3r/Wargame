@@ -1,10 +1,6 @@
 package tests;
 
 import java.util.ArrayList;
-
-import javax.print.attribute.standard.MediaSize.NA;
-
-import terrains.Chemin;
 import terrains.Noeud;
 import terrains.Carte;
 import misc.Position;

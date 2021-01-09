@@ -20,7 +20,8 @@ public interface IConfig {
 	String[][] PARAMETRES = {
 		{"tailleFenetre", "Taille de la fenètre", "grande", "plein écran", "petite", "moyenne"},
 		{"difficulte", "Difficulté", "normale", "difficile", "simple"},
-		{"deplacementVert", "Déplacement vertical", "éteind", "allumé"}
+		{"deplacementVert", "Déplacement vertical", "éteind", "allumé"},
+		{"modePerf", "Mode Performance", "On", "Off"}
 	};
 	// Chemin vers le fichier de configuration
 	String CONFIGFILE = "/config.properties"; 
@@ -40,4 +41,5 @@ public interface IConfig {
 	int TAILLEX = 256, TAILLEY = 194; // Tailles des sprite élément
 	int MARGX = TAILLEX*2, MARGY = TAILLEY*2; // Marges horizontales et verticales sur la carte
 	int DEPLACEMENTCLAVIER = 30; // Nombre de pixels à déplacer par appui des flèches du clavier
+	float MULTTAILLEPERF = 0.5f; // Multiplicateur des tailles pour le mode performance
 }

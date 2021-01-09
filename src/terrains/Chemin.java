@@ -1,7 +1,6 @@
 package terrains;
 
 import java.util.ArrayList;
-import terrains.Noeud;
 import misc.Position; 
 
 
