@@ -8,6 +8,7 @@ import wargame.ISoldat.TypesH;
 import wargame.ISoldat.TypesM;
 
 import java.awt.*;
+import java.util.ArrayList;
 
 public class Carte implements wargame.IConfig, wargame.ICarte {
     Element[][] grille = new Element[HAUTEUR_CARTE][LARGEUR_CARTE];
@@ -91,7 +92,7 @@ public class Carte implements wargame.IConfig, wargame.ICarte {
         if(getElement(pos).getSoldat() == null)
             return false; 
         
-        /*Si le solda n'est pas un heros ou si un héros se trouve déjà en pos2*/
+        /*Si le soldat n'est pas un heros ou si un héros se trouve déjà en pos2*/
         if(!(getElement(pos).getSoldat() instanceof Heros) || getElement(pos2).getSoldat() instanceof Heros)
             return false;
         
@@ -119,15 +120,14 @@ public class Carte implements wargame.IConfig, wargame.ICarte {
 
     public boolean deplaceSoldat(Position pos, Soldat soldat){
         /*Si la position ou l'on veut se deplacer est vide et adjacente au soldat*/
-        if(getElement(pos).estAccessible() && getElement(pos).getSoldat() == null && pos.estVoisine(soldat.getPos())){
+        if(pos != null && getElement(pos) != null && getElement(pos).estAccessible() && 
+           getElement(pos).getSoldat() == null && pos.estVoisine(soldat.getPos())){
             getElement(soldat.getPos()).setSoldat(null); /*On libère la case ou se trouvais le soldat*/
             soldat.seDeplace(pos);
             getElement(pos).setSoldat(soldat); /*On sauvegarde le soldat dans l'element de pos*/
             return true;
         }else return false;
     }
-
-    public void placerSoldat (int nb_soldat) {}
 
     /* Retourne l'élement à la position pos dans la grille */
     public Element getElement(Position pos) {
@@ -258,31 +258,40 @@ public class Carte implements wargame.IConfig, wargame.ICarte {
     /**
      * Fini le tour des soldats joueur
      * @see Soldat#termineTour()
+     * @return la liste de soldats ayant perdues de la vie 
      */
-    public void terminerTour () {
+    public ArrayList<Soldat>  terminerTour () {
+        ArrayList<Soldat> tmp = new ArrayList<>();
+
         for (int i = 0; i < HAUTEUR_CARTE; i++) {
             for (int j = 0; j < LARGEUR_CARTE; j++) {
                 Soldat s = grille[i][j].getSoldat();
-                if (s != null) {
-                    s.termineTour();
-                }
+                if (s != null && s.termineTour()) tmp.add(s);
             }
         }
+
+        return tmp;
     }
 
     /**
      * Joue le tour des ennemis de la carte
      * @see Monstre#joueTour()
+     * @return la liste de héros attaqué
      */
-    public void jouerEnnemis () {
+    public ArrayList<Heros> jouerEnnemis () {
+        ArrayList<Heros> herosAttaque = new ArrayList<>();
+
         for (int i = 0; i < HAUTEUR_CARTE; i++) {
             for (int j = 0; j < LARGEUR_CARTE; j++) {
                 Soldat s = grille[i][j].getSoldat();
                 if (s != null && !s.estHeros()) {
-                    ((Monstre) s).joueTour();
+                    Heros tmp = ((Monstre) s).jouer();
+                    if (tmp != null) herosAttaque.add(tmp);
                 }
             }
         }
+
+        return herosAttaque;
     }
 
 

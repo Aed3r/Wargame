@@ -19,7 +19,8 @@ public abstract class Soldat implements ISoldat, IConfig {
     private Carte carte;
     private Position pos;
     private boolean tour = true; /*Permet de savoir si ce soldat a déja joué son tour*/
-    private BufferedImage sprite;
+    private BufferedImage sprite, spriteDegat;
+    private boolean afficherSpriteDegat = false;
 
     /**
      * Crée un soldat selon les caracteristiques en paramètre (CLASSE ABSTRAITE NE DOIT PAS ÊTRE APELLÉ DIRECTEMENT)
@@ -64,18 +65,22 @@ public abstract class Soldat implements ISoldat, IConfig {
      * Termine le tour du soldat, si il n'as pas bougé ce tour ci il recupère des pv.
      * Si il se trouve dans un désert il perd des pv
      */
-    public void termineTour(){
+    public boolean termineTour(){
+        int pdvAvant = getPoints();
         /*Si le soldat n'as pas joué ce tour ci et qu'il ne se trouve pas sur une case qui cause des dégats il recupère 10% de ses pv max*/
-        if(tour == true && carte.getElement(this.pos).getPDVPerdues() > 0){
+        if(tour == true && carte.getElement(this.pos).getPDVPerdues() == 0){
             this.pointsDeVie = this.pointsDeVie + (int)(this.POINT_DE_VIE_MAX *0.1);
         }else{
             this.pointsDeVie = this.pointsDeVie - (int) carte.getElement(this.pos).getPDVPerdues();
         }  
-        /*On vérifie que le soldat n'est pas mort, ou que son nombre de points de vie n'est pas au dessus du maximum */
-        if(this.pointsDeVie <= 0){
-            carte.mort(this);
-        }else if(this.pointsDeVie > POINT_DE_VIE_MAX) this.pointsDeVie = POINT_DE_VIE_MAX;
         tour = true;
+        /*On vérifie que le soldat n'est pas mort, ou que son nombre de points de vie n'est pas au dessus du maximum */
+        if(this.pointsDeVie <= 0)
+            carte.mort(this);
+        else if(this.pointsDeVie > POINT_DE_VIE_MAX) this.pointsDeVie = POINT_DE_VIE_MAX;
+        else if (pdvAvant < getPoints()) carte.getElement(this.pos).setReafficher(); // réaffichage normal
+        else return true; // afficher animation dégat
+        return false;
     }
 
     /**
@@ -159,10 +164,53 @@ public abstract class Soldat implements ISoldat, IConfig {
             } catch (IOException e) {
                 // Problème lors du chargement, on utilise rien
                 System.out.println(e.getLocalizedMessage());
+                return null;
             }
+
+            // Sprite dégat
+            spriteDegat = tint(sprite, Color.RED);
         }
-        return sprite;
+        if (afficherSpriteDegat) return spriteDegat;
+        else return sprite;
     }
+
+    public BufferedImage getSpriteDegat () {
+        return spriteDegat;
+    }
+
+    /**
+     * Applique la teinture color à image et laisse le channel alpha intact
+     * @param image une image à teinter
+     * @param color la couleur de la teinte
+     * @return une nouvelle image correspondant à image teinté
+     * @author Oleg Mikhailov
+     * @see https://stackoverflow.com/a/36744345/5591299
+     */
+    private static BufferedImage tint(BufferedImage image, Color color) {
+        BufferedImage tmp = new BufferedImage(image.getWidth(), image.getHeight(), BufferedImage.TYPE_INT_ARGB);
+		for (int x = 0; x < image.getWidth(); x++) {
+			for (int y = 0; y < image.getHeight(); y++) {
+				Color pixelColor = new Color(image.getRGB(x, y), true);
+				int r = (pixelColor.getRed() + color.getRed()) / 2;
+				int g = (pixelColor.getGreen() + color.getGreen()) / 2;
+				int b = (pixelColor.getBlue() + color.getBlue()) / 2;
+				int a = pixelColor.getAlpha();
+				int rgba = (a << 24) | (r << 16) | (g << 8) | b;
+				tmp.setRGB(x, y, rgba);
+			}
+        }
+        return tmp;
+    }
+    
+
+    public boolean getAfficherSpriteDegat() {
+        return this.afficherSpriteDegat;
+    }
+
+    public void setAfficherSpriteDegat(boolean afficherSpriteDegat) {
+        this.afficherSpriteDegat = afficherSpriteDegat;
+    }
+
 
     public boolean estHeros () {
 		return this instanceof Heros;

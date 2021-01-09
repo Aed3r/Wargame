@@ -13,6 +13,7 @@ import javax.imageio.ImageIO;
 import misc.Element;
 import javax.swing.*;
 import terrains.Carte;
+import unites.Heros;
 import unites.Soldat;
 import misc.Position;
 
@@ -113,10 +114,22 @@ public class PanneauJeu extends JPanel implements wargame.IConfig, MouseWheelLis
             @Override
             public void mouseClicked(MouseEvent e) {
                 System.out.println("finir tour");
-                carte.terminerTour();
+                for (Soldat s : carte.terminerTour()) {
+                    RunnableAfficherDegat r = new RunnableAfficherDegat(carte.getElement(s.getPos()));
+                    Thread t = new Thread(r);
+                    t.start();
+                }
                 PanneauJeu.this.repaint();
-                carte.jouerEnnemis();
-                PanneauJeu.this.repaint();
+                for (Soldat s : carte.jouerEnnemis()) {
+                    RunnableAfficherDegat r = new RunnableAfficherDegat(carte.getElement(s.getPos()));
+                    Thread t = new Thread(r);
+                    t.start();
+                }
+                for (Soldat s : carte.terminerTour()) {
+                    RunnableAfficherDegat r = new RunnableAfficherDegat(carte.getElement(s.getPos()));
+                    Thread t = new Thread(r);
+                    t.start();
+                }
             }
         });
         gc.gridx = 1;
@@ -378,7 +391,12 @@ public class PanneauJeu extends JPanel implements wargame.IConfig, MouseWheelLis
                     if (pos1 == null && s != null && s.estHeros()) pos1 = pos;
                     else if (pos1 != null) {
                         if (carte.actionHeros(pos1, pos)) {
-                            repaint();
+                            // Affichage des dégats
+                            if (s != null) {
+                                RunnableAfficherDegat r = new RunnableAfficherDegat(carte.getElement(pos));
+                                Thread t = new Thread(r);
+                                t.start();
+                            } else repaint();
                             pos1 = null;
                         } else if (s != null && s.estHeros()) pos1 = pos; 
                         else pos1 = null;
@@ -628,6 +646,36 @@ public class PanneauJeu extends JPanel implements wargame.IConfig, MouseWheelLis
         yPlateau += apres.getY() - avant.getY();
         repaint();
     }
+
+    /**
+     * Lance l'animation lorsqu'un soldat prend des dégats
+     */
+    public class RunnableAfficherDegat implements Runnable {
+        private Element e;
+
+        /**
+         * @param e le soldat sur lequel affiché l'animation
+         */
+		public RunnableAfficherDegat(Element e) {
+            this.e = e;
+		}
+        
+		public void run() {
+            if (e.getSoldat() == null) return;
+
+            e.getSoldat().setAfficherSpriteDegat(true);
+            e.setReafficher();
+            PanneauJeu.this.repaint();
+
+            try {
+				Thread.sleep(500);
+            } catch (InterruptedException e) { }
+            
+            e.getSoldat().setAfficherSpriteDegat(false);
+            e.setReafficher();
+            PanneauJeu.this.repaint();
+		}
+	}
 
     /**
      *  Affiche le plateau sur le panneau

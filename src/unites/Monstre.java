@@ -44,17 +44,17 @@ public class Monstre extends Soldat {
 
     /**
      * Joue le monstre
-     * @return true si le monstre a fait une action, false sinon
+     * @return le héros attaqué, s'il y en a
      */
-    public boolean jouer(){
+    public Heros jouer(){
         Heros h = getCarte().trouveHeros(getPos());
         if(h == null){/*Il n'y a aucun Heros adjacents*/
             Position pos = getCarte().trouvePositionVide(getPos());
-            if(pos == null) return false;
+            if(pos == null) return null;
             getCarte().deplaceSoldat(pos, this);
         }else{
             this.combat(h);
         }
-        return true;
+        return h;
     }
 }
