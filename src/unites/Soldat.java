@@ -104,14 +104,14 @@ public abstract class Soldat implements ISoldat {
                 if(this.pointsDeVie <= 0) carte.mort(this);
             }
         /*Ensuite le cas d'un combat a distance (on utilise le tir et non la puissance)*/ 
-        }else if(getPos().distance(soldat.getPos()) <= this.getPortee()){ //Si le soldat adverse est a portée de tir
+        }else if(getPos().distance(soldat.getPos(), carte) <= this.getPortee()){ //Si le soldat adverse est a portée de tir
             /*TODO On vérifie qu'il n'y aie pas d'obstacle entre les deux soldats*/
             
             /*On fait un tirage entre 0 et la puissance de tir du soldat*/
             soldat.pointsDeVie = soldat.pointsDeVie - (int)(Math.random() * TIR);
             if(soldat.pointsDeVie <= 0){ /*Si le soldat adverse est mort sur le coup*/
                 carte.mort(soldat);
-            }else if(getPos().distance(soldat.getPos()) <= soldat.getPortee()){ /* Si il n'est pas mort et que l'on est a sa portée il peut attaquer a son tour*/
+            }else if(getPos().distance(soldat.getPos(), carte) <= soldat.getPortee()){ /* Si il n'est pas mort et que l'on est a sa portée il peut attaquer a son tour*/
                 this.pointsDeVie = this.pointsDeVie - (int)(Math.random() * soldat.TIR);
                 if(this.pointsDeVie <= 0) carte.mort(this);
             }
