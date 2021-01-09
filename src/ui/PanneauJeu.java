@@ -8,12 +8,10 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
 import misc.Parametres;
-
 import javax.imageio.ImageIO;
 import misc.Element;
 import javax.swing.*;
 import terrains.Carte;
-import unites.Heros;
 import unites.Soldat;
 import misc.Position;
 
@@ -23,22 +21,28 @@ import misc.Position;
 public class PanneauJeu extends JPanel implements wargame.IConfig, MouseWheelListener {
     private static final long serialVersionUID = -4874781269011185234L;
     private static final float MAXZOOM = 2f, VITESSEZOOM = 0.1f;
-    private int xPlateau = -MARGX, yPlateau = -MARGY, wPlateau, hPlateau;
-    private double zoomPlateau = 1;
+    private final Carte carte; // La cart à afficher
+    private final ArrayList<TranslucentButton> boutonsJeu = new ArrayList<>(); // Boutons apparaissant au dessus du plateau de jeu
+    private final ArrayList<TranslucentButton> boutonsMenu = new ArrayList<>(); // Boutons apparaissant dans le menu
+    private final ArrayList<LabelAA> labelsInfo = new ArrayList<>(); // Labels d'informations sur un soldat
+    private final MenuSimple menuParent;
+    private final boolean perf; // Si le mode performance est activé ou non
+    private final float multTaille; // Le multiplicateur des tailles d'images
+
+    private int xPlateau = -MARGX, yPlateau = -MARGY, wPlateau, hPlateau; // Position et taille du plateau
+    private double zoomPlateau = 1, zoomMin;
     private transient BufferedImage plateau = null, fond;
-    private byte[][][] tabHitbox;
+    private byte[][][] tabHitbox; // Le tableau indiquant la position des éléments sur le plateau
     private Point posSouris;
     private Dimension tailleFenetre = null, tailleVirtuelle = null;
-    private final Carte carte;
-    private final ArrayList<TranslucentButton> boutonsJeu = new ArrayList<>();
-    private final ArrayList<TranslucentButton> boutonsMenu = new ArrayList<>();
-    private final ArrayList<LabelAA> labelsInfo = new ArrayList<>();
     private boolean afficherMenu = false, barreInfosCache = true;
     private transient Position pos1;
-    private final MenuSimple menuParent;
-    private final boolean perf;
-    private final float multTaille;
-
+    
+    /**
+     * Construit un nouveau panneau affichant la carte c
+     * @param carte la carte à afficher
+     * @param parent le menu auquel revenir en quittant
+     */
     public PanneauJeu(Carte carte, MenuSimple parent) {
         super();
         this.carte = carte;
@@ -74,6 +78,10 @@ public class PanneauJeu extends JPanel implements wargame.IConfig, MouseWheelLis
         creerMouseMotionListener();
         creerKeyListener();
     }
+    
+
+             /* Création de l'interface */
+
 
     /**
      * Crée les boutons s'affichant au dessus du plateau
@@ -239,6 +247,30 @@ public class PanneauJeu extends JPanel implements wargame.IConfig, MouseWheelLis
         boutonsMenu.add(tmp);
     }
 
+    /**
+     * Ouvre/Ferme le meu
+     */
+    private void swapMenu() {
+        if (afficherMenu) { // On ferme le menu
+            // On affiche tous les boutons du jeu
+            for (int i = 0; i < boutonsJeu.size(); i++) boutonsJeu.get(i).setVisible(true);
+            // On cache tous les boutons du menu
+            for (int i = 0; i < boutonsMenu.size(); i++) boutonsMenu.get(i).setVisible(false);
+        } else { // On affiche le menu
+            // On cache tous les boutons du jeu
+            for (int i = 0; i < boutonsJeu.size(); i++) boutonsJeu.get(i).setVisible(false);
+            // On affiche tous les boutons du menu
+            for (int i = 0; i < boutonsMenu.size(); i++) boutonsMenu.get(i).setVisible(true);
+            // On cache tous les boutons de la barre d'informations
+            if (!barreInfosCache) for (int i = 0; i < labelsInfo.size(); i++) labelsInfo.get(i).setVisible(false);
+        }
+        afficherMenu = !afficherMenu;
+        repaint();
+    }
+
+    /**
+     * Crée les labels affichant des informations sur les soldats
+     */
     private void creerInfoBar () {
         GridBagConstraints gc = new GridBagConstraints();
         LabelAA tmp;
@@ -340,6 +372,11 @@ public class PanneauJeu extends JPanel implements wargame.IConfig, MouseWheelLis
         }
     }
 
+    /**
+     * Charge une icône depuis data/img/icon
+     * @param nom le nom de l'icône sans extension
+     * @return l'icône chargée
+     */
     private ImageIcon chargerIcon (String nom) {
         InputStream stream = getClass().getResourceAsStream("/img/icon/" + nom + ".png");
         ImageIcon icon = null;
@@ -354,6 +391,44 @@ public class PanneauJeu extends JPanel implements wargame.IConfig, MouseWheelLis
 
         return icon;
     }
+
+    /**
+     * Affiche/cache la barre d'info 
+     */
+    private void switchBarreInfo (Soldat s) {
+        if (s != null) {
+            // Nom
+            labelsInfo.get(0).setText(s.getNom());
+            labelsInfo.get(0).setVisible(true);
+            // Points de vies
+            labelsInfo.get(1).setText(s.getPoints() + "/" + s.getPointsMax());
+            labelsInfo.get(1).setVisible(true);
+            // Portée de vue
+            labelsInfo.get(2).setText(s.getPortee() + "");
+            labelsInfo.get(2).setVisible(true);
+            // Puissance au corps à corps
+            labelsInfo.get(3).setText(s.getPUISSANCE() + "");
+            labelsInfo.get(3).setVisible(true);
+            // Puissance au tir
+            labelsInfo.get(4).setText(s.getTIR() + "");
+            labelsInfo.get(4).setVisible(true);
+            // Tour Joué
+            if (!s.getTour()) {
+                labelsInfo.get(5).setText("Tour joué");
+                labelsInfo.get(5).setVisible(true);
+            }
+            barreInfosCache = false;
+        } else if (!barreInfosCache) {
+            // On cache tous les boutons de la barre d'informations
+            for (int i = 0; i < labelsInfo.size(); i++) labelsInfo.get(i).setVisible(false);
+            barreInfosCache = true;
+        }
+    }
+
+
+
+             /* Création des listener */
+
 
     /**
      * Crée le listener des évènements souris
@@ -378,12 +453,9 @@ public class PanneauJeu extends JPanel implements wargame.IConfig, MouseWheelLis
 
                 if (SwingUtilities.isLeftMouseButton(e)) {
                     // On retrouve l'élémetn cliqué
-                    Point curseurMap;
-                    try { curseurMap = getPosCurseurPlateau(); }
-                    catch (NullPointerException ex) { 
-                        System.out.println("souris null");
-                        return; 
-                    }
+                    Point curseurMap = getPosCurseurPlateau();
+                    if (curseurMap == null) return;
+
                     Position pos = new Position(tabHitbox[curseurMap.y][curseurMap.x][0] & 0xFF, tabHitbox[curseurMap.y][curseurMap.x][1] & 0xFF);
                     
                     // Action du héros
@@ -453,49 +525,16 @@ public class PanneauJeu extends JPanel implements wargame.IConfig, MouseWheelLis
                     Soldat s;
     
                     if(afficherMenu) return;
-    
-                    Point curseurMap;
-                    try { curseurMap = getPosCurseurPlateau(); }
-                    catch (NullPointerException ex) { return; }
+
+                    Point curseurMap = getPosCurseurPlateau();
+                    if (curseurMap == null) return;
+
                     Position pos = new Position(tabHitbox[curseurMap.y][curseurMap.x][0] & 0xFF, tabHitbox[curseurMap.y][curseurMap.x][1] & 0xFF);
     
                     s = carte.getElement(pos).getSoldat();
                     switchBarreInfo(s);
                 }
             });
-        }
-    }
-
-    /**
-     * Affiche/cache la barre d'info 
-     */
-    private void switchBarreInfo (Soldat s) {
-        if (s != null) {
-            // Nom
-            labelsInfo.get(0).setText(s.getNom());
-            labelsInfo.get(0).setVisible(true);
-            // Points de vies
-            labelsInfo.get(1).setText(s.getPoints() + "/" + s.getPointsMax());
-            labelsInfo.get(1).setVisible(true);
-            // Portée de vue
-            labelsInfo.get(2).setText(s.getPortee() + "");
-            labelsInfo.get(2).setVisible(true);
-            // Puissance au corps à corps
-            labelsInfo.get(3).setText(s.getPUISSANCE() + "");
-            labelsInfo.get(3).setVisible(true);
-            // Puissance au tir
-            labelsInfo.get(4).setText(s.getTIR() + "");
-            labelsInfo.get(4).setVisible(true);
-            // Tour Joué
-            if (!s.getTour()) {
-                labelsInfo.get(5).setText("Tour joué");
-                labelsInfo.get(5).setVisible(true);
-            }
-            barreInfosCache = false;
-        } else if (!barreInfosCache) {
-            // On cache tous les boutons de la barre d'informations
-            for (int i = 0; i < labelsInfo.size(); i++) labelsInfo.get(i).setVisible(false);
-            barreInfosCache = true;
         }
     }
 
@@ -567,25 +606,33 @@ public class PanneauJeu extends JPanel implements wargame.IConfig, MouseWheelLis
     }
 
     /**
-     * Ouvre/Ferme le meu
+     * Définie le zoom lorsque la molette est utilisé
+     * @param e l'évenement généré
      */
-    private void swapMenu() {
-        if (afficherMenu) { // On ferme le menu
-            // On affiche tous les boutons du jeu
-            for (int i = 0; i < boutonsJeu.size(); i++) boutonsJeu.get(i).setVisible(true);
-            // On cache tous les boutons du menu
-            for (int i = 0; i < boutonsMenu.size(); i++) boutonsMenu.get(i).setVisible(false);
-        } else { // On affiche le menu
-            // On cache tous les boutons du jeu
-            for (int i = 0; i < boutonsJeu.size(); i++) boutonsJeu.get(i).setVisible(false);
-            // On affiche tous les boutons du menu
-            for (int i = 0; i < boutonsMenu.size(); i++) boutonsMenu.get(i).setVisible(true);
-            // On cache tous les boutons de la barre d'informations
-            if (!barreInfosCache) for (int i = 0; i < labelsInfo.size(); i++) labelsInfo.get(i).setVisible(false);
-        }
-        afficherMenu = !afficherMenu;
-        repaint();
+    @Override
+	public void mouseWheelMoved(MouseWheelEvent e) {
+        if(afficherMenu) return;
+        
+        // la position du curseur sur le plateau avant le zoom
+        Point curseurMap = getPosCurseurPlateau();
+        if (curseurMap == null) return;
+        
+        zoomPlateau += e.getWheelRotation() * -VITESSEZOOM;
+        if (zoomPlateau > MAXZOOM) zoomPlateau = MAXZOOM;
+        if (zoomPlateau < zoomMin) zoomPlateau = zoomMin;
+
+        // la position du curseur sur le plateau après le zoom
+        Point curseurMapZoom = getPosCurseurPlateau();
+        if (curseurMapZoom == null) return;
+
+        // On replace le plateau de façon à ce que le curseur reste sur le même point de la carte
+        deplacement(curseurMap, curseurMapZoom);
     }
+
+    
+
+            /* Gestion de la navigation du plateau */
+
 
     /**
      * Effectue un zoom centré sur le centre de l'écran
@@ -602,40 +649,22 @@ public class PanneauJeu extends JPanel implements wargame.IConfig, MouseWheelLis
     }
 
     /**
-     * @return la position du curseur sur le plateau
-     * @throws NullPointerException si le curseur se trouve en dehors de la fenêtres
+     * @return la position du curseur sur le plateau ou null s'il ne s'y trouve pas
      */
-    private Point getPosCurseurPlateau () throws NullPointerException {
-        Point curseur = this.getMousePosition();
-        if (curseur == null) throw new NullPointerException(); // Lorsque le curseur se trouve en dehors de la fenêtre
-
-        Point pointVirt = new Point((int) (curseur.getX()/zoomPlateau), (int) (curseur.getY()/zoomPlateau));
-        return new Point((int) pointVirt.getX()-xPlateau, (int) pointVirt.getY()-yPlateau);
-    }
-
-    /**
-     * Définie le zoom lorsque la molette est utilisé
-     * @param e l'évenement généré
-     */
-    @Override
-	public void mouseWheelMoved(MouseWheelEvent e) {
-        if(afficherMenu) return;
+    private Point getPosCurseurPlateau () {
+        Point tmp;
         
-        // la position du curseur sur le plateau avant le zoom
-        Point curseurMap;
-        try { curseurMap = getPosCurseurPlateau(); }
-        catch (NullPointerException ex) { return; }
+        tmp = MouseInfo.getPointerInfo().getLocation(); // Position sur l'écran
+        Point posFenetre = null;
+        try { posFenetre = this.getLocationOnScreen(); } 
+        catch (IllegalComponentStateException e) { return null; }
         
-        zoomPlateau += e.getWheelRotation() * -VITESSEZOOM;
-        if (zoomPlateau > MAXZOOM) zoomPlateau = MAXZOOM;
-
-        // la position du curseur sur le plateau après le zoom
-        Point curseurMapZoom;
-        try { curseurMapZoom = getPosCurseurPlateau(); }
-        catch (NullPointerException ex) { return; }
-
-        // On replace le plateau de façon à ce que le curseur reste sur le même point de la carte
-        deplacement(curseurMap, curseurMapZoom);
+        tmp.setLocation(tmp.x - posFenetre.x, tmp.y - posFenetre.y); // Position dans la fenêtre
+        tmp.setLocation((int) (tmp.x/zoomPlateau), (int) (tmp.y/zoomPlateau)); // Position dans la fenêtre virtuelle
+        tmp.setLocation(tmp.x-xPlateau, tmp.y-yPlateau); // Point sur la carte
+        
+        if (tmp.x > 0 && tmp.y > 0 && tmp.x < wPlateau && tmp.y < hPlateau) return tmp;
+        else return null;
     }
 
     /**
@@ -700,6 +729,14 @@ public class PanneauJeu extends JPanel implements wargame.IConfig, MouseWheelLis
                 g2d.dispose();
             }
 
+            // zoomMin
+            if (tailleFenetre.width > tailleFenetre.height)
+                zoomMin = (double) tailleFenetre.width / wPlateau;
+            else
+                zoomMin = (double) tailleFenetre.height / hPlateau;
+
+            zoomPlateau = zoomMin;
+
             if (plateau == null) {
                 // On crée l'image sur laquelle le plateau sera dessiné
                 if (perf)
@@ -717,15 +754,6 @@ public class PanneauJeu extends JPanel implements wargame.IConfig, MouseWheelLis
         // On affiche le fond
         g2d = (Graphics2D) g;
         if (!perf) g.drawImage(fond, 0, 0, null);
-
-        // On vérifie si le zoom n'est pas allé trop loin
-        double zoomMin;
-        if (tailleFenetre.width > tailleFenetre.height)
-            zoomMin = (double) tailleFenetre.width / wPlateau;
-        else
-            zoomMin = (double) tailleFenetre.height / hPlateau;
-
-        if (zoomPlateau < zoomMin) zoomPlateau = zoomMin;
 
         // On récupère un nouveau buffer pour effectuer un zoom
         AffineTransform og = g2d.getTransform(), at = new AffineTransform(og);

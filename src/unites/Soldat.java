@@ -77,9 +77,11 @@ public abstract class Soldat implements ISoldat, IConfig {
         /*On vérifie que le soldat n'est pas mort, ou que son nombre de points de vie n'est pas au dessus du maximum */
         if(this.pointsDeVie <= 0)
             carte.mort(this);
-        else if(this.pointsDeVie > POINT_DE_VIE_MAX) this.pointsDeVie = POINT_DE_VIE_MAX;
-        else if (pdvAvant < getPoints()) carte.getElement(this.pos).setReafficher(); // réaffichage normal
-        else return true; // afficher animation dégat
+        else {
+            if (this.pointsDeVie > POINT_DE_VIE_MAX) this.pointsDeVie = POINT_DE_VIE_MAX;
+            if (pdvAvant < getPoints()) carte.getElement(this.pos).setReafficher(); // réaffichage normal
+            else if (pdvAvant > getPoints()) return true; // afficher animation dégat
+        }
         return false;
     }
 
