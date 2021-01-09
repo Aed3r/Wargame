@@ -13,6 +13,7 @@ import javax.imageio.ImageIO;
 import misc.Element;
 import javax.swing.*;
 import terrains.Carte;
+import unites.Soldat;
 import misc.Position;
 
 /**
@@ -24,22 +25,21 @@ public class PanneauJeu extends JPanel implements wargame.IConfig, MouseWheelLis
     private int xPlateau = -MARGX, yPlateau = -MARGY, wPlateau, hPlateau;
     private double zoomPlateau = 1;
     private transient BufferedImage plateau = null, fond;
-    private byte[][][] tabHitbox;
+    private final byte[][][] tabHitbox;
     private Point posSouris;
     private Dimension tailleFenetre = null, tailleVirtuelle = null;
-    private Carte carte;
-    private ArrayList<TranslucentButton> boutonsJeu = new ArrayList<>();
-    private ArrayList<TranslucentButton> boutonsMenu = new ArrayList<>();
-    private boolean afficherMenu = false;
+    private final Carte carte;
+    private final ArrayList<TranslucentButton> boutonsJeu = new ArrayList<>();
+    private final ArrayList<TranslucentButton> boutonsMenu = new ArrayList<>();
+    private final ArrayList<LabelAA> labelsInfo = new ArrayList<>();
+    private boolean afficherMenu = false, barreInfosCache = true;
     private transient Position pos1;
+    private final MenuSimple menuParent;
 
     public PanneauJeu(Carte carte, MenuSimple parent) {
         super();
         this.carte = carte;
-        Dimension s = new Dimension(300, 75); // Taille des boutons
-        TranslucentButton tmp = null;
-        GridBagConstraints gc;
-        ImageIcon icon;
+        this.menuParent = parent;
 
         // Initialisations
         setOpaque(false);
@@ -50,18 +50,32 @@ public class PanneauJeu extends JPanel implements wargame.IConfig, MouseWheelLis
         tabHitbox = new byte[hPlateau][wPlateau][2];
 
         /* Création des boutons */
+        creerBoutonJeu();
+        creerBoutonMenu();
+
+        /* Création de la barre d'infos */
+        creerInfoBar();
+        
+        /* Création des listener */
+        creerMouseListener();
+        creerMouseMotionListener();
+        creerKeyListener();
+    }
+
+    /**
+     * Crée les boutons s'affichant au dessus du plateau
+     */
+    private void creerBoutonJeu () {
+        TranslucentButton tmp = null;
+        GridBagConstraints gc;
+        ImageIcon icon;
 
         // Menu
         gc = new GridBagConstraints();
-        InputStream stream = getClass().getResourceAsStream("/img/icon/settings.png");
-        try {
-            icon = new ImageIcon(ImageIO.read(stream));
-            tmp = new TranslucentButton(icon, new Dimension(45, 45));
-        } catch (IOException e1) {
-            stream = null;
-        }
 
-        if (stream == null) tmp = new TranslucentButton("Menus", new Dimension(100, 100), 400, false);
+        icon = chargerIcon("settings");
+        if (icon == null) tmp = new TranslucentButton("Menus", new Dimension(100, 100), 400, false);
+        else tmp = new TranslucentButton(icon, new Dimension(45, 45));
 
         tmp.addMouseListener(new MouseAdapter() {
             @Override
@@ -89,7 +103,7 @@ public class PanneauJeu extends JPanel implements wargame.IConfig, MouseWheelLis
                 //TODO
             }
         });
-        gc.gridx = 0;
+        gc.gridx = 5;
         gc.gridy = 0;
         gc.weightx = 1;
         gc.weighty = 1;
@@ -97,9 +111,16 @@ public class PanneauJeu extends JPanel implements wargame.IConfig, MouseWheelLis
         gc.insets = new Insets(10,10,10,10);
         add(tmp, gc);
         boutonsJeu.add(tmp);
+    }
 
-        /* Création des boutons du menu */
-        
+    /**
+     * Crée les boutons du menu
+     */
+    private void creerBoutonMenu () {
+        Dimension s = new Dimension(300, 75); // Taille des boutons
+        TranslucentButton tmp = null;
+        GridBagConstraints gc = new GridBagConstraints();
+
         // Retour au jeu
         tmp = new TranslucentButton("Retour au jeu", s, 400, false);
         tmp.addMouseListener(new MouseAdapter() {
@@ -122,13 +143,11 @@ public class PanneauJeu extends JPanel implements wargame.IConfig, MouseWheelLis
         tmp.addMouseListener(new MouseAdapter() {
             @Override
             public void mouseClicked(MouseEvent e) {
-                parent.setMenu(parent);
+                menuParent.setMenu(menuParent);
             }
         });
 
-        gc.insets = new Insets(10,10,10,10);
         gc.gridy = 2;
-        gc.anchor = GridBagConstraints.CENTER;
         add(tmp, gc);
         tmp.setVisible(false);
         boutonsMenu.add(tmp);
@@ -155,9 +174,7 @@ public class PanneauJeu extends JPanel implements wargame.IConfig, MouseWheelLis
             }
         });
 
-        gc.insets = new Insets(10,10,10,10);
         gc.gridy = 3;
-        gc.anchor = GridBagConstraints.CENTER;
         add(tmp, gc);
         tmp.setVisible(false);
         boutonsMenu.add(tmp);
@@ -171,9 +188,7 @@ public class PanneauJeu extends JPanel implements wargame.IConfig, MouseWheelLis
             }
         });
 
-        gc.insets = new Insets(10,10,10,10);
         gc.gridy = 4;
-        gc.anchor = GridBagConstraints.CENTER;
         add(tmp, gc);
         tmp.setVisible(false);
         boutonsMenu.add(tmp);
@@ -187,15 +202,117 @@ public class PanneauJeu extends JPanel implements wargame.IConfig, MouseWheelLis
             }
         });
 
-        gc.insets = new Insets(10,10,10,10);
         gc.gridy = 5;
-        gc.anchor = GridBagConstraints.CENTER;
         add(tmp, gc);
         tmp.setVisible(false);
         boutonsMenu.add(tmp);
-        
-        /* Création des listener */
+    }
 
+    private void creerInfoBar () {
+        GridBagConstraints gc = new GridBagConstraints();
+        LabelAA tmp;
+        ImageIcon icon;
+        Dimension s = new Dimension();
+            
+        gc.anchor = GridBagConstraints.SOUTHWEST;
+        gc.insets = new Insets(0,10,10,10);
+        gc.gridy = 0;
+        gc.fill = GridBagConstraints.HORIZONTAL;
+
+        // Nom du soldat
+        tmp = new LabelAA("");
+        tmp.setForeground(Color.white);
+        s.setSize(300, 45);
+        tmp.setPreferredSize(s);
+        gc.gridx = 0;
+        tmp.setVisible(false);
+        add(tmp, gc);
+        labelsInfo.add(tmp);
+
+        // Points de vies
+        icon = chargerIcon("heart");
+        tmp = new LabelAA("", icon);
+        tmp.setForeground(Color.white);
+        s.setSize(200, 45);
+        tmp.setPreferredSize(s);
+        gc.gridx = 1;
+        gc.ipadx = 45;
+        tmp.setVisible(false);
+        add(tmp, gc);
+        labelsInfo.add(tmp);
+
+        // Portee
+        icon = chargerIcon("eye");
+        tmp = new LabelAA("", icon);
+        tmp.setForeground(Color.white);
+        s.setSize(200, 45);
+        tmp.setPreferredSize(s);
+        gc.gridx = 2;
+        tmp.setVisible(false);
+        add(tmp, gc);
+        labelsInfo.add(tmp);
+
+        // Puissance au corps à corps
+        icon = chargerIcon("swords");
+        tmp = new LabelAA("", icon);
+        tmp.setForeground(Color.white);
+        s.setSize(100, 45);
+        tmp.setPreferredSize(s);
+        gc.gridx = 3;
+        tmp.setVisible(false);
+        add(tmp, gc);
+        labelsInfo.add(tmp);
+
+        // Puissance au tir
+        icon = chargerIcon("bow");
+        tmp = new LabelAA("", icon);
+        tmp.setForeground(Color.white);
+        s.setSize(100, 45);
+        tmp.setPreferredSize(s);
+        gc.gridx = 4;
+        tmp.setVisible(false);
+        add(tmp, gc);
+        labelsInfo.add(tmp);
+    }
+
+    /**
+     * JLabel dont le texte est anti-aliasé et la police pré-définie
+     */
+    class LabelAA extends JLabel {
+        private static final long serialVersionUID = 1L;
+
+        public LabelAA(String text) { super(text); }
+
+        public LabelAA(String text, Icon ico) { super(text, ico, SwingConstants.CENTER); }
+        
+        @Override
+        public void paintComponent (Graphics g) {
+            Graphics2D g2d = (Graphics2D) g;
+            g2d.setRenderingHint(RenderingHints.KEY_TEXT_ANTIALIASING, RenderingHints.VALUE_TEXT_ANTIALIAS_ON);
+            g2d.setFont(GenPolice.genFont("Raleway", 500, false));
+            super.paintComponent(g2d);
+        }
+    }
+
+    private ImageIcon chargerIcon (String nom) {
+        InputStream stream = getClass().getResourceAsStream("/img/icon/" + nom + ".png");
+        ImageIcon icon = null;
+
+        if (stream == null) return null;
+
+        try {
+            icon = new ImageIcon(ImageIO.read(stream));
+        } catch (IOException|IllegalArgumentException e) {
+            System.err.println(e.getLocalizedMessage());
+        }
+
+        return icon;
+    }
+
+    /**
+     * Crée le listener des évènements souris
+     */
+    private void creerMouseListener () {
         this.addMouseListener(new MouseAdapter() {
             // Déplacement de la carte
             @Override
@@ -209,29 +326,34 @@ public class PanneauJeu extends JPanel implements wargame.IConfig, MouseWheelLis
             // Action d'un héros
             @Override
             public void mouseClicked(MouseEvent e) {
+                Soldat s;
+
                 if(afficherMenu) return;
 
-                Point curseurMap;
-                try { curseurMap = getPosCurseurPlateau(); }
-                catch (NullPointerException ex) { return; }
-                Position pos = new Position(tabHitbox[curseurMap.y][curseurMap.x][0] & 0xFF, tabHitbox[curseurMap.y][curseurMap.x][1] & 0xFF);
-                System.out.println(pos.toString());
-
-                carte.getElement(pos).setVisible();
-
-                if (pos1 == null) pos1 = pos;
-                else {
-                    System.out.println("trying action");
-                    if (carte.actionHeros(pos1, pos)) {
-                        System.out.println("succeeded");
-                        repaint();
-                    } else System.out.println("failed");
+                if (SwingUtilities.isLeftMouseButton(e)) {
+                    Point curseurMap;
+                    try { curseurMap = getPosCurseurPlateau(); }
+                    catch (NullPointerException ex) { return; }
+                    Position pos = new Position(tabHitbox[curseurMap.y][curseurMap.x][0] & 0xFF, tabHitbox[curseurMap.y][curseurMap.x][1] & 0xFF);
+    
+                    s = carte.getElement(pos).getSoldat();
+                    if (pos1 == null && s != null && s.estHeros()) pos1 = pos;
+                    else {
+                        if (carte.actionHeros(pos1, pos)) repaint();
+                        else if (s != null && s.estHeros()) pos1 = pos; 
+                        else pos1 = null;
+                    } 
+                } else if (SwingUtilities.isRightMouseButton(e)) {
                     pos1 = null;
-                } 
+                }
             }
         });
+    }
 
-        // Déplacement de la carte
+    /**
+     * Crée le listener des mouvements de souris
+     */
+    private void creerMouseMotionListener () {
         this.addMouseMotionListener(new MouseMotionAdapter() {
             @Override
             public void mouseDragged(MouseEvent e) {
@@ -246,9 +368,50 @@ public class PanneauJeu extends JPanel implements wargame.IConfig, MouseWheelLis
                 posSouris = e.getPoint();
                 repaint();
             }
-        });
 
-        // Action avec le clavier
+            // Affichage d'informations sur le soldat
+            @Override
+            public void mouseMoved(MouseEvent e) {
+                Soldat s;
+
+                if(afficherMenu) return;
+
+                Point curseurMap;
+                try { curseurMap = getPosCurseurPlateau(); }
+                catch (NullPointerException ex) { return; }
+                Position pos = new Position(tabHitbox[curseurMap.y][curseurMap.x][0] & 0xFF, tabHitbox[curseurMap.y][curseurMap.x][1] & 0xFF);
+
+                s = carte.getElement(pos).getSoldat();
+                if (s != null) {
+                    // Nom
+                    labelsInfo.get(0).setText(s.getNom());
+                    labelsInfo.get(0).setVisible(true);
+                    // Points de vies
+                    labelsInfo.get(1).setText(s.getPoints() + "/" + s.getPointsMax());
+                    labelsInfo.get(1).setVisible(true);
+                    // Portée de vue
+                    labelsInfo.get(2).setText(s.getPortee() + "");
+                    labelsInfo.get(2).setVisible(true);
+                    // Puissance au corps à corps
+                    labelsInfo.get(3).setText(s.getPUISSANCE() + "");
+                    labelsInfo.get(3).setVisible(true);
+                    // Puissance au tir
+                    labelsInfo.get(4).setText(s.getTIR() + "");
+                    labelsInfo.get(4).setVisible(true);
+                    barreInfosCache = false;
+                } else if (!barreInfosCache) {
+                    // On cache tous les boutons de la barre d'informations
+                    for (int i = 0; i < labelsInfo.size(); i++) labelsInfo.get(i).setVisible(false);
+                    barreInfosCache = true;
+                }
+            }
+        });
+    }
+
+    /**
+     * Crée le listener des évènements clavier
+     */
+    private void creerKeyListener () {
         this.addKeyListener(new KeyAdapter() {
             @Override
             public void keyPressed (KeyEvent e) {
@@ -326,6 +489,8 @@ public class PanneauJeu extends JPanel implements wargame.IConfig, MouseWheelLis
             for (int i = 0; i < boutonsJeu.size(); i++) boutonsJeu.get(i).setVisible(false);
             // On affiche tous les boutons du menu
             for (int i = 0; i < boutonsMenu.size(); i++) boutonsMenu.get(i).setVisible(true);
+            // On cache tous les boutons de la barre d'informations
+            if (!barreInfosCache) for (int i = 0; i < labelsInfo.size(); i++) labelsInfo.get(i).setVisible(false);
         }
         afficherMenu = !afficherMenu;
         repaint();
