@@ -56,6 +56,8 @@ public class Monstre extends Soldat {
                 System.out.println("Erreur le monstre n'a pas reussi a TROUVER UNE POSITION VIDE");
                 return null;
             }
+            System.out.println(getPos());
+            System.out.println(pos);
             getCarte().deplaceSoldat(pos, this);
         }else{
             if(!this.combat(h)){
