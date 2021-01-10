@@ -56,13 +56,19 @@ public class Monstre extends Soldat {
                 System.out.println("Erreur le monstre n'a pas reussi a TROUVER UNE POSITION VIDE");
                 return null;
             }
-            getCarte().deplaceSoldat(pos, this);
+            System.out.println(getPos());
+            System.out.println(pos);
+            if(this.joueTour()){
+                getCarte().deplaceSoldat(pos, this);
+                return h;
+            }
         }else{
-            if(!this.combat(h)){
-                System.out.println("Erreur le monstre n'a pas reussi a engager le combat");
-                return null;
+            if(this.joueTour()){
+                if(!this.combat(h)){
+                    System.out.println("Erreur le monstre n'a pas reussi a engager le combat");
+                }else return h;
             }
         }
-        return h;
+        return null;
     }
 }

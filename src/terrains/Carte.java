@@ -206,7 +206,7 @@ public class Carte implements wargame.IConfig, wargame.ICarte, Serializable {
             else {
                 P.setX(i);
                 P.setY(j);
-                if (grille[i][j].estAccessible()) test = 1;
+                if (grille[i][j].estAccessible() && grille[i][j].getSoldat() == null) test = 1;
             }
         }
         System.out.println("trouvePositionVide fin");

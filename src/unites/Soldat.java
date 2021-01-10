@@ -51,7 +51,7 @@ public abstract class Soldat implements ISoldat, IConfig, Serializable {
     public boolean getTour(){return tour;}
     
     /**
-     * Joue le tour du soldat, retourne 0 si il a pu jouer son tour, -1 si son tour est déjà joué
+     * Joue le tour du soldat, retourne true si il a pu jouer son tour, false si son tour est déjà joué
      */
     public boolean joueTour(){
         if(tour == true){
