@@ -10,6 +10,8 @@ import java.awt.*;
 import java.io.Serializable;
 import java.util.ArrayList;
 
+import javax.swing.text.WrappedPlainView;
+
 public class Carte implements wargame.IConfig, wargame.ICarte, Serializable {
     private static final long serialVersionUID = -1115730673450347942L;
     Element[][] grille = new Element[HAUTEUR_CARTE][LARGEUR_CARTE];
@@ -106,9 +108,6 @@ public class Carte implements wargame.IConfig, wargame.ICarte, Serializable {
         if(!(getElement(pos).getSoldat() instanceof Heros) || getElement(pos2).getSoldat() instanceof Heros)
             return false;
         
-        
-        /*On essaie de jouer le tour du soldat*/
-        
 
         /*On va maintenant déterminer l'action a effectuer :*/
         /*Si la case n'est pas voisine on tente une attaque a distance */
@@ -122,18 +121,20 @@ public class Carte implements wargame.IConfig, wargame.ICarte, Serializable {
         }
 
         /*On essaye de deplacer le soldat dans la case pos2, si on ne peut pas c'est qu'il y a un monstre*/
+        if(!getElement(pos).getSoldat().getTour()) return false;
         if(!deplaceSoldat(pos2, getElement(pos).getSoldat())){
             if(getElement(pos2).getSoldat() != null){
                 getElement(pos).getSoldat().combat(getElement(pos2).getSoldat());
+                getElement(pos).getSoldat().joueTour();
             }else return false;
-        }
+        }else getElement(pos2).getSoldat().joueTour();
         return true;
     }
 
     public boolean deplaceSoldat(Position pos, Soldat soldat){
         /*Si la position ou l'on veut se deplacer est vide et adjacente au soldat*/
         if(pos != null && getElement(pos) != null && getElement(pos).estAccessible() && 
-           getElement(pos).getSoldat() == null && pos.estVoisine(soldat.getPos())){
+            getElement(pos).getSoldat() == null && pos.estVoisine(soldat.getPos())){
             getElement(soldat.getPos()).setSoldat(null); /*On libère la case ou se trouvais le soldat*/
             soldat.seDeplace(pos);
             getElement(pos).setSoldat(soldat); /*On sauvegarde le soldat dans l'element de pos*/
