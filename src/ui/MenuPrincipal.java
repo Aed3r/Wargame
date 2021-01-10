@@ -7,10 +7,10 @@ import terrains.Carte;
 /**
  * Crée le menu principale
  */
-public class MenuPrincipale extends MenuSimple {
+public class MenuPrincipal extends MenuSimple {
     private static final long serialVersionUID = 1L;
     
-    public MenuPrincipale() {
+    public MenuPrincipal() {
         super(null);
         Dimension s = new Dimension(300, 75); // Taille des boutons
         
@@ -28,21 +28,21 @@ public class MenuPrincipale extends MenuSimple {
             public void mouseClicked(MouseEvent e) {
                 Carte c = new Carte();
                 c.placementSoldatAlea();
-                setMenu(new PanneauJeu(c, MenuPrincipale.this));
+                setMenu(new PanneauJeu(c, MenuPrincipal.this));
             }
         });
             // Charger un jeu
         buttons[1].addMouseListener(new MouseAdapter() {
             @Override
             public void mouseClicked(MouseEvent e) {
-                setMenu(new MenuChargerJeu(MenuPrincipale.this));
+                setMenu(new MenuChargerJeu(MenuPrincipal.this));
             }
         });
             // Options
         buttons[2].addMouseListener(new MouseAdapter() {
             @Override
             public void mouseClicked(MouseEvent e) {
-                setMenu(new MenuOptions(MenuPrincipale.this));
+                setMenu(new MenuOptions(MenuPrincipal.this));
             }
         });
             // Quitter
