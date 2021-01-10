@@ -170,7 +170,10 @@ public class Carte implements wargame.IConfig, wargame.ICarte, Serializable {
         
         for (int i = posI-1; i < posI+2; i++) {
             for (int j = posJ-1; j < posJ+2; j++) {
-                if ((i != posI && j != posJ) || (i != posI-1 && j != posJ+1) || (i != posI+1 && j != posJ+1)) {
+                if ((i == posI && j == posJ) || (i == posI-1 && j == posJ+1) || (i == posI+1 && j == posJ+1)) {
+                    
+                }
+                else {
                     if (grille[i][j].estAccessible()) cmp++;
                 }
             }
@@ -187,20 +190,27 @@ public class Carte implements wargame.IConfig, wargame.ICarte, Serializable {
         int max = 1; int min = -1; 
         int range = max - min + 1; 
         int randI; int randJ;
+        int i; int j;
 
         while (test == 0) {
             randI = (int)(Math.random() * range) + min;
             randJ = (int)(Math.random() * range) + min;
-            if ((randI != posI && randJ != posJ) || (randI != posI-1 && randJ != posJ+1) || (randI != posI+1 && randJ != posJ+1)) {
-                P.setX(randI);
-                P.setY(randJ);
-                if (grille[posI][posJ].estAccessible()) test = 1;
+            i = randI+posI;
+            j = randJ+posJ;
+
+            if ((i == posI && j == posJ) || (i == posI-1 && j == posJ+1) || (i == posI+1 && j == posJ+1)) {
+                //System.out.printf("Cas non valable : %d %d \n", i, j);
+            }
+            else {
+                P.setX(i);
+                P.setY(j);
+                if (grille[i][j].estAccessible()) test = 1;
             }
         }
         return P;
     }
 
-    /* Trouve un heros choisi aleatoirement parmi les 8 positions adjacentes de pos */
+    /* Trouve un heros choisi aleatoirement parmi les 6 positions adjacentes de pos */
     public Heros trouveHeros(Position pos) {
         int posI = pos.getX();
         int posJ = pos.getY();
@@ -213,8 +223,11 @@ public class Carte implements wargame.IConfig, wargame.ICarte, Serializable {
         
         for (int i = posI-1; i < posI+2; i++) {
             for (int j = posJ-1; j < posJ+2; j++) {
-                if ((i != posI && j != posJ) || (i != posI-1 && j != posJ+1) || (i != posI+1 && j != posJ+1)) {
-                    if (grille[i][j].getSoldat() != null && grille[posI][posJ].getSoldat().estHeros()) cmp++;
+                if ((i == posI && j == posJ) || (i == posI-1 && j == posJ+1) || (i == posI+1 && j == posJ+1)) {
+                    //System.out.printf("Cas non valable : %d %d \n", i, j);
+                }
+                else {
+                    if (grille[i][j].getSoldat() != null && grille[i][j].getSoldat().estHeros()) cmp++;
                 }
             }
         }
@@ -230,18 +243,30 @@ public class Carte implements wargame.IConfig, wargame.ICarte, Serializable {
         int max = 1; int min = -1; 
         int range = max - min + 1; 
         int randI; int randJ;
+        int i = 0; int j = 0;
 
         while (test == 0) {
             randI = (int)(Math.random() * range) + min;
             randJ = (int)(Math.random() * range) + min;
-            if ((randI != posI && randJ != posJ) || (randI != posI-1 && randJ != posJ+1) || (randI != posI+1 && randJ != posJ+1)) {
-                P.setX(randI);
-                P.setY(randJ);
-                if (grille[posI][posJ].getSoldat() != null && grille[posI][posJ].getSoldat().estHeros()) test = 1;
+            i = randI+posI;
+            j = randJ+posJ;
+
+            if ((i == posI && j == posJ) || (i == posI-1 && j == posJ+1) || (i == posI+1 && j == posJ+1)) {
+                //System.out.printf("Cas non valable : %d %d \n", i, j);
+            }
+            else {
+                System.out.printf("i j %d %d \n", i, j);
+                System.out.printf("posI posJ %d %d \n", posI, posJ);
+                System.out.printf("posI-1 posJ+1 %d %d \n", posI-1, posJ+1);
+                System.out.printf("posI+1 posJ+1 %d %d \n", posI+1, posJ+1);
+
+                P.setX(i);
+                P.setY(j);
+                if (grille[i][j].getSoldat() != null && grille[i][j].getSoldat().estHeros()) test = 1;
             }
         }
-        System.out.printf("indice : %d %d %n", posI, posJ);
-        return (Heros)(grille[posI][posJ].getSoldat());
+        System.out.printf("indice : %d %d %n", i, j);
+        return (Heros)(grille[i][j].getSoldat());
     }
 
     /* Affichage basique du nom des élements de la grille */
