@@ -15,11 +15,16 @@ public class Carte implements wargame.IConfig, wargame.ICarte, Serializable {
     Element[][] grille = new Element[HAUTEUR_CARTE][LARGEUR_CARTE];
     private int minutesJouees = 0; // Utilisé pour la sauvegarde
 
+    /**
+     * Construit une carte d'éléments aléatoires avec les informations de IConfig
+     * @see Element
+     */
     public Carte () {
         /* Construction de la carte avec élements aléatoires et un contour de forêt */
         for (int i = 0; i < HAUTEUR_CARTE; i++) {
             for (int j = 0; j < LARGEUR_CARTE; j++) {
                 if (i == 0 || i == HAUTEUR_CARTE-1 || j == 0 || j == LARGEUR_CARTE-1) {
+                    /* Création d'un contours inacessible du plateau, ici de type Forêt*/
                     grille[i][j] = new Element(misc.Element.TypeElement.FORET, new Position(i, j));
                 }
                 else grille[i][j] = new Element (new Position(i, j));
@@ -33,6 +38,7 @@ public class Carte implements wargame.IConfig, wargame.ICarte, Serializable {
             }
         } 
 
+        /* Zone de Spawn des héros */
         for (int i = POS_INIT_SPAWN_GENTIL.getX(); i <= POS_INIT_SPAWN_GENTIL.getX()+HAUTEUR_SPAWN-1; i++) {
             for (int j = POS_INIT_SPAWN_GENTIL.getY(); j <= POS_INIT_SPAWN_GENTIL.getY()+LARGEUR_SPAWN-1; j++) {
                 grille[i][j] = new Element(misc.Element.TypeElement.PLAINE, new Position(i, j));
@@ -48,23 +54,29 @@ public class Carte implements wargame.IConfig, wargame.ICarte, Serializable {
         this.minutesJouees += minutesJouees;
     }
 
+
+    /**
+     * Fonction de placement aléatoire des Soldats sur la carte de jeu
+     */
     public void placementSoldatAlea () {
+        /* Récupération des configurations de IConfig */
         int nb_heros = NB_HEROS;
         int nb_monstres = NB_MONSTRES;
-        System.out.printf("nb heros : %d nb monstres : %d %n", nb_heros, nb_monstres);
-        System.out.printf("init Monstre x : %d y : %d %n", POS_INIT_SPAWN_MONSTRE.getX(), POS_INIT_SPAWN_MONSTRE.getY());
-        System.out.printf("init Heros x : %d y : %d %n", POS_INIT_SPAWN_GENTIL.getX(), POS_INIT_SPAWN_GENTIL.getY());
 
+        /* Test que le nombre de soldats ne dépassent pas les zones de spawn */
         if (HAUTEUR_SPAWN*LARGEUR_SPAWN < nb_heros || HAUTEUR_SPAWN*LARGEUR_SPAWN < nb_monstres) {
             System.out.println("Erreur placementHerosAlea Trop de soldats dans la zone de Spawn %n");
             System.exit(-1);
         }
+
         int i; int j; int iMonstre; int jMonstre;
         int max = LARGEUR_SPAWN-1; int min = 0; 
         int range = max - min + 1; 
         int randI; int randJ;
 
+        /* Placement aléatoires dans chaque zone de spawn des Héros et des Monstres */
         while (nb_heros > 0 || nb_monstres > 0) {
+            /* Calcul des valeurs des variables aléatoires à chaque tour de boucle */
             randI = (int)(Math.random() * range) + min;
             randJ = (int)(Math.random() * range) + min;
             i = randI + POS_INIT_SPAWN_GENTIL.getX();
@@ -72,19 +84,18 @@ public class Carte implements wargame.IConfig, wargame.ICarte, Serializable {
             iMonstre = randI + POS_INIT_SPAWN_MONSTRE.getX();
             jMonstre = randJ + POS_INIT_SPAWN_MONSTRE.getY();
 
+            /* Si il n'y a pas déjà de Héros à cet emplacement on peut placer le nouveau Héros */
             if (grille[i][j].getSoldat() == null && nb_heros != 0) {
-                System.out.printf("héros %d %d  %n", i, j);
-                grille[i][j].setSoldat(new Heros(this, TypesH.getTypeHAlea(), "Adolf", new Position(i, j), Color.black));
+                grille[i][j].setSoldat(new Heros(this, TypesH.getTypeHAlea(), "gentil", new Position(i, j), Color.black));
                 nb_heros--;
             }
             
+            /* Si il n'y a pas déjà de Monstres à cet emplacement on peut placer le nouveau Monstre */
             if (grille[iMonstre][jMonstre].getSoldat() == null && nb_monstres != 0) {
-                System.out.printf("monstre %d %d  %n", iMonstre, jMonstre);
-                grille[iMonstre][jMonstre].setSoldat(new Monstre(this, TypesM.getTypeMAlea(), "Gustav", new Position(iMonstre, jMonstre), Color.blue));
+                grille[iMonstre][jMonstre].setSoldat(new Monstre(this, TypesM.getTypeMAlea(), "mechant", new Position(iMonstre, jMonstre), Color.blue));
                 nb_monstres--;
             }
         }
-        System.out.println("test test %n");
     }
 
 
@@ -141,7 +152,11 @@ public class Carte implements wargame.IConfig, wargame.ICarte, Serializable {
         }else return false;
     }
 
-    /* Retourne l'élement à la position pos dans la grille */
+    /**
+     * Retourne l'élement à la position pos dans la grille
+     * @return L'élément trouvé 
+     * @param pos La position dans la grille à laquelle on veut obtenir l'élément
+     */
     public Element getElement(Position pos) {
         
         int i = pos.getX();
@@ -159,28 +174,38 @@ public class Carte implements wargame.IConfig, wargame.ICarte, Serializable {
         return getElement(new Position(x, y));
     }
 
-    /* Trouve une position vide choisie aleatoirement parmi les 8 positions adjacentes de pos */
+    /**
+     * Trouve une position vide (où l'on peut se déplacer) choisie aleatoirement parmi les 6 positions adjacentes de pos
+     * @return null si l'on ne trouve pas de positions vides et la position trouvée sinon
+     * @param pos La position autour de laquelle on cherche une position vide
+     */
     public Position trouvePositionVide(Position pos) {
+        /* Récupération des coordonées de la position passée en paramètres */
         int posI = pos.getX();
         int posJ = pos.getY();
         int cmp = 0;
-        System.out.println("trouvePositionVide 1");
+
+        /* On vérifie que la position de laquelle on part est dans le plateau de jeu */
         if (!pos.estValide()) {
             System.out.println("Erreur trouvePositionVide la position est hors de la grille FIN");
             return null;
         }
         
+         /* On regarde déjà si il existe bien une PositionVide dans les cases adjacentes */
         for (int i = posI-1; i < posI+2; i++) {
             for (int j = posJ-1; j < posJ+2; j++) {
                 if ((i == posI && j == posJ) || (i == posI-1 && j == posJ+1) || (i == posI+1 && j == posJ+1)) {
-                    
+                    /* On vérifie ici que l'on ne prend pas en compte la positions de départ elle même
+                       ou les positions qui ne sont pas accessibles dans le cas d'une grille hexagonale */
                 }
                 else {
+                    /* On vérifie si il y'a un soldat sur la case accesible */
                     if (grille[i][j].estAccessible() && grille[i][j].getSoldat() == null) cmp++; 
                 }
             }
         }
 
+        /* On renvoie null si on ne trouve pas de positions vides */
         if (cmp == 0) {
             System.out.println("Erreur trouvePositionVide pas de cases vides adjacentes FIN");
             return null;
@@ -194,6 +219,7 @@ public class Carte implements wargame.IConfig, wargame.ICarte, Serializable {
         int randI; int randJ;
         int i; int j;
 
+        /* On tire aléatoirement une case dans les cases adjacentes tant que l'on ne trouve pas la case vide repérée auparavant */
         while (test == 0) {
             randI = (int)(Math.random() * range) + min;
             randJ = (int)(Math.random() * range) + min;
@@ -201,7 +227,8 @@ public class Carte implements wargame.IConfig, wargame.ICarte, Serializable {
             j = randJ+posJ;
 
             if ((i == posI && j == posJ) || (i == posI-1 && j == posJ+1) || (i == posI+1 && j == posJ+1)) {
-                //System.out.printf("Cas non valable : %d %d \n", i, j);
+                /* On vérifie ici que l'on ne prend pas en compte la positions de départ elle même
+                    ou les positions qui ne sont pas accessibles dans le cas d'une grille hexagonale */
             }
             else {
                 P.setX(i);
@@ -209,25 +236,33 @@ public class Carte implements wargame.IConfig, wargame.ICarte, Serializable {
                 if (grille[i][j].estAccessible() && grille[i][j].getSoldat() == null) test = 1;
             }
         }
-        System.out.println("trouvePositionVide fin");
+        /* On renvoie la position vide trouvée */
         return P;
     }
 
-    /* Trouve un heros choisi aleatoirement parmi les 6 positions adjacentes de pos */
+    /**
+     * Trouve un heros choisi aleatoirement parmi les 6 positions adjacentes de pos
+     * @return null si l'on ne trouve pas de héros et le Héros trouvé sinon
+     * @param pos La position autour de laquelle on cherche un Héros
+     */
     public Heros trouveHeros(Position pos) {
+        /* Récupération des coordonées de la position passée en paramètres */
         int posI = pos.getX();
         int posJ = pos.getY();
         int cmp = 0;
-        System.out.println("trouveHeros 1");
+
+        /* On vérifie que la position de laquelle on part est dans le plateau de jeu */
         if (!pos.estValide()) {
             System.out.println("Erreur trouvePositionVide la position est hors de la grille FIN");
             return null;
         }
         
+        /* On regarde déjà si il existe bien un Héros dans les cases adjacentes */
         for (int i = posI-1; i < posI+2; i++) {
             for (int j = posJ-1; j < posJ+2; j++) {
                 if ((i == posI && j == posJ) || (i == posI-1 && j == posJ+1) || (i == posI+1 && j == posJ+1)) {
-                    //System.out.printf("Cas non valable : %d %d \n", i, j);
+                    /* On vérifie ici que l'on ne prend pas en compte la positions de départ elle même
+                       ou les positions qui ne sont pas accessibles dans le cas d'une grille hexagonale */
                 }
                 else {
                     if (grille[i][j].getSoldat() != null && grille[i][j].getSoldat().estHeros()) cmp++;
@@ -235,6 +270,7 @@ public class Carte implements wargame.IConfig, wargame.ICarte, Serializable {
             }
         }
 
+        /* On renvoie null si on ne trouve pas de héros */
         if (cmp == 0) {
             System.out.println("Erreur trouveHeros pas de héros dans les cases adjacentes FIN");
             return null;
@@ -248,6 +284,7 @@ public class Carte implements wargame.IConfig, wargame.ICarte, Serializable {
         int randI; int randJ;
         int i = 0; int j = 0;
 
+        /* On tire aléatoirement une case dans les cases adjacentes tant que l'on ne trouve pas le héros repéré auparavant */
         while (test == 0) {
             randI = (int)(Math.random() * range) + min;
             randJ = (int)(Math.random() * range) + min;
@@ -255,25 +292,22 @@ public class Carte implements wargame.IConfig, wargame.ICarte, Serializable {
             j = randJ+posJ;
 
             if ((i == posI && j == posJ) || (i == posI-1 && j == posJ+1) || (i == posI+1 && j == posJ+1)) {
-                //System.out.printf("Cas non valable : %d %d \n", i, j);
+                /* On vérifie ici que l'on ne prend pas en compte la positions de départ elle même
+                    ou les positions qui ne sont pas accessibles dans le cas d'une grille hexagonale */
             }
             else {
-                System.out.printf("i j %d %d \n", i, j);
-                System.out.printf("posI posJ %d %d \n", posI, posJ);
-                System.out.printf("posI-1 posJ+1 %d %d \n", posI-1, posJ+1);
-                System.out.printf("posI+1 posJ+1 %d %d \n", posI+1, posJ+1);
-
                 P.setX(i);
                 P.setY(j);
                 if (grille[i][j].getSoldat() != null && grille[i][j].getSoldat().estHeros()) test = 1;
             }
         }
-        System.out.printf("indice : %d %d %n", i, j);
-        System.out.println("trouveHeros fin");
+        /* On renvoie le héros à la position trouvée */
         return (Heros)(grille[i][j].getSoldat());
     }
 
-    /* Affichage basique du nom des élements de la grille */
+    /**
+     * Affichage basique du nom des élements de la grille
+     */
     public void affiche_nul () {
         for (int i = 0; i < HAUTEUR_CARTE; i++) {
             for (int j = 0; j < LARGEUR_CARTE; j++) {
@@ -283,7 +317,9 @@ public class Carte implements wargame.IConfig, wargame.ICarte, Serializable {
         }
     }
 
-    /* Affichage basique du nom des élements de la grille */
+    /**
+     * Affichage basique des soldats de la grille
+     */
     public void affiche_perso () {
         for (int i = 0; i < HAUTEUR_CARTE; i++) {
             for (int j = 0; j < LARGEUR_CARTE; j++) {
