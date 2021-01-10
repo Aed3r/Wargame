@@ -108,6 +108,7 @@ public abstract class Soldat implements ISoldat, IConfig, Serializable {
      * @return true si les soldat on pu combatre, false sinon
      */
     public boolean combat(Soldat soldat){ /*On considere que l'instance pour laquelle est appelée cette methode est la première a taper */
+        if(soldat == null) return false;
         /*Premièrement le cas d'un combat au corps-a-corps (adjacent)*/
         if(getPos().estVoisine(soldat.getPos())){
             /*On fait un tirage entre 0 et la puissance du soldat*/
@@ -120,8 +121,6 @@ public abstract class Soldat implements ISoldat, IConfig, Serializable {
             }
         /*Ensuite le cas d'un combat a distance (on utilise le tir et non la puissance)*/ 
         }else if(getPos().distance(soldat.getPos(), carte) <= this.getPortee()){ //Si le soldat adverse est a portée de tir
-            /*TODO On vérifie qu'il n'y aie pas d'obstacle entre les deux soldats*/
-            
             /*On fait un tirage entre 0 et la puissance de tir du soldat*/
             soldat.pointsDeVie = soldat.pointsDeVie - (int)(Math.random() * TIR);
             if(soldat.pointsDeVie <= 0){ /*Si le soldat adverse est mort sur le coup*/
