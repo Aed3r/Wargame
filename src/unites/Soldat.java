@@ -148,7 +148,7 @@ public abstract class Soldat implements ISoldat, IConfig, Serializable {
      * Déplace le soldat dans une case sans aucune vérification
      * @param newPos La position on le soldat se déplace
      */
-    public void seDeplace(Position newPos) { this.pos = newPos;}
+    public void seDeplace(Position newPos) { this.pos = newPos; }
 
     public String toString(){
         return " position : " + this.getPos().toString() + " Pdv : " + this.pointsDeVie + "/" + this.POINT_DE_VIE_MAX;
