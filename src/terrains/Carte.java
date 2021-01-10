@@ -149,17 +149,19 @@ public class Carte implements wargame.IConfig, wargame.ICarte, Serializable {
         /*Si la case n'est pas voisine on tente une attaque a distance */
         if(!pos.estVoisine(pos2)){
             /*Si le combat ne se fait pas on retourne false */
-            if(!getElement(pos).getSoldat().joueTour()) return false;
+            if(!getElement(pos).getSoldat().getTour()) return false;
             if(!getElement(pos).getSoldat().combat(getElement(pos2).getSoldat())){
                 return false;
+            }else{
+                getElement(pos).getSoldat().joueTour();
+                return true;
             }
-            
         }
 
         /*On essaye de deplacer le soldat dans la case pos2, si on ne peut pas c'est qu'il y a un monstre*/
         if(!getElement(pos).getSoldat().getTour()) return false;
         if(!deplaceSoldat(pos2, getElement(pos).getSoldat())){
-            if(getElement(pos2).getSoldat() != null){
+            if(getElement(pos2).getSoldat() != null && getElement(pos2).getSoldat() instanceof Monstre){
                 getElement(pos).getSoldat().combat(getElement(pos2).getSoldat());
                 getElement(pos).getSoldat().joueTour();
             }else return false;
