@@ -14,12 +14,18 @@ public class Carte implements wargame.IConfig, wargame.ICarte, Serializable {
     private static final long serialVersionUID = -1115730673450347942L;
     Element[][] grille = new Element[HAUTEUR_CARTE][LARGEUR_CARTE];
     private int minutesJouees = 0; // Utilisé pour la sauvegarde
+    private int difficulte = 1;
 
     /**
      * Construit une carte d'éléments aléatoires avec les informations de IConfig
      * @see Element
      */
-    public Carte () {
+    public Carte () {;
+        /* Gestion de la difficulté */
+        if (Parametres.getParametre("difficulte").equals("simple")) difficulte = 3;
+        if (Parametres.getParametre("difficulte").equals("normale")) difficulte = 2;
+        if (Parametres.getParametre("difficulte").equals("difficile")) difficulte = 1;
+
         /* Construction de la carte avec élements aléatoires et un contour de forêt */
         for (int i = 0; i < HAUTEUR_CARTE; i++) {
             for (int j = 0; j < LARGEUR_CARTE; j++) {
@@ -61,7 +67,7 @@ public class Carte implements wargame.IConfig, wargame.ICarte, Serializable {
     public void placementSoldatAlea () {
         /* Récupération des configurations de IConfig */
         int nb_heros = NB_HEROS;
-        int nb_monstres = NB_MONSTRES;
+        int nb_monstres = NB_MONSTRES/difficulte;
 
         /* Test que le nombre de soldats ne dépassent pas les zones de spawn */
         if (HAUTEUR_SPAWN*LARGEUR_SPAWN < nb_heros || HAUTEUR_SPAWN*LARGEUR_SPAWN < nb_monstres) {
