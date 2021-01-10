@@ -11,6 +11,8 @@ import misc.Position;
  * Classe représentants les Héros, l'armée du joueur
  */
 public class Heros extends Soldat {
+    private static final long serialVersionUID = -7847862757650619304L;
+    
     private TypesH TYPE;
     
     /**

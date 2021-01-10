@@ -1,10 +1,12 @@
 package misc;
 
 import wargame.IConfig;
+import java.io.Serializable;
 import terrains.Carte;
 import terrains.Chemin;
 
-public class Position implements IConfig {
+public class Position implements IConfig, Serializable {
+	private static final long serialVersionUID = -539589512429181144L;
 	private int x, y;
 	public Position(int x, int y) { this.x = x; this.y = y; }
 	public Position() {  }

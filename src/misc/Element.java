@@ -6,6 +6,7 @@ import javax.imageio.ImageIO;
 import javax.swing.SwingUtilities;
 import unites.Soldat;
 import java.io.IOException;
+import java.io.Serializable;
 import java.util.LinkedList;
 import java.awt.image.BufferedImage;
 import java.awt.image.RescaleOp;
@@ -14,7 +15,8 @@ import terrains.*;
 /**
  * Représente une des tuile du plateau de jeu
  */
-public class Element implements wargame.IConfig {
+public class Element implements wargame.IConfig, Serializable {
+	private static final long serialVersionUID = -5536596246170100605L;
 	private final TypeElement type;
 	private final Position pos;
 	private Soldat soldat = null; // le soldat se trouvant sur la case
@@ -26,17 +28,18 @@ public class Element implements wargame.IConfig {
 	private int nbSoldatVoient = 0; // Le nombre de soldats qui voient l'élément
 	private static LinkedList<Element> fileElem = new LinkedList<>(); // File des éléments à raffraichir
 	private boolean jamaisAffiche = true; 
-	private final boolean perf; // Si le mode performance est allumé ou non
-	private final float multTaille; // Le multiplicateur des tailles d'images
-	private final int tailleX, tailleY; // La taille des sprite
+	private float multTaille; // Le multiplicateur des tailles d'images
+	private int tailleX; // La taille des sprite
+	private int tailleY;
+	private static int compteurSoldats = 0; // Compte les soldats présent sur le plateau
 
 	/**
 	 * Représente un des différents types d'éléments prédéfinies
 	 */
-    public enum TypeElement {
-		PLAINE ("plaine", 0.6f, true, true, 0, -65), DESERT ("desert", 0.2f, true, true, 5, -95), 
-		EAU ("eau", 0.025f, false, true, 0, -60), MONTAGNE ("montagne", 0.025f, false, false, 0, -195),
-		FORET ("foret", 0.05f, false, false, 0, -106);
+	public enum TypeElement {
+		PLAINE("plaine", 0.6f, true, true, 0, -65), DESERT("desert", 0.2f, true, true, 5, -95),
+		EAU("eau", 0.025f, false, true, 0, -60), MONTAGNE("montagne", 0.025f, false, false, 0, -195),
+		FORET("foret", 0.05f, false, false, 0, -106);
 
 		final String NOM;
 		final float PROBA;
@@ -48,16 +51,21 @@ public class Element implements wargame.IConfig {
 
 		/**
 		 * Crée les éléments définies au dessus
-		 * @param nom le nom de l'élément (également utilisé pour récupérer l'image)
+		 * 
+		 * @param nom             le nom de l'élément (également utilisé pour récupérer
+		 *                        l'image)
 		 * @param probaApparition la probabilité d'apparition de l'élément
-		 * @param estAccessible si une unité peuvent être déplacé sur l'élément ou non
-		 * @param peuxTirer si les unités peuvent tirer des projectiles au travers de l'élément
-		 * @param pdvPerdues le nombre de point de vies perdus à chaque tour par une unité se trouvant sur cet élément
-		 * @param deplacementY déplacement vertical à effectuer pour afficher l'image de l'élément
+		 * @param estAccessible   si une unité peuvent être déplacé sur l'élément ou
+		 *                        non
+		 * @param peuxTirer       si les unités peuvent tirer des projectiles au travers
+		 *                        de l'élément
+		 * @param pdvPerdues      le nombre de point de vies perdus à chaque tour par
+		 *                        une unité se trouvant sur cet élément
+		 * @param deplacementY    déplacement vertical à effectuer pour afficher
+		 *                        l'image de l'élément
 		 */
-		private TypeElement(String nom, float probaApparition, boolean estAccessible,
-					boolean peuxTirer, int pdvPerdues, int deplacementVert) 
-		{ 
+		private TypeElement(String nom, float probaApparition, boolean estAccessible, boolean peuxTirer, int pdvPerdues,
+				int deplacementVert) {
 			this.NOM = nom;
 			this.PROBA = probaApparition;
 			this.ESTACCESSIBLE = estAccessible;
@@ -76,7 +84,7 @@ public class Element implements wargame.IConfig {
 			for (i = 0; i < values().length && valElem < valRand; i++)
 				valElem += values()[i].PROBA;
 
-			return values()[i-1];
+			return values()[i - 1];
 		}
 
 		/**
@@ -87,7 +95,7 @@ public class Element implements wargame.IConfig {
 			for (TypeElement te : values()) {
 				String param = Parametres.getParametre("deplacementVert");
 				if (param != null && param.equals("allumé"))
-					te.deplacementY = (int) ((te.DEPLACEMENTVERT + (int) (Math.random()*50-25)) * multTaille);  	  
+					te.deplacementY = (int) ((te.DEPLACEMENTVERT + (int) (Math.random() * 50 - 25)) * multTaille);
 				else
 					te.deplacementY = (int) (te.DEPLACEMENTVERT * multTaille);
 			}
@@ -96,29 +104,167 @@ public class Element implements wargame.IConfig {
 
 	/**
 	 * Crée un élément aléatoire
+	 * 
 	 * @param pos la position de l'élément sur la carte
 	 * @see TypeElement#getElementAlea
 	 */
-	public Element (Position pos) {
+	public Element(Position pos) {
 		this(TypeElement.getElementAlea(), pos);
 	}
 
 	/**
 	 * Crée l'élément indiqué par type
+	 * 
 	 * @param type un des types définies dans TypeElement
-	 * @param pos la position de l'élément sur la carte
+	 * @param pos  la position de l'élément sur la carte
 	 * @see TypeElement
 	 */
-	public Element (TypeElement type, Position pos) {
-		int w, h;
-
+	public Element(TypeElement type, Position pos) {
 		this.type = type;
 		this.pos = pos;
+		initialiser();
+	}
+
+	/**
+	 * @return le nom de l'élément (également utilisé pour récupérer l'image)
+	 */
+	public String getNom() {
+		return type.NOM;
+	}
+
+	/**
+	 * @return l'image de l'élément
+	 */
+	public BufferedImage getSprite() {
+		if (sprite == null) initialiser();
+		return sprite;
+	}
+
+	/**
+	 * @return l'image de l'élément sombre
+	 */
+	public BufferedImage getSpriteSombre() {
+		if (spriteSombre == null) initialiser();
+		return spriteSombre;
+	}
+
+	/**
+	 * @return true si une unité peuvent être déplacé sur l'élément ou non, false
+	 *         sinon
+	 */
+	public boolean estAccessible() {
+		return type.ESTACCESSIBLE;
+	}
+
+	/**
+	 * @return true si les unités peuvent tirer des projectiles au travers de
+	 *         l'élément, false sinon
+	 */
+	public boolean peuxTirer() {
+		return type.PEUXTIRER;
+	}
+
+	/**
+	 * @return le nombre de point de vies perdus à chaque tour par une unité se
+	 *         trouvant sur cet élément
+	 */
+	public int getPDVPerdues() {
+		return type.PDVPERDUES;
+	}
+
+	/**
+	 * @return la position de l'élément sur la carte
+	 */
+	public Position getPos() {
+		return this.pos;
+	}
+
+	/**
+	 * @return le soldat stationné sur l'élément (s'il y en a un), null sinon
+	 */
+	public Soldat getSoldat() {
+		return this.soldat;
+	}
+
+	/**
+	 * Seul un soldat à la fois
+	 * 
+	 * @param soldat un soldat quelconque
+	 */
+	public void setSoldat(Soldat soldat) {
+		// Mise à jour du compteur
+		if (getSoldat() != null && soldat == null)
+			addCompteurSoldat(-1);
+		else if (soldat != null)
+			addCompteurSoldat(1);
+
+		this.soldat = soldat;
+		setReafficher();
+	}
+
+	/**
+	 * @param x le nombre de soldats à ajouter au compte
+	 */
+	private static void addCompteurSoldat(int x) {
+		compteurSoldats += x;
+	}
+
+	/**
+	 * @return le compteur de soldats
+	 */
+	public static int getCompteurSoldat() {
+		return compteurSoldats;
+	}
+
+	/**
+	 * @return true si l'élément est visible, false sinon
+	 */
+	public boolean getVisible() {
+		return estVisible;
+	}
+
+	/**
+	 * Indique que cet élément et son contenu est visible par le joueur
+	 */
+	public void setVisible() {
+		nbSoldatVoient++;
+		if (!estVisible) {
+			estVisible = true;
+			setReafficher();
+		}
+	}
+
+	/**
+	 * Indique que cet élément et son contenu ne sont pas visible par le joueur
+	 * (case grisée)
+	 */
+	public void setCache() {
+		nbSoldatVoient--;
+		if (nbSoldatVoient <= 0) {
+			nbSoldatVoient = 0;
+			estVisible = false;
+			setReafficher();
+		}
+	}
+
+	/**
+	 * Indique s'il faut réafficher l'élément
+	 */
+	public void setReafficher() {
+		if (!jamaisAffiche)
+			fileElem.add(this);
+	}
+
+	private void initialiser() {
+		int w, h;
+		boolean perf;
 
 		// Mode Performance
 		String val = Parametres.getParametre("modePerf");
-        if (val != null) perf = val.equals(PARAMETRES[3][2]);
-        else perf = true;
+		if (val != null)
+			perf = val.equals(PARAMETRES[3][2]);
+		else
+			perf = true;
 
 		if (perf) {
 			multTaille = MULTTAILLEPERF;
@@ -155,101 +301,6 @@ public class Element implements wargame.IConfig {
 	}
 
 	/**
-	 * @return le nom de l'élément (également utilisé pour récupérer l'image)
-	 */
-	public String getNom () {
-		return type.NOM;
-	}
-
-	/**
-	 * @return l'image de l'élément
-	 */
-	public BufferedImage getSprite () {
-        return sprite;
-	}
-
-	/**
-	 * @return true si une unité peuvent être déplacé sur l'élément ou non, false sinon
-	 */
-	public boolean estAccessible () {
-		return type.ESTACCESSIBLE;
-	}
-
-	/**
-	 * @return true si les unités peuvent tirer des projectiles au travers de l'élément, false sinon
-	 */
-	public boolean peuxTirer () {
-		return type.PEUXTIRER;
-	}
-
-	/**
-	 * @return le nombre de point de vies perdus à chaque tour par une unité se trouvant sur cet élément
-	 */
-	public int getPDVPerdues () {
-		return type.PDVPERDUES;
-	}
-
-	/**
-	 * @return la position de l'élément sur la carte
-	 */
-	public Position getPos() {
-		return this.pos;
-	}
-
-	/**
-	 * @return le soldat stationné sur l'élément (s'il y en a un), null sinon
-	 */
-	public Soldat getSoldat() {
-		return this.soldat;
-	}
-
-	/**
-	 * Seul un soldat à la fois 
-	 * @param soldat un soldat quelconque
-	 */
-	public void setSoldat(Soldat soldat) {
-		this.soldat = soldat;
-		setReafficher();
-	}
-
-	/**
-	 * @return true si l'élément est visible, false sinon
-	 */
-	public boolean getVisible () {
-		return estVisible;
-	}
-
-	/**
-	 * Indique que cet élément et son contenu est visible par le joueur
-	 */
-	public void setVisible () {
-		nbSoldatVoient++;
-		if (!estVisible) {
-			estVisible = true;
-			setReafficher();
-		}
-	}
-
-	/**
-	 * Indique que cet élément et son contenu ne sont pas visible par le joueur (case grisée)
-	 */
-	public void setCache () {
-		nbSoldatVoient--;
-		if (nbSoldatVoient <= 0) {
-			nbSoldatVoient = 0;
-			estVisible = false;
-			setReafficher();
-		}
-	}
-
-	/**
-	 * Indique s'il faut réafficher l'élément
-	 */
-	public void setReafficher () {
-		if(!jamaisAffiche) fileElem.add(this);
-	}
-
-	/**
 	 * Affiche cet élément sur l'objet graphique g à la position (x, y)
 	 * @param g un objet graphique
 	 * @param x l'abscisse
@@ -261,7 +312,7 @@ public class Element implements wargame.IConfig {
 		drawY = y;
 		
 		if (estVisible) g.drawImage(getSprite(), x, y+type.deplacementY, null);
-		else g.drawImage(spriteSombre, x, y+type.deplacementY, null);
+		else g.drawImage(getSpriteSombre(), x, y+type.deplacementY, null);
 
 		afficherSoldat(g, x, y);
 
@@ -305,7 +356,7 @@ public class Element implements wargame.IConfig {
 			Graphics g = buffer.getGraphics();
 
 			if (estVisible) g.drawImage(getSprite(), 0, deplacementYSoldat, null);
-			else g.drawImage(spriteSombre, 0, deplacementYSoldat, null);
+			else g.drawImage(getSpriteSombre(), 0, deplacementYSoldat, null);
 
 			afficherSoldat(buffer.getGraphics(), 0, -type.deplacementY+deplacementYSoldat);
 
@@ -441,7 +492,7 @@ public class Element implements wargame.IConfig {
 
 		// On réaffiche l'élément courant
 		if (estVisible) img = getSprite();
-		else img = spriteSombre;
+		else img = getSpriteSombre();
 
 		g.drawImage(img, drawX, drawY+type.deplacementY, 
 					drawX+w, (int) (drawY+190*multTaille), 

@@ -10,6 +10,8 @@ import misc.Position;
  * Classe représentant les monstres
  */
 public class Monstre extends Soldat {
+    private static final long serialVersionUID = 6094099750050793967L;
+    
     private final TypesM TYPE;
     /**
      * Cree un Monstre d'un des types énuméré dans ISoldat selon son type 

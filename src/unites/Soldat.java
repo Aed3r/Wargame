@@ -8,18 +8,19 @@ import wargame.ISoldat;
 import java.awt.image.*;
 import javax.imageio.ImageIO;
 import java.io.IOException;
-
+import java.io.Serializable;
 
 /**
  * Classe abstraite décrivant les méthodes et variables communes aux deux factions
  */
-public abstract class Soldat implements ISoldat, IConfig {
-    private final int POINT_DE_VIE_MAX, PORTEE_VISUELLE, PUISSANCE, TIR; 
+public abstract class Soldat implements ISoldat, IConfig, Serializable {
+    private static final long serialVersionUID = -3905888721768484824L;
+    private final int POINT_DE_VIE_MAX, PORTEE_VISUELLE, PUISSANCE, TIR;
     private int pointsDeVie;
     private Carte carte;
     private Position pos;
     private boolean tour = true; /*Permet de savoir si ce soldat a déja joué son tour*/
-    private BufferedImage sprite, spriteDegat;
+    private transient BufferedImage sprite, spriteDegat;
     private boolean afficherSpriteDegat = false;
 
     /**
@@ -77,9 +78,11 @@ public abstract class Soldat implements ISoldat, IConfig {
         /*On vérifie que le soldat n'est pas mort, ou que son nombre de points de vie n'est pas au dessus du maximum */
         if(this.pointsDeVie <= 0)
             carte.mort(this);
-        else if(this.pointsDeVie > POINT_DE_VIE_MAX) this.pointsDeVie = POINT_DE_VIE_MAX;
-        else if (pdvAvant < getPoints()) carte.getElement(this.pos).setReafficher(); // réaffichage normal
-        else return true; // afficher animation dégat
+        else {
+            if (this.pointsDeVie > POINT_DE_VIE_MAX) this.pointsDeVie = POINT_DE_VIE_MAX;
+            if (pdvAvant < getPoints()) carte.getElement(this.pos).setReafficher(); // réaffichage normal
+            else if (pdvAvant > getPoints()) return true; // afficher animation dégat
+        }
         return false;
     }
 
