@@ -11,6 +11,7 @@ import terrains.Carte;
 import java.awt.event.*;
 import java.awt.geom.*;
 import java.awt.image.*;
+import java.io.File;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
@@ -370,9 +371,26 @@ public class MenuChargerJeu extends MenuSimple implements wargame.IConfig {
      * @param save une sauvegarde de jeu
      */
     private void removeGame (SaveCard save) {
+        // supprimer du menu
         itemsPanel.remove(save);
         itemsPanel.revalidate();
         itemsPanel.repaint();
-        // Supprimer du stockage...
+
+        // Supprimer du stockage
+        
+        int numSauvegarde = save.getSave().getNumSauvegarde();
+        String nomFicCarte = save.getSave().getCarteSaveName();
+
+        // carte
+        File fic = new File(nomFicCarte);
+        if (!fic.delete()) {
+            System.err.println("Problème lors de la suppression du fichier carte");
+        }
+
+        // save
+        fic = new File("sauvegarde" + numSauvegarde + ".save");
+        if (!fic.delete()) {
+            System.err.println("Problème lors de la suppression de la sauvegarde");
+        }
     }
 }

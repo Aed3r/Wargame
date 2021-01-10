@@ -102,6 +102,20 @@ public class GameSave implements Serializable {
     }
 
     /**
+     * @return le numéro permettant d'idenfier le fichier de cette save
+     */
+    public int getNumSauvegarde() {
+        return this.numSauvegarde;
+    }
+
+    /**
+     * @return le nom du fichier sauvegarde de la carte associé
+     */
+    public String getCarteSaveName() {
+        return this.carteSaveName;
+    }
+
+    /**
      * Enregistre la carte c
      * @param c carte a enregistrer
      * @param numSauvegarde le numéro de la sauvegarde
