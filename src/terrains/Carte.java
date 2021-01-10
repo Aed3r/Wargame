@@ -6,12 +6,14 @@ import misc.Position;
 import unites.*;
 import wargame.ISoldat.TypesH;
 import wargame.ISoldat.TypesM;
-
 import java.awt.*;
+import java.io.Serializable;
 import java.util.ArrayList;
 
-public class Carte implements wargame.IConfig, wargame.ICarte {
+public class Carte implements wargame.IConfig, wargame.ICarte, Serializable {
+    private static final long serialVersionUID = -1115730673450347942L;
     Element[][] grille = new Element[HAUTEUR_CARTE][LARGEUR_CARTE];
+    private int minutesJouees = 0; // Utilisé pour la sauvegarde
 
     public Carte () {
         /* Construction de la carte avec élements aléatoires et un contour de forêt */
@@ -36,6 +38,14 @@ public class Carte implements wargame.IConfig, wargame.ICarte {
                 grille[i][j] = new Element(misc.Element.TypeElement.PLAINE, new Position(i, j));
             }
         }
+    }
+
+    public int getMinutesJouees() {
+        return this.minutesJouees;
+    }
+
+    public void addMinutesJouees(int minutesJouees) {
+        this.minutesJouees += minutesJouees;
     }
 
     public void placementSoldatAlea () {

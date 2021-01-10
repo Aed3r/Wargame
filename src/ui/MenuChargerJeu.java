@@ -4,8 +4,10 @@ import java.awt.*;
 import javax.swing.*;
 
 import java.util.ArrayList;
-import java.util.Date;
 import misc.GameSave;
+import misc.Parametres;
+import terrains.Carte;
+
 import java.awt.event.*;
 import java.awt.geom.*;
 import java.awt.image.*;
@@ -22,6 +24,7 @@ public class MenuChargerJeu extends MenuSimple implements wargame.IConfig {
     private ModernScrollPane scrollPane;
     /* Derniere sauvegarde sélectionné */
     private SaveCard lastSelected = null;
+    private MenuSimple parent;
 
     /**
      * Construit un menu affichant les jeux enregistré
@@ -33,6 +36,7 @@ public class MenuChargerJeu extends MenuSimple implements wargame.IConfig {
         ArrayList<GameSave> saveList = getSavedGames();
         int i, l = saveList.size();
         JButton btn;
+        this.parent = parent;
 
         // On réutilise l'image chargé par le menu parent
         setBgImage(parent.getBgImage());
@@ -263,7 +267,7 @@ public class MenuChargerJeu extends MenuSimple implements wargame.IConfig {
          */
         private void updateSizes () {
             double width, height;
-            BufferedImage img = save.getGameImg();
+            ImageIcon img = save.getGameImg();
 
             /* Taille du panneau */
             width = MenuChargerJeu.this.getWidth() * SCALE;
@@ -272,10 +276,7 @@ public class MenuChargerJeu extends MenuSimple implements wargame.IConfig {
             h = (int) height;
 
             /* Image (si elle existe) */
-            if (img != null) {
-                scaledImg = img.getScaledInstance(-1, h, Image.SCALE_FAST);
-                scaledImg = makeRoundedCorner(scaledImg, r);
-            }
+            if (img != null) scaledImg = makeImage(img.getImage());
 
             lastDim = MenuChargerJeu.this.getSize();
             setPreferredSize(new Dimension(w, h));
@@ -286,15 +287,15 @@ public class MenuChargerJeu extends MenuSimple implements wargame.IConfig {
         }
 
         /**
-         * Renvoie image avec des coins arrondies et sans aliasage
-         * @param image une image quelconque
-         * @param cornerRadius le nombre de pixel à enlever aux coins
+         * Renvoie img avec des coins arrondies et sans aliasage
+         * @param img une image quelconque
          * @return <b>image</b> avec des coins arrondies et sans aliasage
-         * @see https://stackoverflow.com/a/7603815/5591299
+         * @author Philipp Reichart
+         * @see https://stackoverflow.com/a/7603815/5591299 (modifié)
          */
-        public BufferedImage makeRoundedCorner(Image image, int cornerRadius) {
-            int width = image.getWidth(null);
-            int height = image.getHeight(null);
+        public BufferedImage makeImage(Image img) {
+            int width = (int) (((double) h/img.getHeight(null)) * img.getWidth(null));
+            int height = h;
             BufferedImage output = new BufferedImage(width, height, BufferedImage.TYPE_INT_ARGB);
         
             Graphics2D g2 = output.createGraphics();
@@ -307,12 +308,12 @@ public class MenuChargerJeu extends MenuSimple implements wargame.IConfig {
             g2.setComposite(AlphaComposite.Src);
             g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
             g2.setColor(Color.WHITE);
-            g2.fill(new RoundRectangle2D.Float(0, 0, width, height, cornerRadius, cornerRadius));
+            g2.fill(new RoundRectangle2D.Float(0, 0, width, height, r, r));
             
-            // ... then compositing the image on top,
+            // ... then compositing the img on top,
             // using the white shape from above as alpha source
             g2.setComposite(AlphaComposite.SrcAtop);
-            g2.drawImage(image, 0, 0, null);
+            g2.drawImage(img, 0, 0, width, height, null);
             
             g2.dispose();
             
@@ -328,33 +329,39 @@ public class MenuChargerJeu extends MenuSimple implements wargame.IConfig {
     }
 
     /**
-     * TODO
+     * Trouve tous les jeux enregistré et les charge
      * @return Une liste de GameSave
      */
     private ArrayList<GameSave> getSavedGames() {
-        ArrayList<GameSave> l = new ArrayList<>();
-        l.add(new GameSave(new Date(), 22, 6, "data/img/gameSaveImgTMP.jpg"));
-        l.add(new GameSave(new Date(), 234, 8, "data/img/gameSaveImgTMP.jpg"));
-        l.add(new GameSave(new Date(), 345, 2, "data/img/gameSaveImgTMP.jpg"));
-        l.add(new GameSave(new Date(), 345, 456, "data/img/gameSaveImgTMP.jpg"));
-        l.add(new GameSave(new Date(), 123, 4, "data/img/gameSaveImgTMP.jpg"));
-        l.add(new GameSave(new Date(), 123, 4, "data/img/gameSaveImgTMP.jpg"));
-        l.add(new GameSave(new Date(), 123, 4, "data/img/gameSaveImgTMP.jpg"));
-        l.add(new GameSave(new Date(), 123, 4, "data/img/gameSaveImgTMP.jpg"));
-        l.add(new GameSave(new Date(), 123, 4, "data/img/gameSaveImgTMP.jpg"));
-        l.add(new GameSave(new Date(), 123, 4, "data/img/gameSaveImgTMP.jpg"));
-        l.add(new GameSave(new Date(), 123, 4, "data/img/gameSaveImgTMP.jpg"));
+        ArrayList<GameSave> saves = new ArrayList<>();
+        String tmp = Parametres.getParametre("nbSauvegardes");
+        GameSave tempSave;
 
-        return l;
+        if (tmp == null) return saves;
+        int n = Integer.parseInt(tmp);
+
+        for (int i = 1; i <= n; i++) {
+            tempSave = GameSave.recuperation("sauvegarde" + i + ".save");
+            if (tempSave == null) continue;
+            saves.add(tempSave);
+        }
+
+        return saves;
     }
 
     /**
-     * TODO
      * Charge le jeu passé en paramètre
      * @param save une sauvegarde de jeu
      */
     private void loadGame (GameSave save) {
-        System.out.println("Chargement d'une save (ou pas)...");
+        Carte c = save.recuperationCarte();
+
+        if (c != null)
+            setMenu(new PanneauJeu(c, parent));
+        else
+            JOptionPane.showMessageDialog((JFrame) SwingUtilities.getWindowAncestor(this),
+                "Un problème est survenu lors du chargement de cette sauvegarde",
+                "Erreur", JOptionPane.ERROR_MESSAGE);
     }
 
     /**

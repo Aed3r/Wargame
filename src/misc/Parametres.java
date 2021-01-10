@@ -66,5 +66,10 @@ public class Parametres implements wargame.IConfig {
         } catch (IOException io) {
             System.err.println("Erreur lors de l'écriture vers le fichier de configuration! " + io.getLocalizedMessage());
         }
+        try (OutputStream out = new FileOutputStream("bin/config.properties")) {
+            p.store(out, null);
+        } catch (IOException io) {
+            System.err.println("Erreur lors de l'écriture vers le fichier de configuration! " + io.getLocalizedMessage());
+        }
     }
 }

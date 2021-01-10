@@ -4,7 +4,6 @@ import java.awt.*;
 import java.awt.event.*;
 import java.awt.geom.AffineTransform;
 import java.awt.image.BufferedImage;
-import java.io.BufferedInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
@@ -33,7 +32,6 @@ public class PanneauJeu extends JPanel implements wargame.IConfig, MouseWheelLis
     private final MenuSimple menuParent;
     private final boolean perf; // Si le mode performance est activé ou non
     private final float multTaille; // Le multiplicateur des tailles d'images
-    private final GameSave save; // L'objet potentiellement suavegardé par le joueur
     private final long debutJeu = System.currentTimeMillis();
 
     private int xPlateau = -MARGX, yPlateau = -MARGY, wPlateau, hPlateau; // Position et taille du plateau
@@ -230,10 +228,9 @@ public class PanneauJeu extends JPanel implements wargame.IConfig, MouseWheelLis
         tmp.addMouseListener(new MouseAdapter() {
             @Override
             public void mouseClicked(MouseEvent e) {
-                save.setMinutesPlayed(save.getMinutesPlayed() + (int) (debutJeu / 6000));
-                save.setDate(new Date());
-                save.setGameImg(creerThumbnail());
-                save.setTroopCount(Element.getCompteurSoldat());
+                carte.addMinutesJouees((int) ((System.currentTimeMillis()-debutJeu) / 6000));
+                new GameSave(new Date(), Element.getCompteurSoldat(), 
+                            carte.getMinutesJouees(), creerThumbnail(), carte).enregistrement();
             }   
         });
 
@@ -258,9 +255,9 @@ public class PanneauJeu extends JPanel implements wargame.IConfig, MouseWheelLis
     }
 
     /**
-     * @return une capture d'écran de l'écran actuel pouvant être utilisé dans une save
+     * @return une capture d'écran du plateau actuel pouvant être utilisé dans une save
      */
-    private BufferedImage creerThumbnail () {
+    private ImageIcon creerThumbnail () {
         int w = tailleFenetre.width/5,
             h = tailleFenetre.height/5;
 
@@ -272,7 +269,7 @@ public class PanneauJeu extends JPanel implements wargame.IConfig, MouseWheelLis
         g2d.drawImage (plateau, 0, 0, w, h, null);
         g2d.dispose();
 
-        return thumb;
+        return new ImageIcon(thumb);
     }
 
     /**
