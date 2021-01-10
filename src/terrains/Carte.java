@@ -295,17 +295,19 @@ public class Carte implements wargame.IConfig, wargame.ICarte, Serializable {
     }
 
     /**
-     * Fini le tour des soldats joueur
+     * Fini le tour des soldats indiqué en paramètre
+     * @param tourJoueur si true: finir le tour du joueur, sinon finir le tour des ennemis
      * @see Soldat#termineTour()
      * @return la liste de soldats ayant perdues de la vie 
      */
-    public ArrayList<Soldat>  terminerTour () {
+    public ArrayList<Soldat>  terminerTour (boolean tourJoueur) {
         ArrayList<Soldat> tmp = new ArrayList<>();
 
         for (int i = 0; i < HAUTEUR_CARTE; i++) {
             for (int j = 0; j < LARGEUR_CARTE; j++) {
                 Soldat s = grille[i][j].getSoldat();
-                if (s != null && s.termineTour()) tmp.add(s);
+                if (s != null && s.estHeros() == tourJoueur && s.termineTour()) 
+                    tmp.add(s);
             }
         }
 
@@ -323,7 +325,7 @@ public class Carte implements wargame.IConfig, wargame.ICarte, Serializable {
         for (int i = 0; i < HAUTEUR_CARTE; i++) {
             for (int j = 0; j < LARGEUR_CARTE; j++) {
                 Soldat s = grille[i][j].getSoldat();
-                if (s != null && !s.estHeros() && s.getTour()) {
+                if (s != null && !s.estHeros()) {
                     Heros tmp = ((Monstre) s).jouer();
                     if (tmp != null) herosAttaque.add(tmp);
                 }
