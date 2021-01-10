@@ -715,9 +715,10 @@ public class PanneauJeu extends JPanel implements wargame.IConfig, MouseWheelLis
 		}
         
 		public void run() {
-            if (e.getSoldat() == null) return;
+            Soldat s = e.getSoldat();
+            if (s == null) return;
 
-            e.getSoldat().setAfficherSpriteDegat(true);
+            s.setAfficherSpriteDegat(true);
             e.setReafficher();
             PanneauJeu.this.repaint();
 
@@ -725,8 +726,9 @@ public class PanneauJeu extends JPanel implements wargame.IConfig, MouseWheelLis
 				Thread.sleep(500);
             } catch (InterruptedException e) { }
             
-            e.getSoldat().setAfficherSpriteDegat(false);
-            e.setReafficher();
+            s.setAfficherSpriteDegat(false);
+            if (s.getPos() != null) // Le soldat peux avoir été tué entre-temps
+                carte.getElement(s.getPos()).setReafficher();
             PanneauJeu.this.repaint();
 		}
 	}
