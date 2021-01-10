@@ -727,7 +727,8 @@ public class PanneauJeu extends JPanel implements wargame.IConfig, MouseWheelLis
             } catch (InterruptedException e) { }
             
             s.setAfficherSpriteDegat(false);
-            carte.getElement(s.getPos()).setReafficher();
+            if (s.getPos() != null) // Le soldat peux avoir été tué entre-temps
+                carte.getElement(s.getPos()).setReafficher();
             PanneauJeu.this.repaint();
 		}
 	}

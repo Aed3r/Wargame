@@ -8,6 +8,7 @@ import unites.Soldat;
 import java.io.IOException;
 import java.io.Serializable;
 import java.util.LinkedList;
+import java.util.NoSuchElementException;
 import java.awt.image.BufferedImage;
 import java.awt.image.RescaleOp;
 import terrains.*;
@@ -536,7 +537,12 @@ public class Element implements wargame.IConfig, Serializable {
 
 	public static void reafficherFile (Graphics g, byte[][][] tabHitbox, Carte carte) {
 		while (!fileElem.isEmpty()) {
-			fileElem.removeFirst().reafficher(g, tabHitbox, carte);
+			// Il peux arriver qu'un autre thread (voir animation dégat) ai vidé la file en arrivant ici
+			try {
+				fileElem.removeFirst().reafficher(g, tabHitbox, carte);
+			} catch (NoSuchElementException e) {
+				return;
+			}
 		}
 	}
 
