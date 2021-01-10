@@ -168,19 +168,23 @@ public class GameSave implements Serializable {
 
     /**
      * Enregistre la save courante
+     * @return true si la sauvegarde a réussi, false sinon
      */
-    public void enregistrement () {
+    public boolean enregistrement () {
         String fileName = "sauvegarde" + numSauvegarde + ".save";
         try (FileOutputStream fileOutputStream = new FileOutputStream(fileName)) {
             try (ObjectOutputStream objectOutputStream = new ObjectOutputStream(fileOutputStream)) {
                 objectOutputStream.writeObject(this);
                 objectOutputStream.flush();
                 Parametres.setParametre("nbSauvegardes", String.valueOf(numSauvegarde));
+                return true;
             } catch (IOException|SecurityException|NullPointerException e) {
                 System.err.println(e.getLocalizedMessage());
+                return false;
             }
         } catch (SecurityException|IOException e) {
             System.err.println(e.getLocalizedMessage());
+            return false;
         }
     }
 

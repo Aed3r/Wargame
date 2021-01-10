@@ -17,6 +17,7 @@ public class Carte implements wargame.IConfig, wargame.ICarte, Serializable {
     Element[][] grille = new Element[HAUTEUR_CARTE][LARGEUR_CARTE];
     private int minutesJouees = 0; // Utilisé pour la sauvegarde
     private int difficulte = 1;
+    private int compteurHeros = 0, compteurMonstres = 0;
 
     /**
      * Construit une carte d'éléments aléatoires avec les informations de IConfig
@@ -54,10 +55,16 @@ public class Carte implements wargame.IConfig, wargame.ICarte, Serializable {
         }
     }
 
+    /**
+     * @return le nombre de minutes joué lors du dernier chargement
+     */
     public int getMinutesJouees() {
         return this.minutesJouees;
     }
 
+    /**
+     * @param minutesJouees ajoute le nombre de minutes jouées
+     */
     public void addMinutesJouees(int minutesJouees) {
         this.minutesJouees += minutesJouees;
     }
@@ -70,6 +77,9 @@ public class Carte implements wargame.IConfig, wargame.ICarte, Serializable {
         /* Récupération des configurations de IConfig */
         int nb_heros = NB_HEROS;
         int nb_monstres = NB_MONSTRES/difficulte;
+
+        compteurHeros = nb_heros;
+        compteurMonstres = nb_monstres;
 
         /* Test que le nombre de soldats ne dépassent pas les zones de spawn */
         if (HAUTEUR_SPAWN*LARGEUR_SPAWN < nb_heros || HAUTEUR_SPAWN*LARGEUR_SPAWN < nb_monstres) {
@@ -108,8 +118,12 @@ public class Carte implements wargame.IConfig, wargame.ICarte, Serializable {
 
 
     public void mort(Soldat soldat){
+        getElement(soldat.getPos()).setReafficher();
         getElement(soldat.getPos()).setSoldat(null);/*On libère la case ou se trouvais le soldat*/
         soldat.seDeplace(null); /*On met ensuite le soldat dans une position nulle pour signifier qu'il n'est plus de ce monde*/
+
+        if(soldat.estHeros()) compteurHeros--;
+        else compteurMonstres--;
     }
 
     /**
@@ -192,6 +206,20 @@ public class Carte implements wargame.IConfig, wargame.ICarte, Serializable {
     /* Retourne l'élement à la position (x, y) dans la grille */
     public Element getElement(int x, int y) {
         return getElement(new Position(x, y));
+    }
+
+    /**
+     * @return le nombre de héros
+     */
+    public int getNbHeros () {
+        return compteurHeros;
+    }
+
+    /**
+     * @return le noombre de soldats
+     */
+    public int getNbMonstres () {
+        return compteurMonstres;
     }
 
     /**

@@ -62,7 +62,7 @@ public class Heros extends Soldat {
      * @param cache Si true on met les cases sur caché a la place
      */
     private void calcVisRec(int distance, Position pos, boolean cache){
-        if(distance < 1 || !pos.estValide()) return;
+        if(distance < 0 || !pos.estValide()) return;
         
         /*On rend tout d'abord visible la case en position pos*/
         if(cache){
