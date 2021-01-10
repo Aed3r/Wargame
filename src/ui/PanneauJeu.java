@@ -585,7 +585,8 @@ public class PanneauJeu extends JPanel implements wargame.IConfig, MouseWheelLis
                     Position pos = new Position(tabHitbox[curseurMap.y][curseurMap.x][0] & 0xFF, tabHitbox[curseurMap.y][curseurMap.x][1] & 0xFF);
     
                     s = carte.getElement(pos).getSoldat();
-                    switchBarreInfo(s);
+                    if (carte.getElement(pos).estVisible()) switchBarreInfo(s);
+                    else switchBarreInfo(null);
                 }
             });
         }
