@@ -164,7 +164,7 @@ public class Carte implements wargame.IConfig, wargame.ICarte, Serializable {
         int posI = pos.getX();
         int posJ = pos.getY();
         int cmp = 0;
-        System.out.println("%nAyou %n");
+        System.out.println("trouvePositionVide 1");
         if (!pos.estValide()) {
             System.out.println("Erreur trouvePositionVide la position est hors de la grille FIN");
             return null;
@@ -199,6 +199,7 @@ public class Carte implements wargame.IConfig, wargame.ICarte, Serializable {
                 if (grille[posI][posJ].estAccessible()) test = 1;
             }
         }
+        System.out.println("trouvePositionVide fin");
         return P;
     }
 
@@ -207,7 +208,7 @@ public class Carte implements wargame.IConfig, wargame.ICarte, Serializable {
         int posI = pos.getX();
         int posJ = pos.getY();
         int cmp = 0;
-        System.out.println("%nAyou %n");
+        System.out.println("trouveHeros 1");
         if (!pos.estValide()) {
             System.out.println("Erreur trouvePositionVide la position est hors de la grille FIN");
             return null;
@@ -243,6 +244,7 @@ public class Carte implements wargame.IConfig, wargame.ICarte, Serializable {
             }
         }
         System.out.printf("indice : %d %d %n", posI, posJ);
+        System.out.println("trouveHeros fin");
         return (Heros)(grille[posI][posJ].getSoldat());
     }
 
