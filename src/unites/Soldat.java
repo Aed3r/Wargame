@@ -65,6 +65,7 @@ public abstract class Soldat implements ISoldat, IConfig, Serializable {
     /**
      * Termine le tour du soldat, si il n'as pas bougé ce tour ci il recupère des pv.
      * Si il se trouve dans un désert il perd des pv
+     * @return true s'il faut afficher une animation de dégats, false sinon
      */
     public boolean termineTour(){
         int pdvAvant = getPoints();

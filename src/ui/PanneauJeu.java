@@ -127,7 +127,7 @@ public class PanneauJeu extends JPanel implements wargame.IConfig, MouseWheelLis
             @Override
             public void mouseClicked(MouseEvent e) {
                 System.out.println("finir tour");
-                for (Soldat s : carte.terminerTour()) {
+                for (Soldat s : carte.terminerTour(true)) {
                     RunnableAfficherDegat r = new RunnableAfficherDegat(carte.getElement(s.getPos()));
                     Thread t = new Thread(r);
                     t.start();
@@ -138,7 +138,7 @@ public class PanneauJeu extends JPanel implements wargame.IConfig, MouseWheelLis
                     Thread t = new Thread(r);
                     t.start();
                 }
-                for (Soldat s : carte.terminerTour()) {
+                for (Soldat s : carte.terminerTour(false)) {
                     RunnableAfficherDegat r = new RunnableAfficherDegat(carte.getElement(s.getPos()));
                     Thread t = new Thread(r);
                     t.start();
