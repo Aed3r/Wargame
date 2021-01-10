@@ -18,6 +18,8 @@ import javax.swing.*;
 import terrains.Carte;
 import unites.Soldat;
 import misc.Position;
+import static javax.swing.JOptionPane.showMessageDialog;
+
 
 /**
  * Panneau permettant d'afficher un plateau de jeu et l'interface associé
@@ -132,6 +134,7 @@ public class PanneauJeu extends JPanel implements wargame.IConfig, MouseWheelLis
                     Thread t = new Thread(r);
                     t.start();
                 }
+                verifierFinDuJeu();
                 PanneauJeu.this.repaint();
                 for (Soldat s : carte.jouerEnnemis()) {
                     RunnableAfficherDegat r = new RunnableAfficherDegat(carte.getElement(s.getPos()));
@@ -143,6 +146,7 @@ public class PanneauJeu extends JPanel implements wargame.IConfig, MouseWheelLis
                     Thread t = new Thread(r);
                     t.start();
                 }
+                verifierFinDuJeu();
             }
         });
         gc.gridx = 1;
@@ -153,6 +157,29 @@ public class PanneauJeu extends JPanel implements wargame.IConfig, MouseWheelLis
         gc.insets = new Insets(10,10,10,10);
         add(tmp, gc);
         boutonsJeu.add(tmp);
+    }
+
+    private void verifierFinDuJeu () {
+        if (carte.getNbMonstres() == 0) {
+            // Gagné
+            showMessageDialog(null, "Vous avez gagné!", "Félicitation!", JOptionPane.PLAIN_MESSAGE);
+            retourMenu();
+        }
+        if (carte.getNbHeros() == 0) {
+            // Perdu
+            showMessageDialog(null, "Better luck next time...", "Game Over!", JOptionPane.PLAIN_MESSAGE);
+            retourMenu();
+        }
+    }
+
+    private void retourMenu () {
+        if (menuParent != null) {
+            plateau.flush();
+            tabHitbox = null;
+            menuParent.setMenu(menuParent);
+        } else {
+            System.out.println("Pas de menu parent défini!");
+        }
     }
 
     /**
@@ -185,9 +212,7 @@ public class PanneauJeu extends JPanel implements wargame.IConfig, MouseWheelLis
         tmp.addMouseListener(new MouseAdapter() {
             @Override
             public void mouseClicked(MouseEvent e) {
-                plateau.flush();
-                tabHitbox = null;
-                menuParent.setMenu(menuParent);
+                retourMenu();
             }
         });
 
@@ -229,8 +254,11 @@ public class PanneauJeu extends JPanel implements wargame.IConfig, MouseWheelLis
             @Override
             public void mouseClicked(MouseEvent e) {
                 carte.addMinutesJouees((int) ((System.currentTimeMillis()-debutJeu) / 6000));
-                new GameSave(new Date(), Element.getCompteurSoldat(), 
-                            carte.getMinutesJouees(), creerThumbnail(), carte).enregistrement();
+                if (new GameSave(new Date(), carte.getNbHeros()+carte.getNbMonstres(), 
+                            carte.getMinutesJouees(), creerThumbnail(), carte).enregistrement())
+                {
+                    showMessageDialog(null, "Jeu sauvegardé");
+                } else showMessageDialog(null, "Erreur lors de la sauvegarde");
             }   
         });
 
