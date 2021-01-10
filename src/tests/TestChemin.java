@@ -53,7 +53,7 @@ public class TestChemin {
 
         //Chemin chem = new Chemin(5, 2, 5, 18, c);
         Position p = new Position(5, 2);
-        Position p2 = new Position(5, 18);
+        Position p2 = new Position(5, 5);
         int longu = p.distance(p2, c);
         System.out.printf("La longueur du chemin est de %d \n", longu);
     }

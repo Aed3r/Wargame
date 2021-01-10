@@ -40,18 +40,17 @@ public class Position implements IConfig, Serializable {
 		|| (pos.getX() == getX() && (pos.getY() == getY() - 1 || pos.getY() == getY() + 1))));
 	}
 	/**
-	 * @param pos Position
+	 * Calcul la distance entre deux positions en calculant un chemin entre celles-ci
+	 * @param pos Position jusqu'à laquelle on veut déterminer la distance
+	 * @param c Carte actuelle 
 	 * @return int : distance vers la position pos
 	 */
-	public int distance(Position pos, Carte c){ // 
+	public int distance(Position pos, Carte c){ 
+		/* Appel de la fonction Chemin qui utilise des listes pour stocker celui-ci*/
 		Chemin chem = new Chemin(x, y, pos.getX(), pos.getY(), c);
-		int cmp = 0;
 
-		for (int i = 0; i < chem.getListeF().size(); i++) {
-			cmp++;
-		}
-
-		return cmp;
+		/* On retourne la longueur du chemin */
+		return chem.getListeF().size();
 	}
 
 	

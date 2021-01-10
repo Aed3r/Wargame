@@ -8,7 +8,7 @@ import java.awt.*;
 import java.util.*;
 import misc.Parametres;
 
-public class TestMenuPrincipale implements wargame.IConfig {
+public class TestMenuPrincipal implements wargame.IConfig {
 
     public static void main(String[] args) {
         JFrame frame = new JFrame("Menu Principal Test");
@@ -28,7 +28,7 @@ public class TestMenuPrincipale implements wargame.IConfig {
         // Chargement des polices
         GenPolice.loadFonts();
 
-        MenuPrincipale m = new MenuPrincipale(); 
+        MenuPrincipal m = new MenuPrincipal(); 
         frame.add(m, BorderLayout.CENTER);
         frame.setVisible(true);
     }

@@ -39,8 +39,8 @@ public class Element implements wargame.IConfig, Serializable {
 	 */
 	public enum TypeElement {
 		PLAINE("plaine", 0.6f, true, true, 0, -65), DESERT("desert", 0.2f, true, true, 5, -95),
-		EAU("eau", 0.025f, false, true, 0, -60), MONTAGNE("montagne", 0.025f, false, false, 0, -195),
-		FORET("foret", 0.05f, false, false, 0, -106);
+		EAU("eau", 0.025f, false, true, 0, -60), MONTAGNE("montagne", 0.0375f, false, false, 0, -195),
+		FORET("foret", 0.0375f, false, false, 0, -106);
 
 		final String NOM;
 		final float PROBA;

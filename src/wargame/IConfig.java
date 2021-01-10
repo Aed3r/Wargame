@@ -6,7 +6,6 @@ import misc.Position;
 public interface IConfig {
 	int LARGEUR_CARTE = 20; int HAUTEUR_CARTE = 15; // en nombre de cases
 	int LARGEUR_SPAWN = 5; int HAUTEUR_SPAWN = 5; //taille similaire
-	/* A VOIR SI C'EST VRAIMENT UTILE  */
 	Position POS_INIT_SPAWN_MONSTRE = new Position(1, 1);
 	Position POS_INIT_SPAWN_GENTIL = new Position(HAUTEUR_CARTE-1-HAUTEUR_SPAWN, LARGEUR_CARTE-1-LARGEUR_SPAWN);
 	int NB_HEROS = 25; int NB_MONSTRES = 25;
