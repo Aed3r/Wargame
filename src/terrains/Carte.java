@@ -323,7 +323,7 @@ public class Carte implements wargame.IConfig, wargame.ICarte, Serializable {
         for (int i = 0; i < HAUTEUR_CARTE; i++) {
             for (int j = 0; j < LARGEUR_CARTE; j++) {
                 Soldat s = grille[i][j].getSoldat();
-                if (s != null && !s.estHeros()) {
+                if (s != null && !s.estHeros() && s.getTour()) {
                     Heros tmp = ((Monstre) s).jouer();
                     if (tmp != null) herosAttaque.add(tmp);
                 }
