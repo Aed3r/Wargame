@@ -176,7 +176,7 @@ public class Carte implements wargame.IConfig, wargame.ICarte, Serializable {
                     
                 }
                 else {
-                    if (grille[i][j].estAccessible()) cmp++;
+                    if (grille[i][j].estAccessible() && grille[i][j].getSoldat() == null) cmp++; 
                 }
             }
         }
