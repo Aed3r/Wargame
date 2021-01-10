@@ -112,8 +112,13 @@ public class Carte implements wargame.IConfig, wargame.ICarte, Serializable {
         soldat.seDeplace(null); /*On met ensuite le soldat dans une position nulle pour signifier qu'il n'est plus de ce monde*/
     }
 
-    /*Appélée quand le joueur donne l'ordre au heros en position pos de faire une action en pos2
-    si la case est accessible il se déplace, si il y a un enemis il attaque*/
+    /**
+     * Appélée quand le joueur donne l'ordre au heros en position pos de faire une action en pos2
+     * si la case est accessible il se déplace, si il y a un enemis il attaque
+     * @param pos la position d'un héros
+     * @param pos2 la position cliqué
+     * @return true si l'action a réussi, false sinon
+     */
     public boolean actionHeros(Position pos, Position pos2){
         
         /*Vérifications préalables :*/
