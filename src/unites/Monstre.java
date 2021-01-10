@@ -50,10 +50,16 @@ public class Monstre extends Soldat {
         Heros h = getCarte().trouveHeros(getPos());
         if(h == null){/*Il n'y a aucun Heros adjacents*/
             Position pos = getCarte().trouvePositionVide(getPos());
-            if(pos == null) return null;
+            if(pos == null){
+                System.out.println("Erreur le monstre n'a pas reussi a TROUVER UNE POSITION VIDE");
+                return null;
+            }
             getCarte().deplaceSoldat(pos, this);
         }else{
-            this.combat(h);
+            if(!this.combat(h)){
+                System.out.println("Erreur le monstre n'a pas reussi a engager le combat");
+                return null;
+            }
         }
         return h;
     }

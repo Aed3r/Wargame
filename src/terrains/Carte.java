@@ -1,4 +1,4 @@
-package terrains;
+ package terrains;
 
 import misc.Element;
 import misc.Parametres;
@@ -98,15 +98,17 @@ public class Carte implements wargame.IConfig, wargame.ICarte {
         
         
         /*On essaie de jouer le tour du soldat*/
-        if(!getElement(pos).getSoldat().joueTour()) return false;
         
 
         /*On va maintenant déterminer l'action a effectuer :*/
         /*Si la case n'est pas voisine on tente une attaque a distance */
         if(!pos.estVoisine(pos2)){
             /*Si le combat ne se fait pas on retourne false */
-            if(!getElement(pos).getSoldat().combat(getElement(pos2).getSoldat()))
+            if(!getElement(pos).getSoldat().joueTour()) return false;
+            if(!getElement(pos).getSoldat().combat(getElement(pos2).getSoldat())){
                 return false;
+            }
+            
         }
 
         /*On essaye de deplacer le soldat dans la case pos2, si on ne peut pas c'est qu'il y a un monstre*/
