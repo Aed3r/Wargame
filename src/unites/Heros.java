@@ -27,6 +27,7 @@ public class Heros extends Soldat {
         super(carte, type.getPoints(), type.getPortee(),
         type.getPuissance(), type.getTir(), pos, couleur, nom);
         TYPE = type;
+        calculerVision(false);
     }
 
     public String toString(){
@@ -48,39 +49,47 @@ public class Heros extends Soldat {
 
     /**
      * Appelle la fonction récursive qui calcule les cases que le héros peut voir a partir de sa portée visuelle
+     * @param cache si true, cache les éléments dans le champs de vision
      * */
-    public void calculerVision(){
-        calcVisRec(this.getPortee(), this.getPos(), false);
+    public void calculerVision(boolean cache){
+        calcVisRec(this.getPortee(), this.getPos(), cache);
     }
 
     /**
      * Utilise récursivement Element.setVisible() sur les cases adjacentes, s'appelle également dessus avec une distance réduite de 1
      * @param distance Distance a laquelle on est censé voir depuis cette case
      * @param pos Position a partir de laquelle on applique cette distance
-     * @param deplacement Si true on met les cases sur caché a la place
+     * @param cache Si true on met les cases sur caché a la place
      */
-    private void calcVisRec(int distance, Position pos, boolean deplacement){
-        if(distance < 1) return;
-        
-        /*Puisque l'on travaille avec des hexagones il y a un decalage a prende en compte selon l'indice de la ligne*/
-		int decalageX = 1, y;
-        if(pos.getY() % 2 == 0) decalageX = -1;
+    private void calcVisRec(int distance, Position pos, boolean cache){
+        if(distance < 1 || !pos.estValide()) return;
         
         /*On rend tout d'abord visible la case en position pos*/
-        if(deplacement){
+        if(cache){
             getCarte().getElement(pos).setCache();
         }else getCarte().getElement(pos).setVisible();
 
-        /*On parcours ensuite toutes les positions voisine pour appeller recursivement la fonction*/
-        for(y=pos.getY()-1;y<pos.getY()+1;y++){
-            if(y == pos.getY()){
-                calcVisRec(distance - 1, new Position(y, pos.getX() - 1), deplacement);
-                calcVisRec(distance - 1, new Position(y, pos.getX() + 1), deplacement);
-            }else{
-                calcVisRec(distance - 1, new Position(y, pos.getX()), deplacement);
-                calcVisRec(distance - 1, new Position(y, pos.getX() + decalageX), deplacement);
+       /*On parcours ensuite toutes les positions voisine pour appeller recursivement la fonction*/
+        Position test = new Position();
+        for (int x = -1; x < 2; x++) {
+            for (int y = -1; y < 2; y++) {
+                test.set(pos.getX()+x, pos.getY()+y);
+                if (pos.estVoisine(test))
+                    calcVisRec(distance-1, test, cache);
             }
         }
+    }
 
+    /**
+     * Déplace le soldat dans une case sans aucune vérification
+     * @param newPos La position on le soldat se déplace
+     */
+    @Override
+    public void seDeplace(Position newPos) { 
+        // On cache les éléments autout de soit
+        calculerVision(true);
+        super.seDeplace(newPos);
+        // On affiche les éléments autour de la nouvelle position
+        calculerVision(false);
     }
 }

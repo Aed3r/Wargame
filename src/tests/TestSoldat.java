@@ -28,6 +28,6 @@ public class TestSoldat {
         System.out.println(chevalier.toString());
         System.out.println(troll.toString());
 
-        chevalier.calculerVision();
+        chevalier.calculerVision(false);
     }
 }

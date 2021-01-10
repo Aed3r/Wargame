@@ -220,7 +220,7 @@ public class Element implements wargame.IConfig, Serializable {
 	/**
 	 * @return true si l'élément est visible, false sinon
 	 */
-	public boolean getVisible() {
+	public boolean estVisible() {
 		return estVisible;
 	}
 
@@ -555,7 +555,8 @@ public class Element implements wargame.IConfig, Serializable {
 	private void afficherSoldat (Graphics g, int dX, int dY) {
 		Soldat s = getSoldat();
 
-		if (s == null) return;
+		// On affiche rien si s est null ou un monstre non visible au joueur
+		if (s == null || (!s.estHeros() && !estVisible())) return;
 
 		BufferedImage img = s.getSprite();
 		// Coordonnées d'affichage du soldat
